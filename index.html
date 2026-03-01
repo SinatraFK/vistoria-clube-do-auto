@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clube do Auto - Avaliação Comercial</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#111827">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Clube do Auto">
+
+  <style>
+    :root{--preto:#111827;--verde:#16a34a;--verde2:#22c55e;--cinza:#f2f4f7;--borda:#cfd4dc;--texto:#0b1220}
+    body{font-family:Arial,Helvetica,sans-serif;background:var(--cinza);margin:0;padding:14px;max-width:980px;margin-inline:auto;color:var(--texto)}
+    .hidden{display:none !important}
+
+    /* Top bar */
+    .topbar{display:flex;align-items:center;gap:14px;background:var(--preto);color:#fff;padding:12px;border-radius:14px;box-shadow:0 8px 22px rgba(0,0,0,.18);margin-bottom:12px}
+    .topbar img{width:150px;height:auto;display:block}
+    .topbarTitle{flex:1;display:flex;flex-direction:column;justify-content:center;gap:6px}
+    .topbarTitle .main{font-weight:900;letter-spacing:.5px;font-size:18px}
+    .userline{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:12px;opacity:.95}
+    .chip{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.08)}
+    .dot{width:10px;height:10px;border-radius:50%;background:#2e7d32}
+    .btnSmall{border:none;border-radius:10px;padding:9px 11px;font-weight:900;cursor:pointer}
+    .btnExit{background:var(--verde);color:#fff}
+    .btnExit:hover{background:var(--verde2)}
+    .btnGhost{background:rgba(255,255,255,.08);color:#fff}
+    .btnGhost:hover{background:rgba(255,255,255,.14)}
+
+    /* Tabs */
+    .tabs{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+    .tabbtn{border:none;border-radius:12px;padding:11px 14px;font-weight:900;cursor:pointer;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.08);color:var(--preto)}
+    .tabbtn.active{background:var(--verde);color:#fff}
+    .tabbtn.active:hover{background:var(--verde2)}
+    .tabbtn:hover{filter:brightness(.98)}
+
+    .card{background:#fff;padding:14px;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.10);margin-bottom:14px}
+    h3{margin:0 0 10px 0}
+    label{font-weight:800;font-size:13px}
+    input,select,textarea{width:100%;padding:10px;margin-top:6px;margin-bottom:10px;border-radius:12px;border:1px solid var(--borda);font-size:15px;outline:none;background:#fff}
+    textarea{resize:vertical;min-height:80px}
+    .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+    @media (max-width:760px){.row2,.row3{grid-template-columns:1fr}}
+
+    button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;font-weight:900;cursor:pointer;margin-top:8px}
+    .btnW{background:#25D366;color:#fff}
+    .btnB{background:#1976d2;color:#fff}
+    .btnG{background:#6b7280;color:#fff}
+    .btnP{background:var(--verde);color:#fff}
+    .btnP:hover{background:var(--verde2)}
+    .hint{font-size:12px;color:#666;margin-top:-6px;margin-bottom:10px}
+    .ok{color:#065f46;font-weight:900}
+    .warn{color:#b91c1c;font-weight:900}
+
+    .preview{white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;font-size:13px;background:#fcfcfc;border:1px dashed #cfd4dc;padding:12px;border-radius:14px}
+
+    /* Login */
+    #screenLogin{display:block}
+    .loginWrap{max-width:440px;margin:10vh auto 0 auto;background:#fff;padding:18px;border-radius:18px;box-shadow:0 12px 30px rgba(0,0,0,.18)}
+    .loginLogo{width:240px;display:block;margin:0 auto 14px auto}
+    .loginTitle{margin:0;text-align:center;font-size:20px;font-weight:900;color:var(--preto)}
+    .loginSubtitle{margin:10px 0 16px 0;text-align:center;color:#6b7280}
+    .loginBtns{display:grid;grid-template-columns:1fr;gap:10px;margin-top:6px}
+    .loginRow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media (max-width:520px){.loginRow{grid-template-columns:1fr}}
+
+    /* Photos */
+    .photoGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media (max-width:760px){.photoGrid{grid-template-columns:1fr}}
+    .photoBox{border:1px solid #e5e7eb;border-radius:14px;padding:10px;background:#fafafa}
+    .photoTop{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .req{font-size:12px;font-weight:900;color:#b91c1c}
+    .opt{font-size:12px;font-weight:900;color:#065f46}
+    .thumb{margin-top:8px;display:flex;gap:10px;align-items:center}
+    .thumb img{width:72px;height:72px;object-fit:cover;border-radius:12px;border:1px solid #ddd;display:none}
+    .thumb small{color:#666}
+
+    /* Histórico */
+    #historicoWrap{display:none}
+    .histItem{border:1px solid #e5e7eb;border-radius:14px;padding:12px;margin-bottom:10px;background:#fafafa}
+    .histTop{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .histTitle{font-weight:900}
+    .histMeta{font-size:12px;color:#666;margin-top:4px}
+    .histBtns{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+    @media (max-width:760px){.histBtns{grid-template-columns:1fr 1fr}}
+    .mini{padding:10px;border-radius:12px;font-size:13px;font-weight:900;color:#fff;border:none;cursor:pointer}
+    .mOpen{background:#111827}
+    .mCopy{background:#1976d2}
+    .mSend{background:#25D366}
+    .mDel{background:#d32f2f}
+
+    /* Admin */
+    .adminGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media (max-width:760px){.adminGrid{grid-template-columns:1fr}}
+    .rolePill{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:#eef2ff;color:#1f2937;font-weight:900;font-size:12px}
+    .rolePill.admin{background:#dcfce7;color:#065f46}
+    .rolePill.gerente{background:#fff7ed;color:#9a3412}
+    .rolePill.closer{background:#eef2ff;color:#1e40af}
+    .rolePill.user{background:#f3f4f6;color:#374151}
+    .roleListItem{border:1px solid #e5e7eb;border-radius:14px;padding:12px;background:#fafafa;margin-bottom:10px}
+    .roleRow{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+    .danger{background:#d32f2f;color:#fff}
+    .danger:hover{filter:brightness(.95)}
+  </style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<section id="screenLogin">
+  <div class="loginWrap">
+    <img src="logo.png" class="loginLogo" alt="Logo Clube do Auto"
+      onerror="this.style.display='none'; alert('Logo não encontrada. Verifique se o arquivo se chama logo.png e está na mesma pasta do index.html');">
+    <div class="loginTitle">AVALIAÇÃO COMERCIAL</div>
+    <div class="loginSubtitle">Entre para salvar na nuvem e (se tiver permissão) acessar o histórico.</div>
+
+    <div class="loginRow">
+      <div>
+        <label>E-mail</label>
+        <input id="loginEmail" inputmode="email" placeholder="ex: gerente@clube.com">
+      </div>
+      <div>
+        <label>Senha</label>
+        <input id="loginPass" type="password" placeholder="••••••••">
+      </div>
+    </div>
+
+    <div class="loginBtns">
+      <button class="btnP" id="btnDoLogin">Entrar</button>
+      <button class="btnG" id="btnCreateUser">Cadastrar (usuário padrão)</button>
+      <button class="btnB" id="btnGuest">Convidado (sem histórico)</button>
+    </div>
+
+    <div class="hint" id="loginHint" style="margin-top:12px"></div>
+  </div>
+</section>
+
+<!-- APP -->
+<section id="screenApp" class="hidden">
+  <div class="topbar">
+    <img src="logo.png" alt="Logo Clube do Auto">
+    <div class="topbarTitle">
+      <div class="main">AVALIAÇÃO COMERCIAL</div>
+      <div class="userline">
+        <span class="chip"><span class="dot" id="dot"></span><span id="statusTxt">APROVADO</span></span>
+        <span class="chip" id="whoami">Deslogado</span>
+        <span class="chip" id="roleChip">Sem histórico</span>
+      </div>
+    </div>
+    <button class="btnSmall btnGhost" id="btnSwitchUser">Trocar usuário</button>
+    <button class="btnSmall btnExit" id="btnLogout">Sair</button>
+  </div>
+
+  <div class="tabs">
+    <button class="tabbtn active" id="tabNova">Nova avaliação</button>
+    <button class="tabbtn" id="tabHist">Histórico</button>
+    <button class="tabbtn hidden" id="tabAdmin">Admin</button>
+  </div>
+
+  <!-- NOVA -->
+  <div id="viewNova">
+    <div class="card">
+      <h3>📸 Fotos do veículo</h3>
+      <div class="photoGrid">
+        <div class="photoBox"><div class="photoTop"><label>1. Frontal Esquerda</label><span class="req">Obrigatório</span></div><input type="file" id="foto1" accept="image/*" capture="environment"><div class="thumb"><img id="foto1Img" alt=""><small id="foto1Txt">Nenhuma foto selecionada</small></div></div>
+        <div class="photoBox"><div class="photoTop"><label>2. Frontal Direita</label><span class="req">Obrigatório</span></div><input type="file" id="foto2" accept="image/*" capture="environment"><div class="thumb"><img id="foto2Img" alt=""><small id="foto2Txt">Nenhuma foto selecionada</small></div></div>
+        <div class="photoBox"><div class="photoTop"><label>3. Traseira Esquerda</label><span class="req">Obrigatório</span></div><input type="file" id="foto3" accept="image/*" capture="environment"><div class="thumb"><img id="foto3Img" alt=""><small id="foto3Txt">Nenhuma foto selecionada</small></div></div>
+        <div class="photoBox"><div class="photoTop"><label>4. Traseira Direita</label><span class="req">Obrigatório</span></div><input type="file" id="foto4" accept="image/*" capture="environment"><div class="thumb"><img id="foto4Img" alt=""><small id="foto4Txt">Nenhuma foto selecionada</small></div></div>
+        <div class="photoBox"><div class="photoTop"><label>5. Bancos Dianteiros</label><span class="req">Obrigatório</span></div><input type="file" id="foto5" accept="image/*" capture="environment"><div class="thumb"><img id="foto5Img" alt=""><small id="foto5Txt">Nenhuma foto selecionada</small></div></div>
+        <div class="photoBox"><div class="photoTop"><label>6. Bancos Traseiros</label><span class="opt">Opcional</span></div><input type="file" id="foto6" accept="image/*" capture="environment"><div class="thumb"><img id="foto6Img" alt=""><small id="foto6Txt">Nenhuma foto selecionada</small></div></div>
+        <div class="photoBox"><div class="photoTop"><label>7. Painel Interno</label><span class="req">Obrigatório</span></div><input type="file" id="foto7" accept="image/*" capture="environment"><div class="thumb"><img id="foto7Img" alt=""><small id="foto7Txt">Nenhuma foto selecionada</small></div></div>
+        <div class="photoBox"><div class="photoTop"><label>8. Teto Solar / Panorâmico</label><span class="opt">Opcional</span></div><input type="file" id="foto8" accept="image/*" capture="environment"><div class="thumb"><img id="foto8Img" alt=""><small id="foto8Txt">Nenhuma foto selecionada</small></div></div>
+      </div>
+      <div class="hint" style="margin-top:10px">Fotos são usadas apenas no momento do envio. <b>Não ficam no histórico.</b></div>
+    </div>
+
+    <div class="card">
+      <h3>🚗 Veículo</h3>
+      <label>Modelo / Versão / Cor <span class="hint">(obrigatório)</span></label>
+      <input id="modelo" placeholder="Ex: Fox Trend">
+
+      <div class="row2">
+        <div><label>Ano <span class="hint">(obrigatório)</span></label><input id="ano" placeholder="Ex: 2012/2013"></div>
+        <div>
+          <label>Versão <span class="hint">(obrigatório)</span></label>
+          <select id="versao">
+            <option value="">Selecione</option>
+            <option>Básico</option>
+            <option>Completo</option>
+            <option>Completo menos ar</option>
+            <option>Completo + 7 Lugares</option>
+            <option>Apenas Vidros Elétricos</option>
+            <option>Apenas direção</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row3">
+        <div><label>Placa <span class="hint">(obrigatório)</span></label><input id="placa" placeholder="Ex: EPX5C99"></div>
+        <div><label>Km <span class="hint">(obrigatório)</span></label><input id="km" placeholder="Ex: 237.568"></div>
+        <div><label>Comprou (Km) <span class="hint">(obrigatório)</span></label><input id="kmComprou" placeholder="Ex: 185.975"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>💰 Negócio</h3>
+      <div class="row2">
+        <div><label>Fipe <span class="hint">(obrigatório)</span></label><input id="fipe" inputmode="decimal" placeholder="Ex: 32.500"><div class="hint">No relatório sai como: R$ 32.500</div></div>
+        <div><label>Valor pretendido</label><input id="valorPretendido" inputmode="decimal" placeholder="Ex: 29.900"><div class="hint">No relatório sai como: R$ 29.900</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>📋 Laudo (Estrutural)</h3>
+      <label>Status</label>
+      <select id="laudo"><option>APROVADO</option><option>APONTAMENTO</option><option>REPROVADO</option></select>
+
+      <div id="laudoObsWrap">
+        <label>Descrição do laudo <span class="hint">(obrigatório apenas em Apontamento/Reprovado)</span></label>
+        <textarea id="laudoObs" placeholder="Longarina, painel, colunas, chassi..."></textarea>
+      </div>
+
+      <h3 style="margin-top:14px">🚨 Leilão</h3>
+      <label>Situação</label>
+      <select id="leilao"><option>Não</option><option>Financeira</option><option>Pequena monta</option><option>Média monta</option></select>
+      <div class="hint">Só aparece no relatório se não for “Não”.</div>
+    </div>
+
+    <div class="card">
+      <h3>⚙️ Gastos / Condição Geral</h3>
+
+      <label>Motor (texto livre)</label>
+      <textarea id="motor" placeholder="Batendo, rajando, fumando..."></textarea>
+
+      <label>Luzes do painel (texto livre)</label>
+      <textarea id="luzes" placeholder="Injeção, óleo, ABS..."></textarea>
+
+      <label>Ar-condicionado</label>
+      <select id="ar"><option>Bom</option><option>Não gela</option><option>Não funciona</option><option>Não possui</option></select>
+
+      <h3 style="margin-top:14px">Interna</h3>
+      <div class="row3">
+        <div><label>Volante</label><select id="volante"><option>Bom</option><option>Encapar</option><option>Reformar</option></select></div>
+        <div><label>Manopla do câmbio</label><select id="cambio"><option>Bom</option><option>Trocar</option></select></div>
+        <div><label>Console central</label><select id="console"><option>Bom</option><option>Reparar</option><option>Trocar</option></select></div>
+      </div>
+
+      <div class="row2">
+        <div><label>Bancos (onde)</label><select id="bancosOnde"><option value="">—</option><option>Motorista</option><option>Dianteiros</option><option>Traseiro</option><option>Todos</option></select></div>
+        <div><label>Bancos (ação)</label><select id="bancosAcao"><option value="">—</option><option>Faixa</option><option>Reforma</option><option>Troca</option></select></div>
+      </div>
+      <label>Obs. bancos (ex: 7 peças / rasgos / espuma)</label>
+      <input id="bancosObs" placeholder="Ex: Faixa bancos 7 peças">
+
+      <h3 style="margin-top:14px">Externa</h3>
+      <div class="row3">
+        <div>
+          <label>Peças para pintar</label>
+          <select id="pecasPintura">
+            <option value="0">0</option><option value="1">1 peça</option><option value="2">2 peças</option><option value="3">3 peças</option>
+            <option value="4">4 peças</option><option value="5">5 peças</option><option value="6">6 peças</option><option value="7">7 peças</option>
+            <option value="8">8 peças</option><option value="9">9 peças</option><option value="10">10 peças</option><option value="11">11 peças</option>
+            <option value="12">12 peças</option><option value="completa">Pintura completa</option>
+          </select>
+        </div>
+        <div><label>Faróis (E)</label><select id="farolE"><option>Bom</option><option>Polimento</option><option>Troca</option></select></div>
+        <div><label>Faróis (D)</label><select id="farolD"><option>Bom</option><option>Polimento</option><option>Troca</option></select></div>
+      </div>
+
+      <div class="row3">
+        <div><label>Lanternas (E)</label><select id="lanternaE"><option>Bom</option><option>Polimento</option><option>Troca</option></select></div>
+        <div><label>Lanternas (D)</label><select id="lanternaD"><option>Bom</option><option>Polimento</option><option>Troca</option></select></div>
+        <div><label>Pneus avariados</label><select id="pneus"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></div>
+      </div>
+
+      <label>Outros gastos (texto livre)</label>
+      <textarea id="outros" placeholder="Ex: Terminal de direção, revisar vidros elétricos, travas..."></textarea>
+
+      <div class="hint">No relatório aparecem apenas itens que geram custo.</div>
+    </div>
+
+    <div class="card">
+      <h3>🎯 Closer (Quem recebe no WhatsApp)</h3>
+      <label>Selecionar responsável</label>
+      <select id="closer"></select>
+      <div class="hint">O app lembra o último closer selecionado neste aparelho.</div>
+    </div>
+
+    <div class="card">
+      <h3>👨‍🔧 Responsáveis</h3>
+      <div class="row2">
+        <div><label>Consultor <span class="hint">(obrigatório)</span></label><input id="consultor" placeholder="Ex: Will"></div>
+        <div><label>Avaliadores <span class="hint">(obrigatório)</span></label><input id="avaliadores" placeholder="Ex: Junior / Lucas / Guilherme"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>👤 Cliente</h3>
+      <div class="row2">
+        <div><label>Cliente <span class="hint">(obrigatório)</span></label><input id="cliente" placeholder="Nome do cliente"></div>
+        <div><label>Local</label><input id="local" placeholder="Ex: Osasco / SP"></div>
+      </div>
+      <label>Captação</label>
+      <select id="captacao"><option value="">Selecione</option><option>Lead</option><option>Porta</option><option>Orgânico</option></select>
+      <div class="hint">“Osasco - SP 📍” sempre aparece no relatório.</div>
+    </div>
+
+    <div class="card">
+      <h3>✅ Finalizar</h3>
+      <button class="btnP" id="btnShareAll">📤 Compartilhar relatório + fotos</button>
+      <button class="btnW" id="btnWhats">📲 Enviar relatório (WhatsApp do Closer)</button>
+      <button class="btnB" id="btnCopy">📋 Copiar relatório</button>
+
+      <div class="hint" style="margin-top:10px">“Compartilhar” envia relatório + fotos juntos, mas você escolhe o contato no WhatsApp.</div>
+
+      <h3 style="margin-top:14px;">Prévia do relatório</h3>
+      <div class="preview" id="preview"></div>
+    </div>
+  </div>
+
+  <!-- HISTÓRICO -->
+  <div id="viewHistorico" class="hidden">
+    <div class="card" id="historicoWrap">
+      <h3>☁️ Histórico na Nuvem</h3>
+      <div class="hint" id="histHint"></div>
+      <div style="height:10px"></div>
+      <div id="historicoList"></div>
+    </div>
+  </div>
+
+  <!-- ADMIN -->
+  <div id="viewAdmin" class="hidden">
+    <div class="card">
+      <h3>🛡️ Gerenciar usuários (permissão de histórico)</h3>
+      <div class="hint">
+        Aqui você define quem pode acessar o Histórico. Isso fica salvo na nuvem e não exige editar o código.
+      </div>
+
+      <div class="adminGrid">
+        <div>
+          <label>E-mail do usuário</label>
+          <input id="roleEmail" inputmode="email" placeholder="ex: will@clubedoauto.com">
+        </div>
+        <div>
+          <label>Nível</label>
+          <select id="roleLevel">
+            <option value="user">Usuário (sem histórico)</option>
+            <option value="closer">Closer (com histórico)</option>
+            <option value="gerente">Gerente (com histórico)</option>
+            <option value="admin">Admin (com histórico)</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btnP" id="btnRoleSave">Salvar permissão</button>
+      <div class="hint" id="roleHint"></div>
+
+      <h3 style="margin-top:14px;">Usuários com permissão</h3>
+      <div id="roleList"></div>
+    </div>
+  </div>
+
+</section>
+
+<textarea id="copyFallback" style="position:fixed;left:-9999px;top:-9999px;"></textarea>
+
+
+<script type="module">
+  function showFatal(msg){
+    try{
+      const box = document.createElement("div");
+      box.style.position="fixed";
+      box.style.inset="0";
+      box.style.background="#0b1220";
+      box.style.color="white";
+      box.style.padding="18px";
+      box.style.overflow="auto";
+      box.style.zIndex="99999";
+      box.innerHTML = `
+        <div style="max-width:720px;margin:0 auto;background:rgba(255,255,255,.06);padding:16px;border-radius:16px">
+          <div style="font-weight:900;font-size:18px;margin-bottom:8px">Falha ao iniciar o app</div>
+          <div style="opacity:.9;line-height:1.4;margin-bottom:12px">
+            Isso normalmente acontece por cache do app (Service Worker) ou por erro ao carregar Firebase.
+          </div>
+          <div style="font-family:ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;background:rgba(0,0,0,.35);padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.15)">${msg}</div>
+          <div style="margin-top:12px;opacity:.9">
+            Dicas rápidas:
+            <ul>
+              <li>Abra pelo link com <b>?v=9999</b> para forçar atualização.</li>
+              <li>No Chrome: F12 → Application → Service Workers → <b>Unregister</b> e depois Ctrl+Shift+R.</li>
+              <li>No celular: desinstale o app e instale de novo após abrir o link.</li>
+            </ul>
+          </div>
+        </div>`;
+      document.body.appendChild(box);
+    }catch(e){ alert("Falha ao iniciar o app: " + msg); }
+  }
+
+  async function main(){
+
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+  import {
+    getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword,
+    signOut, setPersistence, browserLocalPersistence
+  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+  import {
+    getFirestore, collection, addDoc, serverTimestamp, query, orderBy, limit, onSnapshot,
+    deleteDoc, doc as docRef, setDoc, getDoc, getDocs
+  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+  // ===== Firebase config =====
+  const firebaseConfig = {
+    apiKey: "AIzaSyCvn2_z1FN2XMN_pgR9IiExRkRNMgZfhIY",
+    authDomain: "clube-do-auto.firebaseapp.com",
+    projectId: "clube-do-auto",
+    appId: "1:647571720442:web:4257dd525b59bd89b62143"
+  };
+
+  // ===== Closers (adicione fácil) =====
+  const CLOSERS = {
+    "Dev":  "5511913033425",
+    "Will": "5511974250176"
+  };
+
+  // ===== Admins fixos (para destravar sem risco) =====
+  const HARD_ADMINS = [
+    "admin@clubedoauto.com",
+    "frank.since96@gmail.com"
+  ].map(x=>x.toLowerCase());
+
+  // ===== Storage key =====
+  const LAST_CLOSER_KEY = "clube_auto_last_closer_v3";
+
+  // ===== Helpers =====
+  const $ = (id)=>document.getElementById(id);
+  const val = (id)=> (($(id).value ?? "") + "").trim();
+
+  function escapeHtml(s){
+    return (s ?? "").toString()
+      .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;").replaceAll("'","&#039;");
+  }
+
+  function normalizeEmail(e){ return (e || "").trim().toLowerCase(); }
+  function emailToDocId(email){ return normalizeEmail(email).replaceAll(".", "_dot_").replaceAll("@", "_at_"); }
+
+  // PWA SW
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js").catch(()=>{});
+    });
+  }
+
+  // Firebase init
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  await setPersistence(auth, browserLocalPersistence);
+
+  // Guest session
+  let isGuest = false;
+
+  // Current role cache
+  let currentRole = "user"; // user|closer|gerente|admin
+  let canHistory = false;
+
+  function showLogin(){
+    $("screenLogin").style.display = "block";
+    $("screenApp").classList.add("hidden");
+  }
+  function showApp(){
+    $("screenLogin").style.display = "none";
+    $("screenApp").classList.remove("hidden");
+  }
+
+  // Tabs
+  function setTab(tab){
+    const tabs = [
+      ["nova", $("tabNova"), $("viewNova")],
+      ["hist", $("tabHist"), $("viewHistorico")],
+      ["admin", $("tabAdmin"), $("viewAdmin")]
+    ];
+    tabs.forEach(([k,btn,view])=>{
+      if(!btn || !view) return;
+      const on = (k===tab);
+      btn.classList.toggle("active", on);
+      view.classList.toggle("hidden", !on);
+    });
+
+    if(tab==="hist") openHistorico();
+    if(tab==="admin") openAdmin();
+  }
+
+  $("tabNova").addEventListener("click", ()=>setTab("nova"));
+  $("tabHist").addEventListener("click", ()=>setTab("hist"));
+  $("tabAdmin").addEventListener("click", ()=>setTab("admin"));
+
+  // Photos state
+  const photoState = { foto1:null,foto2:null,foto3:null,foto4:null,foto5:null,foto6:null,foto7:null,foto8:null };
+
+  function setThumb(id, file){
+    const img = $(id + "Img");
+    const txt = $(id + "Txt");
+    if(!file){ img.style.display = "none"; img.src = ""; txt.textContent = "Nenhuma foto selecionada"; return; }
+    txt.textContent = file.name || "Foto selecionada";
+    const url = URL.createObjectURL(file);
+    img.src = url; img.style.display = "block";
+    img.onload = ()=> URL.revokeObjectURL(url);
+  }
+  function bindPhoto(inputId){
+    $(inputId).addEventListener("change", ()=>{
+      const f = $(inputId).files && $(inputId).files[0] ? $(inputId).files[0] : null;
+      photoState[inputId] = f;
+      setThumb(inputId, f);
+    });
+  }
+  function validateFotosObrigatorias(){
+    const faltando = [];
+    if(!photoState.foto1) faltando.push("1. Frontal Esquerda");
+    if(!photoState.foto2) faltando.push("2. Frontal Direita");
+    if(!photoState.foto3) faltando.push("3. Traseira Esquerda");
+    if(!photoState.foto4) faltando.push("4. Traseira Direita");
+    if(!photoState.foto5) faltando.push("5. Bancos Dianteiros");
+    if(!photoState.foto7) faltando.push("7. Painel Interno");
+    if(faltando.length){
+      alert("Faltam fotos obrigatórias:
+- " + faltando.join("
+- "));
+      return false;
+    }
+    return true;
+  }
+  function getAllSelectedFiles(){
+    const files = [];
+    ["foto1","foto2","foto3","foto4","foto5","foto6","foto7","foto8"].forEach(k=>{
+      if(photoState[k]) files.push(photoState[k]);
+    });
+    return files;
+  }
+
+  // Status badge
+  function setStatusBadge(){
+    const s = (val("laudo") || "APROVADO").toUpperCase();
+    $("statusTxt").innerText = s;
+    $("dot").style.background =
+      (s === "REPROVADO") ? "#d32f2f" :
+      (s === "APONTAMENTO") ? "#f9a825" :
+      "#2e7d32";
+  }
+  function toggleLaudoDescricao(){
+    const s = (val("laudo") || "APROVADO").toUpperCase();
+    if(s === "APROVADO"){
+      $("laudoObsWrap").style.display = "none";
+      $("laudoObs").value = "";
+    }else{
+      $("laudoObsWrap").style.display = "block";
+    }
+  }
+
+  function focusAndWarn(id, msg){
+    alert(msg);
+    const el = $(id);
+    if(el){ el.focus(); el.scrollIntoView({behavior:"smooth", block:"center"}); }
+    return false;
+  }
+
+  function validarObrigatorios(){
+    if(!val("modelo")) return focusAndWarn("modelo","Campo obrigatório: Modelo");
+    if(!val("ano")) return focusAndWarn("ano","Campo obrigatório: Ano");
+    if(!val("versao")) return focusAndWarn("versao","Campo obrigatório: Versão");
+    if(!val("placa")) return focusAndWarn("placa","Campo obrigatório: Placa");
+    if(!val("km")) return focusAndWarn("km","Campo obrigatório: Km");
+    if(!val("kmComprou")) return focusAndWarn("kmComprou","Campo obrigatório: Comprou (Km)");
+    if(!val("fipe")) return focusAndWarn("fipe","Campo obrigatório: Fipe");
+
+    const s = (val("laudo") || "APROVADO").toUpperCase();
+    if(s !== "APROVADO" && !val("laudoObs")) return focusAndWarn("laudoObs","Descreva o laudo quando o status for Apontamento ou Reprovado.");
+
+    if(!val("closer")) return alert("Selecione o Closer (responsável)."), false;
+    if(!val("consultor")) return focusAndWarn("consultor","Campo obrigatório: Consultor");
+    if(!val("avaliadores")) return focusAndWarn("avaliadores","Campo obrigatório: Avaliadores");
+    if(!val("cliente")) return focusAndWarn("cliente","Campo obrigatório: Cliente");
+
+    return true;
+  }
+
+  function fmtBRL(raw){ const s = (raw || "").trim(); return s ? ("R$ " + s) : ""; }
+  function b(label, value){ return value ? (`*${label}:* ${value}`) : ""; }
+  function addLine(lines, text){ if(text && text.trim()) lines.push(text.trim()); }
+
+  function resumoLaudo(laudo, laudoObs){
+    const s = (laudo || "APROVADO").toUpperCase();
+    if(s === "APROVADO") return "Aprovado";
+    const texto = (laudoObs || "").replace(/\s+/g," ").trim();
+    if(!texto) return (s==="APONTAMENTO") ? "Apontamento (sem descrição)" : "Reprovado (sem descrição)";
+    const max = 90;
+    const short = (texto.length > max) ? (texto.slice(0,max).trimEnd()+"…") : texto;
+    return (s==="APONTAMENTO" ? "Apontamento: " : "Reprovado: ") + short;
+  }
+
+  function montarRelatorio(){
+    const laudo = (val("laudo") || "APROVADO").toUpperCase();
+    const icone = (laudo==="REPROVADO") ? "🔴" : (laudo==="APONTAMENTO") ? "🟡" : "🟢";
+
+    let r = "";
+    r += b("Modelo", val("modelo"));
+    r += "\n\n" + b("Ano", val("ano"));
+    r += "\n\n" + b("Versão", val("versao"));
+    r += "\n\n" + b("Placa", val("placa"));
+    r += "\n\n" + b("Km", val("km"));
+    r += "\n" + b("Comprou", val("kmComprou"));
+
+    r += "\n\n📊 *Fipe:* " + fmtBRL(val("fipe"));
+    if(val("valorPretendido")) r += "\n" + b("Valor pretendido", fmtBRL(val("valorPretendido")));
+
+    r += "\n\n📋 *Laudo*";
+    r += "\n" + icone + " " + laudo;
+    if(laudo !== "APROVADO" && val("laudoObs")) r += "\n" + val("laudoObs");
+
+    const leilao = val("leilao");
+    if(leilao && leilao.toLowerCase() !== "não"){
+      r += "\n\n🚨 *Leilão:* " + leilao;
+    }
+
+    const gastos = [];
+    if(val("motor")) addLine(gastos, "Motor: " + val("motor"));
+    if(val("luzes")) addLine(gastos, "Luzes do painel: " + val("luzes"));
+
+    const ar = val("ar");
+    if(ar && ar !== "Bom" && ar !== "Não possui") addLine(gastos, "Ar-condicionado: " + ar);
+
+    if(val("volante") !== "Bom") addLine(gastos, "Volante: " + val("volante"));
+    if(val("cambio") !== "Bom") addLine(gastos, "Manopla do câmbio: " + val("cambio"));
+    if(val("console") !== "Bom") addLine(gastos, "Console central: " + val("console"));
+
+    const bancosOnde = val("bancosOnde");
+    const bancosAcao = val("bancosAcao");
+    if(bancosOnde && bancosAcao){
+      let line = `Bancos (${bancosOnde}): ${bancosAcao}`;
+      if(val("bancosObs")) line += ` (${val("bancosObs")})`;
+      addLine(gastos, line);
+    }else if(val("bancosObs")){
+      addLine(gastos, "Bancos: " + val("bancosObs"));
+    }
+
+    const pecas = val("pecasPintura");
+    if(pecas && pecas !== "0"){
+      if(pecas === "completa") addLine(gastos, "Pintura: completa");
+      else addLine(gastos, `Pintura: ${pecas} peça(s)`);
+    }
+
+    if(val("farolE") !== "Bom") addLine(gastos, `Farol esquerdo: ${val("farolE")}`);
+    if(val("farolD") !== "Bom") addLine(gastos, `Farol direito: ${val("farolD")}`);
+    if(val("lanternaE") !== "Bom") addLine(gastos, `Lanterna esquerda: ${val("lanternaE")}`);
+    if(val("lanternaD") !== "Bom") addLine(gastos, `Lanterna direita: ${val("lanternaD")}`);
+
+    const pneus = val("pneus");
+    if(pneus && pneus !== "0") addLine(gastos, `Pneus avariados: ${pneus}`);
+
+    if(val("outros")) addLine(gastos, "Outros: " + val("outros"));
+
+    if(gastos.length) r += "\n\n⚙️ Gastos\n" + gastos.join("\n");
+
+    r += "\n\n" + b("Closer", val("closer"));
+    r += "\n" + b("Consultor", val("consultor"));
+    r += "\n" + b("Avaliadores", val("avaliadores"));
+
+    r += "\n\n" + b("Cliente", val("cliente"));
+    if(val("local")) r += "\n" + b("Local", val("local"));
+    if(val("captacao")) r += "\n" + b("Captação", val("captacao"));
+
+    r += "\n\nOsasco - SP 📍";
+    return r.trim();
+  }
+
+  function atualizarPreview(){
+    $("preview").innerText = montarRelatorio();
+  }
+
+  // WhatsApp
+  function abrirWhats(numero, texto){
+    const enc = encodeURIComponent(texto);
+    const url1 = "https://wa.me/" + numero + "?text=" + enc;
+    const url2 = "https://api.whatsapp.com/send?phone=" + numero + "&text=" + enc;
+
+    let w = null;
+    try { w = window.open(url1, "_blank"); } catch(e) {}
+    if(!w){
+      try{
+        const a = document.createElement("a");
+        a.href = url2; a.target = "_blank"; a.rel = "noopener";
+        document.body.appendChild(a); a.click(); a.remove();
+        return;
+      }catch(e){}
+    }
+    try{ window.location.href = url2; }catch(e){}
+  }
+
+  // Copy
+  async function copiarTexto(texto){
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      try{ await navigator.clipboard.writeText(texto); return true; }catch(e){}
+    }
+    const ta = $("copyFallback");
+    ta.value = texto;
+    ta.focus(); ta.select();
+    try{
+      const ok = document.execCommand("copy");
+      if(ok) return true;
+    }catch(e){}
+    window.prompt("Copie o relatório abaixo:", texto);
+    return false;
+  }
+
+  // ===== Roles in Firestore =====
+  // Collection: user_roles
+  // DocId: emailToDocId(email)
+  async function loadRoleForEmail(email){
+    const e = normalizeEmail(email);
+    if(!e) return { role:"user", canHistory:false, isAdmin:false };
+
+    // hard admins always admin
+    if(HARD_ADMINS.includes(e)){
+      return { role:"admin", canHistory:true, isAdmin:true };
+    }
+
+    try{
+      const d = await getDoc(docRef(db, "user_roles", emailToDocId(e)));
+      if(!d.exists()) return { role:"user", canHistory:false, isAdmin:false };
+      const data = d.data() || {};
+      const role = (data.role || "user").toString();
+      const canHistory = ["admin","gerente","closer"].includes(role);
+      return { role, canHistory, isAdmin:(role==="admin") };
+    }catch(e){
+      return { role:"user", canHistory:false, isAdmin:false };
+    }
+  }
+
+  function setTopIdentity(email){
+    if(isGuest){
+      $("whoami").textContent = "Convidado";
+      $("roleChip").textContent = "Sem histórico";
+      $("tabAdmin").classList.add("hidden");
+      return;
+    }
+    const who = email ? email : "Deslogado";
+    $("whoami").textContent = who;
+
+    const roleLabel = canHistory ? ("Histórico: " + currentRole.toUpperCase()) : "Sem histórico";
+    $("roleChip").textContent = roleLabel;
+
+    const isAdmin = (currentRole === "admin");
+    $("tabAdmin").classList.toggle("hidden", !isAdmin);
+  }
+
+  // ===== Firestore: salvar e listar vistorias =====
+  let unsubHistory = null;
+
+  async function salvarNoFirestore(texto){
+    const u = auth.currentUser;
+    if(!u) return false;
+
+    const laudo = (val("laudo") || "APROVADO").toUpperCase();
+    const laudoObs = val("laudoObs");
+    const closerName = val("closer");
+    const closerNumber = CLOSERS[closerName] || "";
+
+    const payload = {
+      createdAt: serverTimestamp(),
+      createdByUid: u.uid,
+      createdByEmail: normalizeEmail(u.email || ""),
+      modelo: val("modelo"),
+      placa: val("placa"),
+      laudo: laudo,
+      resumo: resumoLaudo(laudo, laudoObs),
+      closer: closerName,
+      closerNumber: closerNumber,
+      captacao: val("captacao") || "",
+      reportText: texto
+    };
+
+    try{
+      await addDoc(collection(db, "vistorias"), payload);
+      return true;
+    }catch(e){
+      alert("Erro ao salvar no histórico (nuvem): " + (e?.message || e));
+      return false;
+    }
+  }
+
+  function formatDate(ts){
+    try{
+      const d = ts?.toDate ? ts.toDate() : null;
+      if(!d) return "";
+      return new Intl.DateTimeFormat("pt-BR", {
+        day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit"
+      }).format(d);
+    }catch(e){ return ""; }
+  }
+
+  function renderHistorico(items){
+    const box = $("historicoList");
+    if(!items.length){
+      box.innerHTML = "<div class='histItem'><b>Nenhuma vistoria encontrada.</b></div>";
+      return;
+    }
+
+    box.innerHTML = items.map(it=>{
+      const la = (it.laudo || "APROVADO").toUpperCase();
+      const icon = (la==="REPROVADO") ? "🔴" : (la==="APONTAMENTO") ? "🟡" : "🟢";
+      const when = it.createdAtText || "";
+      const closerTxt = it.closer ? (" • Closer: <b>" + escapeHtml(it.closer) + "</b>") : "";
+      const resumo = it.resumo || "-";
+      return `
+        <div class="histItem">
+          <div class="histTop">
+            <div>
+              <div class="histTitle">${icon} ${escapeHtml(it.modelo || "-")} — ${escapeHtml(it.placa || "-")}</div>
+              <div class="histMeta">${escapeHtml(when)}${closerTxt}</div>
+              <div class="histMeta"><b>Resumo:</b> ${escapeHtml(resumo)}</div>
+            </div>
+            <div class="histMeta"><b>${escapeHtml(la)}</b></div>
+          </div>
+          <div class="histBtns">
+            <button class="mini mOpen" data-open="${it.id}">Abrir</button>
+            <button class="mini mCopy" data-copy="${it.id}">Copiar</button>
+            <button class="mini mSend" data-send="${it.id}">Whats</button>
+            <button class="mini mDel" data-del="${it.id}">Excluir</button>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    box.querySelectorAll("[data-open]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const id = btn.getAttribute("data-open");
+        const it = items.find(x=>x.id===id);
+        if(!it) return;
+        $("preview").innerText = it.reportText || "";
+        setTab("nova");
+        window.scrollTo({top:0, behavior:"smooth"});
+      });
+    });
+
+    box.querySelectorAll("[data-copy]").forEach(btn=>{
+      btn.addEventListener("click", async ()=>{
+        const id = btn.getAttribute("data-copy");
+        const it = items.find(x=>x.id===id);
+        if(!it) return;
+        const ok = await copiarTexto(it.reportText || "");
+        if(ok) alert("Relatório do histórico copiado!");
+      });
+    });
+
+    box.querySelectorAll("[data-send]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const id = btn.getAttribute("data-send");
+        const it = items.find(x=>x.id===id);
+        if(!it) return;
+        const numero = (it.closerNumber || "").trim();
+        if(!numero) return alert("Esse item não tem número do closer salvo.");
+        abrirWhats(numero, it.reportText || "");
+      });
+    });
+
+    box.querySelectorAll("[data-del]").forEach(btn=>{
+      btn.addEventListener("click", async ()=>{
+        const id = btn.getAttribute("data-del");
+        if(!confirm("Excluir esta vistoria do histórico da nuvem?")) return;
+        try{ await deleteDoc(docRef(db, "vistorias", id)); }
+        catch(e){ alert("Erro ao excluir: " + (e?.message || e)); }
+      });
+    });
+  }
+
+  function openHistorico(){
+    $("historicoWrap").style.display = "block";
+
+    if(isGuest){
+      $("histHint").innerHTML = "<span class='warn'>Convidado não tem acesso ao histórico.</span>";
+      $("historicoList").innerHTML = "<div class='histItem'><b>Faça login com usuário autorizado.</b></div>";
+      return;
+    }
+
+    const u = auth.currentUser;
+    if(!u){
+      $("histHint").innerHTML = "<span class='warn'>Você precisa estar logado para ver o histórico.</span>";
+      $("historicoList").innerHTML = "<div class='histItem'><b>Faça login.</b></div>";
+      return;
+    }
+
+    if(!canHistory){
+      $("histHint").innerHTML = "<span class='warn'>Seu usuário não tem permissão de histórico.</span>";
+      $("historicoList").innerHTML = "<div class='histItem'><b>Solicite ao administrador.</b></div>";
+      return;
+    }
+
+    $("histHint").innerHTML = "<span class='ok'>Sincronizado na nuvem.</span> (Mostrando os 200 mais recentes)";
+
+    if(unsubHistory) unsubHistory();
+    const q = query(collection(db, "vistorias"), orderBy("createdAt", "desc"), limit(200));
+    unsubHistory = onSnapshot(q, (snap)=>{
+      const items = snap.docs.map(d=>{
+        const data = d.data() || {};
+        return { id:d.id, ...data, createdAtText: formatDate(data.createdAt) };
+      });
+      renderHistorico(items);
+    }, (err)=>{
+      $("historicoList").innerHTML =
+        "<div class='histItem'><b>Erro ao carregar histórico.</b><div class='histMeta'>" +
+        escapeHtml(err?.message || err) + "</div></div>";
+    });
+  }
+
+  // ===== Admin UI =====
+  async function openAdmin(){
+    if(currentRole !== "admin"){
+      $("roleHint").innerHTML = "<span class='warn'>Acesso negado.</span>";
+      $("roleList").innerHTML = "";
+      return;
+    }
+
+    $("roleHint").innerHTML = "<span class='ok'>Você é ADMIN.</span> Cadastre e-mails e níveis.";
+    await refreshRoleList();
+  }
+
+  function rolePill(role){
+    const cls = ["admin","gerente","closer"].includes(role) ? role : "user";
+    return `<span class="rolePill ${cls}">${escapeHtml(role.toUpperCase())}</span>`;
+  }
+
+  async function refreshRoleList(){
+    try{
+      const snap = await getDocs(collection(db, "user_roles"));
+      const items = snap.docs.map(d=>({ id:d.id, ...(d.data()||{}) }))
+        .sort((a,b)=> (a.email||a.id).localeCompare(b.email||b.id));
+
+      if(!items.length){
+        $("roleList").innerHTML = "<div class='roleListItem'><b>Nenhum usuário com permissão salvo.</b></div>";
+        return;
+      }
+
+      $("roleList").innerHTML = items.map(it=>{
+        const email = it.email || it.id;
+        const role = it.role || "user";
+        const isHardAdmin = HARD_ADMINS.includes(normalizeEmail(it.email || ""));
+        const lock = isHardAdmin ? "<span class='hint'>(admin fixo)</span>" : "";
+        return `
+          <div class="roleListItem">
+            <div class="roleRow">
+              <div><b>${escapeHtml(email)}</b> ${lock}</div>
+              <div>${rolePill(role)}</div>
+            </div>
+            <div class="roleRow" style="margin-top:10px">
+              <button class="btnSmall danger" data-delrole="${it.id}" ${isHardAdmin ? "disabled title='Admin fixo não pode ser removido aqui'" : ""}>Remover</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      $("roleList").querySelectorAll("[data-delrole]").forEach(btn=>{
+        btn.addEventListener("click", async ()=>{
+          const id = btn.getAttribute("data-delrole");
+          if(!confirm("Remover este usuário da lista de permissões?")) return;
+          try{ await deleteDoc(docRef(db, "user_roles", id)); await refreshRoleList(); }
+          catch(e){ alert("Erro ao remover: " + (e?.message || e)); }
+        });
+      });
+
+    }catch(e){
+      $("roleList").innerHTML = "<div class='roleListItem'><b>Erro ao listar usuários.</b><div class='histMeta'>" + escapeHtml(e?.message || e) + "</div></div>";
+    }
+  }
+
+  $("btnRoleSave").addEventListener("click", async ()=>{
+    if(currentRole !== "admin") return alert("Acesso negado.");
+    const email = normalizeEmail(val("roleEmail"));
+    const role = val("roleLevel") || "user";
+    if(!email) return alert("Informe um e-mail.");
+
+    try{
+      await setDoc(docRef(db, "user_roles", emailToDocId(email)), { email, role, updatedAt: serverTimestamp() }, { merge:true });
+      $("roleHint").innerHTML = "<span class='ok'>Salvo!</span>";
+      $("roleEmail").value = "";
+      await refreshRoleList();
+    }catch(e){
+      $("roleHint").innerHTML = "<span class='warn'>Erro:</span> " + escapeHtml(e?.message || e);
+    }
+  });
+
+  // ===== Login actions =====
+  $("btnDoLogin").addEventListener("click", async ()=>{
+    const email = val("loginEmail");
+    const pass = val("loginPass");
+    if(!email || !pass) return $("loginHint").innerHTML = "<span class='warn'>Preencha e-mail e senha.</span>";
+    try{
+      await signInWithEmailAndPassword(auth, email, pass);
+      isGuest = false;
+      $("loginHint").innerHTML = "";
+    }catch(e){
+      $("loginHint").innerHTML = "<span class='warn'>Erro no login:</span> " + escapeHtml(e?.message || e);
+    }
+  });
+
+  $("btnCreateUser").addEventListener("click", async ()=>{
+    const email = val("loginEmail");
+    const pass = val("loginPass");
+    if(!email || !pass) return $("loginHint").innerHTML = "<span class='warn'>Preencha e-mail e senha.</span>";
+    if(pass.length < 6) return $("loginHint").innerHTML = "<span class='warn'>Senha mínima: 6 caracteres.</span>";
+    try{
+      await createUserWithEmailAndPassword(auth, email, pass);
+      isGuest = false;
+      $("loginHint").innerHTML = "<span class='ok'>Usuário cadastrado!</span> (sem histórico por padrão)";
+    }catch(e){
+      $("loginHint").innerHTML = "<span class='warn'>Erro ao cadastrar:</span> " + escapeHtml(e?.message || e);
+    }
+  });
+
+  $("btnGuest").addEventListener("click", ()=>{
+    isGuest = true;
+    try{ signOut(auth); }catch(e){}
+    currentRole = "user"; canHistory = false;
+    showApp();
+    setTopIdentity("");
+    setTab("nova");
+  });
+
+  $("btnLogout").addEventListener("click", async ()=>{
+    isGuest = false;
+    try{ await signOut(auth); }catch(e){}
+    showLogin();
+  });
+
+  $("btnSwitchUser").addEventListener("click", ()=>{
+    isGuest = false;
+    showLogin();
+  });
+
+  // ===== Closers =====
+  function carregarClosers(){
+    const sel = $("closer");
+    sel.innerHTML = "";
+    Object.keys(CLOSERS).forEach(nome=>{
+      const op = document.createElement("option");
+      op.value = nome;
+      op.textContent = nome;
+      sel.appendChild(op);
+    });
+
+    const last = localStorage.getItem(LAST_CLOSER_KEY);
+    if(last && CLOSERS[last]) sel.value = last;
+    else sel.selectedIndex = 0;
+
+    sel.addEventListener("change", ()=>{
+      localStorage.setItem(LAST_CLOSER_KEY, sel.value);
+      atualizarPreview();
+    });
+  }
+
+  function getCloserNumberByName(name){ return CLOSERS[name] || ""; }
+
+  // ===== Share / Whats / Copy =====
+  $("btnWhats").addEventListener("click", async ()=>{
+    if(!validarObrigatorios()) return;
+    const texto = montarRelatorio();
+    const numero = getCloserNumberByName(val("closer"));
+    if(!numero) return alert("Número do closer não encontrado.");
+
+    if(!isGuest) await salvarNoFirestore(texto);
+    abrirWhats(numero, texto);
+  });
+
+  $("btnCopy").addEventListener("click", async ()=>{
+    if(!validarObrigatorios()) return;
+    const texto = montarRelatorio();
+    if(!isGuest) await salvarNoFirestore(texto);
+    const ok = await copiarTexto(texto);
+    if(ok) alert("Relatório copiado!");
+  });
+
+  $("btnShareAll").addEventListener("click", async ()=>{
+    if(!validarObrigatorios()) return;
+    if(!validateFotosObrigatorias()) return;
+
+    const texto = montarRelatorio();
+    if(!isGuest) await salvarNoFirestore(texto);
+
+    const files = getAllSelectedFiles();
+
+    if(!navigator.share || !navigator.canShare){
+      alert("Seu aparelho não suporta compartilhar com fotos pelo app.\n\nUse 'Enviar relatório (WhatsApp do Closer)' e anexe as fotos manualmente.");
+      return;
+    }
+
+    try{
+      if(!navigator.canShare({ files })){
+        alert("Seu aparelho não permite compartilhar fotos por aqui.\n\nUse 'Enviar relatório (WhatsApp do Closer)' e anexe as fotos manualmente.");
+        return;
+      }
+      await navigator.share({ title:"Avaliação Comercial - Clube do Auto", text:texto, files: files });
+    }catch(e){}
+  });
+
+  // ===== Bind inputs =====
+  ["foto1","foto2","foto3","foto4","foto5","foto6","foto7","foto8"].forEach(bindPhoto);
+
+  const inputIds = [
+    "modelo","ano","versao","placa","km","kmComprou",
+    "fipe","valorPretendido",
+    "laudo","laudoObs","leilao",
+    "motor","luzes","ar",
+    "volante","cambio","console",
+    "bancosOnde","bancosAcao","bancosObs",
+    "pecasPintura","farolE","farolD","lanternaE","lanternaD","pneus",
+    "outros",
+    "consultor","avaliadores",
+    "cliente","local","captacao",
+    "closer"
+  ];
+  inputIds.forEach(id=>{
+    $(id).addEventListener("input", ()=>{
+      if(id==="laudo"){ setStatusBadge(); toggleLaudoDescricao(); }
+      atualizarPreview();
+    });
+    $(id).addEventListener("change", ()=>{
+      if(id==="laudo"){ setStatusBadge(); toggleLaudoDescricao(); }
+      atualizarPreview();
+    });
+  });
+
+  // ===== Auth state =====
+  async function applyRoleForUser(u){
+    if(!u || !u.email){
+      currentRole = "user"; canHistory = false;
+      setTopIdentity("");
+      return;
+    }
+    const info = await loadRoleForEmail(u.email);
+    currentRole = info.role;
+    canHistory = info.canHistory;
+    setTopIdentity(u.email);
+  }
+
+  onAuthStateChanged(auth, async (u)=>{
+    if(isGuest) return;
+    if(u){
+      showApp();
+      await applyRoleForUser(u);
+      setTab("nova");
+    }else{
+      currentRole = "user"; canHistory = false;
+      showLogin();
+      setTopIdentity("");
+    }
+  });
+
+  // ===== Init =====
+  function init(){
+    carregarClosers();
+    setStatusBadge();
+    toggleLaudoDescricao();
+    atualizarPreview();
+    showLogin();
+  }
+  init();
+
+  }
+
+  main().catch(err=>{
+    console.error(err);
+    // Ensure login screen becomes visible even if module fails
+    try{ const el=document.getElementById("screenLogin"); if(el) el.style.display="block"; }catch(e){}
+    showFatal(err?.message || String(err));
+  });
+</script>
+
+
+</body>
+</html>
