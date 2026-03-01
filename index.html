@@ -78,6 +78,17 @@
     .mOpen{background:#111827}
     .mCopy{background:#1976d2}
     .mSend{background:#25D366}
+
+    /* Fotos */
+    .photoGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media (max-width:760px){.photoGrid{grid-template-columns:1fr}}
+    .photoBox{border:1px solid #e5e7eb;border-radius:14px;padding:10px;background:#fafafa}
+    .photoTop{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .req{font-size:12px;font-weight:900;color:#b91c1c}
+    .opt{font-size:12px;font-weight:900;color:#065f46}
+    .thumb{margin-top:8px;display:flex;gap:10px;align-items:center}
+    .thumb img{width:72px;height:72px;object-fit:cover;border-radius:12px;border:1px solid #ddd;display:none}
+    .thumb small{color:#666}
   </style>
 </head>
 
@@ -134,6 +145,24 @@
 
   <!-- NOVA -->
   <div id="viewNova">
+
+    <div class="card">
+      <h3>📸 Fotos do veículo</h3>
+      <div class="photoGrid">
+        <div class="photoBox"><div class="photoTop"><label>1. Frontal Esquerda</label><span class="req">Obrigatório</span></div><input type="file" id="foto1" accept="image/*" capture="environment"><div class="thumb"><img id="foto1Img" alt=""><small id="foto1Txt">Nenhuma foto selecionada</small></div></div>
+        <div class="photoBox"><div class="photoTop"><label>2. Frontal Direita</label><span class="req">Obrigatório</span></div><input type="file" id="foto2" accept="image/*" capture="environment"><div class="thumb"><img id="foto2Img" alt=""><small id="foto2Txt">Nenhuma foto selecionada</small></div></div>
+        <div class="photoBox"><div class="photoTop"><label>3. Traseira Esquerda</label><span class="req">Obrigatório</span></div><input type="file" id="foto3" accept="image/*" capture="environment"><div class="thumb"><img id="foto3Img" alt=""><small id="foto3Txt">Nenhuma foto selecionada</small></div></div>
+        <div class="photoBox"><div class="photoTop"><label>4. Traseira Direita</label><span class="req">Obrigatório</span></div><input type="file" id="foto4" accept="image/*" capture="environment"><div class="thumb"><img id="foto4Img" alt=""><small id="foto4Txt">Nenhuma foto selecionada</small></div></div>
+        <div class="photoBox"><div class="photoTop"><label>5. Bancos Dianteiros</label><span class="req">Obrigatório</span></div><input type="file" id="foto5" accept="image/*" capture="environment"><div class="thumb"><img id="foto5Img" alt=""><small id="foto5Txt">Nenhuma foto selecionada</small></div></div>
+        <div class="photoBox"><div class="photoTop"><label>6. Bancos Traseiros</label><span class="opt">Opcional</span></div><input type="file" id="foto6" accept="image/*" capture="environment"><div class="thumb"><img id="foto6Img" alt=""><small id="foto6Txt">Nenhuma foto selecionada</small></div></div>
+        <div class="photoBox"><div class="photoTop"><label>7. Painel Interno</label><span class="req">Obrigatório</span></div><input type="file" id="foto7" accept="image/*" capture="environment"><div class="thumb"><img id="foto7Img" alt=""><small id="foto7Txt">Nenhuma foto selecionada</small></div></div>
+        <div class="photoBox"><div class="photoTop"><label>8. Teto Solar / Panorâmico</label><span class="opt">Opcional</span></div><input type="file" id="foto8" accept="image/*" capture="environment"><div class="thumb"><img id="foto8Img" alt=""><small id="foto8Txt">Nenhuma foto selecionada</small></div></div>
+      </div>
+      <div class="hint" style="margin-top:10px">
+        Fotos são usadas <b>somente no envio</b> (não vão para o histórico).
+      </div>
+    </div>
+
     <div class="card">
       <h3>🚗 Veículo</h3>
       <label>Modelo <span class="hint">(obrigatório)</span></label>
@@ -287,8 +316,14 @@
 
     <div class="card">
       <h3>✅ Finalizar</h3>
+      <button class="btnP" id="btnShareAll">📤 Compartilhar relatório + fotos</button>
       <button class="btnW" id="btnWhats">📲 Enviar relatório (WhatsApp)</button>
       <button class="btnB" id="btnCopy">📋 Copiar relatório</button>
+
+      <div class="hint" style="margin-top:10px">
+        “Compartilhar” envia relatório + fotos juntos (você escolhe WhatsApp/contato).
+        Se não suportar, use WhatsApp e anexe as fotos manualmente.
+      </div>
 
       <h3 style="margin-top:14px;">Prévia do relatório</h3>
       <div class="preview" id="preview"></div>
@@ -319,7 +354,6 @@
     getFirestore, collection, addDoc, serverTimestamp, query, orderBy, limit, onSnapshot
   } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-  // ===== Firebase config =====
   const firebaseConfig = {
     apiKey: "AIzaSyCvn2_z1FN2XMN_pgR9IiExRkRNMgZfhIY",
     authDomain: "clube-do-auto.firebaseapp.com",
@@ -327,13 +361,11 @@
     appId: "1:647571720442:web:4257dd525b59bd89b62143"
   };
 
-  // ===== Admins fixos (histórico liberado) =====
   const HARD_ADMINS = new Set([
     "admin@clubedoauto.com",
     "frank.since96@gmail.com"
   ].map(s => s.toLowerCase()));
 
-  // ===== Helpers =====
   const el = (id) => document.getElementById(id);
   const v = (id) => (el(id).value ?? "").toString().trim();
   const lower = (s) => (s ?? "").toString().trim().toLowerCase();
@@ -347,14 +379,12 @@
     el("screenApp").classList.remove("hidden");
   }
 
-  // PWA SW (opcional)
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
       navigator.serviceWorker.register("./sw.js").catch(()=>{});
     });
   }
 
-  // Firebase init
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
@@ -363,20 +393,67 @@
   let isGuest = false;
   let unsubHist = null;
 
-  // Tabs
   function setTab(tab){
     const novaOn = (tab==="nova");
     el("tabNova").classList.toggle("active", novaOn);
     el("tabHist").classList.toggle("active", !novaOn);
     el("viewNova").classList.toggle("hidden", !novaOn);
     el("viewHistorico").classList.toggle("hidden", novaOn);
-
     if(!novaOn) openHistorico();
   }
   el("tabNova").addEventListener("click", ()=>setTab("nova"));
   el("tabHist").addEventListener("click", ()=>setTab("hist"));
 
-  // Status badge
+  const photoState = { foto1:null,foto2:null,foto3:null,foto4:null,foto5:null,foto6:null,foto7:null,foto8:null };
+
+  function setThumb(id, file){
+    const img = el(id + "Img");
+    const txt = el(id + "Txt");
+    if(!file){
+      img.style.display="none";
+      img.src="";
+      txt.textContent="Nenhuma foto selecionada";
+      return;
+    }
+    txt.textContent = file.name || "Foto selecionada";
+    const url = URL.createObjectURL(file);
+    img.src = url;
+    img.style.display="block";
+    img.onload = ()=> URL.revokeObjectURL(url);
+  }
+
+  function bindPhoto(inputId){
+    el(inputId).addEventListener("change", ()=>{
+      const f = el(inputId).files && el(inputId).files[0] ? el(inputId).files[0] : null;
+      photoState[inputId] = f;
+      setThumb(inputId, f);
+    });
+  }
+  ["foto1","foto2","foto3","foto4","foto5","foto6","foto7","foto8"].forEach(bindPhoto);
+
+  function validateFotosObrigatorias(){
+    const faltando = [];
+    if(!photoState.foto1) faltando.push("1. Frontal Esquerda");
+    if(!photoState.foto2) faltando.push("2. Frontal Direita");
+    if(!photoState.foto3) faltando.push("3. Traseira Esquerda");
+    if(!photoState.foto4) faltando.push("4. Traseira Direita");
+    if(!photoState.foto5) faltando.push("5. Bancos Dianteiros");
+    if(!photoState.foto7) faltando.push("7. Painel Interno");
+    if(faltando.length){
+      alert("Faltam fotos obrigatórias:\n- " + faltando.join("\n- "));
+      return false;
+    }
+    return true;
+  }
+
+  function getAllSelectedFiles(){
+    const files = [];
+    ["foto1","foto2","foto3","foto4","foto5","foto6","foto7","foto8"].forEach(k=>{
+      if(photoState[k]) files.push(photoState[k]);
+    });
+    return files;
+  }
+
   function setStatusBadge(){
     const s = (v("laudo") || "APROVADO").toUpperCase();
     el("statusTxt").innerText = s;
@@ -385,6 +462,7 @@
       (s === "APONTAMENTO") ? "#f9a825" :
       "#2e7d32";
   }
+
   function toggleLaudoDescricao(){
     const s = (v("laudo") || "APROVADO").toUpperCase();
     if(s === "APROVADO"){
@@ -496,9 +574,7 @@
     return r.trim();
   }
 
-  function atualizarPreview(){
-    el("preview").innerText = montarRelatorio();
-  }
+  function atualizarPreview(){ el("preview").innerText = montarRelatorio(); }
 
   async function copiarTexto(texto){
     if(navigator.clipboard?.writeText){
@@ -516,21 +592,16 @@
 
   function abrirWhats(texto){
     const enc = encodeURIComponent(texto);
-    const url = "https://wa.me/?text=" + enc; // abre o seletor/último contato no WhatsApp
+    const url = "https://wa.me/?text=" + enc;
     const a = document.createElement("a");
-    a.href = url;
-    a.target = "_blank";
-    a.rel = "noopener";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+    a.href = url; a.target = "_blank"; a.rel = "noopener";
+    document.body.appendChild(a); a.click(); a.remove();
   }
 
   async function salvarNoFirestore(texto){
     if(isGuest) return;
     const u = auth.currentUser;
     if(!u) return;
-
     try{
       await addDoc(collection(db, "vistorias"), {
         createdAt: serverTimestamp(),
@@ -654,7 +725,6 @@
     });
   }
 
-  // ===== Login actions =====
   el("btnDoLogin").addEventListener("click", async ()=>{
     const email = v("loginEmail");
     const pass  = v("loginPass");
@@ -701,7 +771,6 @@
     showLogin();
   });
 
-  // ===== Buttons =====
   el("btnWhats").addEventListener("click", async ()=>{
     if(!validarObrigatorios()) return;
     const texto = montarRelatorio();
@@ -717,7 +786,29 @@
     if(ok) alert("Relatório copiado!");
   });
 
-  // ===== Input listeners =====
+  el("btnShareAll").addEventListener("click", async ()=>{
+    if(!validarObrigatorios()) return;
+    if(!validateFotosObrigatorias()) return;
+
+    const texto = montarRelatorio();
+    await salvarNoFirestore(texto);
+
+    const files = getAllSelectedFiles();
+
+    if(!navigator.share){
+      alert("Seu aparelho/navegador não suporta 'Compartilhar' por aqui.\n\nUse 'Enviar relatório (WhatsApp)' e anexe as fotos manualmente.");
+      return;
+    }
+    if(navigator.canShare && !navigator.canShare({ files })){
+      alert("Seu aparelho não permite compartilhar as fotos por este app.\n\nUse 'Enviar relatório (WhatsApp)' e anexe as fotos manualmente.");
+      return;
+    }
+
+    try{
+      await navigator.share({ title:"Avaliação Comercial - Clube do Auto", text:texto, files });
+    }catch(e){}
+  });
+
   const ids = [
     "modelo","ano","versao","placa","km","kmComprou",
     "fipe","valorPretendido",
@@ -741,7 +832,6 @@
     });
   });
 
-  // ===== Auth state =====
   onAuthStateChanged(auth, (u)=>{
     if(isGuest) return;
     if(u){
@@ -754,7 +844,6 @@
     }
   });
 
-  // Init
   setStatusBadge();
   toggleLaudoDescricao();
   atualizarPreview();
