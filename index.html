@@ -95,6 +95,12 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
 .userActions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
 @media (max-width:760px){.userActions{grid-template-columns:1fr}}
 .badgeRole{display:inline-block;padding:4px 10px;border-radius:999px;background:#111827;color:#fff;font-size:12px;font-weight:900}
+
+.chkWrap{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:6px;margin-bottom:10px}
+.chkItem{display:flex;align-items:center;gap:8px;font-weight:800;font-size:13px}
+.chkItem input[type="checkbox"]{width:auto;margin:0;padding:0}
+@media (max-width:760px){.chkWrap{grid-template-columns:1fr}}
+
 </style>
 </head>
 
@@ -163,7 +169,35 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
 
     <div class="card">
       <h3>💰 Negócio</h3>
-      <div class="row2">
+      
+<div class="row2">
+  <div>
+    <label>Débitos do veículo</label>
+    <select id="debitosSel">
+      <option>Não</option>
+      <option>Sim</option>
+    </select>
+  </div>
+  <div id="debitosValorWrap" class="hidden">
+    <label>Valor dos débitos</label>
+    <input id="debitosValor" inputmode="numeric" placeholder="Ex: 1500">
+  </div>
+</div>
+
+<div class="row2">
+  <div>
+    <label>Financiamento</label>
+    <select id="finSel">
+      <option>Não</option>
+      <option>Sim</option>
+    </select>
+  </div>
+  <div id="finValorWrap" class="hidden">
+    <label>Valor da quitação</label>
+    <input id="finValor" inputmode="numeric" placeholder="Ex: 12000">
+  </div>
+</div>
+<div class="row2">
         <div><label>Fipe <span class="hint">(obrigatório)</span></label><input id="fipe" inputmode="numeric" placeholder="Ex: 59000"></div>
         <div><label>Valor pretendido</label><input id="valorPretendido" inputmode="numeric" placeholder="Ex: 29000"></div>
       </div>
@@ -198,7 +232,17 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
       <h3>👨‍🔧 Responsáveis</h3>
       <div class="row2">
         <div><label>Consultor <span class="hint">(obrigatório)</span></label><input id="consultor"></div>
-        <div><label>Avaliadores <span class="hint">(obrigatório)</span></label><input id="avaliadores"></div>
+        <div>
+  <label>Avaliadores <span class="hint">(obrigatório)</span></label>
+  <div class="chkWrap" id="avaliadoresWrap">
+    <label class="chkItem"><input type="checkbox" class="avChk" value="Lucas"> Lucas</label>
+    <label class="chkItem"><input type="checkbox" class="avChk" value="Guilherme"> Guilherme</label>
+    <label class="chkItem"><input type="checkbox" class="avChk" value="Junior"> Junior</label>
+    <label class="chkItem"><input type="checkbox" class="avChk" value="Anderson"> Anderson</label>
+    <label class="chkItem"><input type="checkbox" class="avChk" value="Thiago"> Thiago</label>
+  </div>
+  <div class="hint">Selecione 1 a 5 avaliadores.</div>
+</div>
       </div>
     </div>
 
@@ -208,7 +252,11 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
         <div><label>Cliente <span class="hint">(obrigatório)</span></label><input id="cliente"></div>
         <div><label>Local</label><input id="local"></div>
       </div>
-      <label>Captação</label>
+      
+<label>Telefone (WhatsApp)</label>
+<input id="telefone" placeholder="Ex: 11 99999-9999">
+<div class="hint">Esse telefone NÃO vai no relatório (Whats/Copiar). Fica salvo só no histórico (gestores).</div>
+<label>Captação</label>
       <select id="captacao"><option value="">Selecione</option><option>Lead</option><option>Porta</option><option>Orgânico</option></select>
       <div class="hint">“Osasco - SP 📍” sempre aparece no relatório.</div>
     </div>
@@ -274,6 +322,23 @@ const el=(id)=>document.getElementById(id);
 const v=(id)=>(el(id).value??"").toString().trim();
 const lower=(s)=>(s??"").toString().trim().toLowerCase();
 
+function getAvaliadores(){
+  return Array.from(document.querySelectorAll(".avChk:checked")).map(x=>x.value).filter(Boolean);
+}
+function getAvaliadoresText(){
+  return getAvaliadores().join("/");
+}
+function toggleDebitos(){
+  const sim = (v("debitosSel")||"Não") === "Sim";
+  el("debitosValorWrap").classList.toggle("hidden", !sim);
+  if(!sim) el("debitosValor").value="";
+}
+function toggleFin(){
+  const sim = (v("finSel")||"Não") === "Sim";
+  el("finValorWrap").classList.toggle("hidden", !sim);
+  if(!sim) el("finValor").value="";
+}
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -309,7 +374,7 @@ function onlyDigits(s){ return (s??"").toString().replace(/[^\d]/g,""); }
 function fmtKM(raw){ const d=onlyDigits(raw); if(!d) return ""; return new Intl.NumberFormat("pt-BR").format(Number(d)); }
 function fmtBRL(raw){ const d=onlyDigits(raw); if(!d) return ""; return new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(Number(d)).replace(/ /g," "); }
 ["km","kmComprou"].forEach(id=>el(id).addEventListener("blur",()=>{ if(v(id)) el(id).value=fmtKM(v(id)); atualizarPreview(); }));
-["fipe","valorPretendido"].forEach(id=>el(id).addEventListener("blur",()=>{ if(v(id)) el(id).value=fmtBRL(v(id)); atualizarPreview(); }));
+["fipe","valorPretendido","debitosValor","finValor"].forEach(id=>{ const e=el(id); if(!e) return; e.addEventListener("blur",()=>{ if(v(id)) el(id).value=fmtBRL(v(id)); atualizarPreview(); }); });
 
 function setStatusBadge(){
   const s=(v("laudo")||"APROVADO").toUpperCase();
@@ -334,7 +399,9 @@ function validar(){
   const s=(v("laudo")||"APROVADO").toUpperCase();
   if(s!=="APROVADO" && !v("laudoObs")) return focusWarn("laudoObs","Descreva o laudo.");
   if(!v("consultor")) return focusWarn("consultor","Obrigatório: Consultor");
-  if(!v("avaliadores")) return focusWarn("avaliadores","Obrigatório: Avaliadores");
+  if(getAvaliadores().length===0) { alert("Obrigatório: Selecione ao menos 1 avaliador."); const w=el("avaliadoresWrap"); w.scrollIntoView({behavior:"smooth",block:"center"}); return false; }
+  if((v("debitosSel")==="Sim") && !v("debitosValor")) return focusWarn("debitosValor","Informe o valor dos débitos.");
+  if((v("finSel")==="Sim") && !v("finValor")) return focusWarn("finValor","Informe o valor da quitação.");
   if(!v("cliente")) return focusWarn("cliente","Obrigatório: Cliente");
   return true;
 }
@@ -342,35 +409,74 @@ function validar(){
 function b(label,value){ return value ? (`*${label}:* ${value}`) : ""; }
 
 function montar(){
+  const lines = [];
+
+  // 🚗 Veículo
+  lines.push("🚗 *Veículo*");
+  lines.push(`*Modelo:* ${v("modelo")}`);
+  lines.push(`*Ano:* ${v("ano")}`);
+  lines.push(`*Versão:* ${v("versao")}`);
+  lines.push(`*Placa:* ${v("placa")}`);
+  lines.push(`*Km:* ${v("km")}`);
+  lines.push(`*Comprou:* ${v("kmComprou")}`);
+
+  // 💰 Negócio
+  lines.push("");
+  lines.push("💰 *Negócio*");
+  lines.push(`*Fipe:* ${v("fipe")}`);
+  if(v("valorPretendido")) lines.push(`*Valor pretendido:* ${v("valorPretendido")}`);
+  if(v("debitosSel")==="Sim"){
+    const val=v("debitosValor");
+    lines.push(`*Débitos do veículo:* ${val || "—"}`);
+  }
+  if(v("finSel")==="Sim"){
+    const val=v("finValor");
+    lines.push(`*Financiamento (quitação):* ${val || "—"}`);
+  }
+
+  // 📋 Laudo
+  lines.push("");
+  lines.push("📋 *Laudo*");
   const laudo=(v("laudo")||"APROVADO").toUpperCase();
   const ic=(laudo==="REPROVADO")?"🔴":(laudo==="APONTAMENTO")?"🟡":"🟢";
-  let r="";
-  r += b("Modelo", v("modelo"));
-  r += "\n\n" + b("Ano", v("ano"));
-  r += "\n\n" + b("Versão", v("versao"));
-  r += "\n\n" + b("Placa", v("placa"));
-  r += "\n\n" + b("Km", v("km"));
-  r += "\n" + b("Comprou", v("kmComprou"));
-  r += "\n\n📊 *Fipe:* " + v("fipe");
-  if(v("valorPretendido")) r += "\n" + b("Valor pretendido", v("valorPretendido"));
-  r += "\n\n📋 *Laudo*\n" + ic + " " + laudo;
-  if(laudo!=="APROVADO" && v("laudoObs")) r += "\n" + v("laudoObs");
-  const le=v("leilao"); if(le && le.toLowerCase()!=="não") r += "\n\n🚨 *Leilão:* " + le;
+  lines.push(`${ic} ${laudo}`);
+  if(laudo!=="APROVADO" && v("laudoObs")) lines.push(v("laudoObs"));
 
+  // 🚨 Leilão
+  const le=v("leilao");
+  if(le && le.toLowerCase()!=="não"){
+    lines.push("");
+    lines.push(`🚨 *Leilão:* ${le}`);
+  }
+
+  // ⚙️ Gastos (mantém o modelo atual)
   const gastos=[];
   if(v("motor")) gastos.push(v("motor"));
   if(v("luzes")) gastos.push(v("luzes"));
   const ar=v("ar"); if(ar && ar!=="Bom" && ar!=="Não possui") gastos.push("Ar-condicionado: "+ar);
   if(v("testeRodagem")) gastos.push("Teste de Rodagem: "+v("testeRodagem"));
-  if(gastos.length) r += "\n\n⚙️ Gastos\n" + gastos.join("\n");
+  if(gastos.length){
+    lines.push("");
+    lines.push("⚙️ *Gastos*");
+    lines.push(...gastos);
+  }
 
-  r += "\n\n" + b("Consultor", v("consultor"));
-  r += "\n" + b("Avaliadores", v("avaliadores"));
-  r += "\n\n" + b("Cliente", v("cliente"));
-  if(v("local")) r += "\n" + b("Local", v("local"));
-  if(v("captacao")) r += "\n" + b("Captação", v("captacao"));
-  r += "\n\nOsasco - SP 📍";
-  return r.trim();
+  // 👨‍🔧 Responsáveis
+  lines.push("");
+  lines.push("👨‍🔧 *Responsáveis*");
+  lines.push(`*Consultor:* ${v("consultor")}`);
+  lines.push(`*Avaliadores:* ${getAvaliadoresText()}`);
+
+  // 👤 Cliente
+  lines.push("");
+  lines.push("👤 *Cliente*");
+  lines.push(`*Cliente:* ${v("cliente")}`);
+  if(v("local")) lines.push(`*Local:* ${v("local")}`);
+  if(v("captacao")) lines.push(`*Captação:* ${v("captacao")}`);
+  lines.push("");
+  lines.push("Osasco - SP 📍");
+
+  return lines.join("\n").trim();
 }
 
 function atualizarPreview(){ el("preview").innerText = montar(); }
@@ -481,7 +587,7 @@ function openHistorico(){
     }).join("") || "<div class='histItem'><b>Nenhum registro.</b></div>";
 
     el("historicoList").querySelectorAll("[data-open]").forEach(btn=>{
-      btn.addEventListener("click",()=>{ const it=items.find(x=>x.id===btn.dataset.open); if(!it) return; el("preview").innerText=it.reportText||""; setTab("nova"); window.scrollTo({top:0,behavior:"smooth"}); });
+      btn.addEventListener("click",()=>{ const it=items.find(x=>x.id===btn.dataset.open); if(!it) return; let t=(it.reportText||""); if(canHistory && it.clienteTelefone){ t += "\n\n☎️ *Telefone:* "+it.clienteTelefone; } el("preview").innerText=t; setTab("nova"); window.scrollTo({top:0,behavior:"smooth"}); });
     });
     el("historicoList").querySelectorAll("[data-copy]").forEach(btn=>{
       btn.addEventListener("click",async()=>{ const it=items.find(x=>x.id===btn.dataset.copy); if(!it) return; const ok=await copiar(it.reportText||""); if(ok) alert("Copiado!"); });
@@ -598,7 +704,7 @@ el("btnCopy").addEventListener("click", async ()=>{
 });
 
 // Bind preview
-["modelo","ano","versao","placa","km","kmComprou","fipe","valorPretendido","laudo","laudoObs","leilao","motor","luzes","ar","testeRodagem","consultor","avaliadores","cliente","local","captacao"]
+["modelo","ano","versao","placa","km","kmComprou","debitosSel","debitosValor","finSel","finValor","fipe","valorPretendido","laudo","laudoObs","leilao","motor","luzes","ar","testeRodagem","consultor","cliente","local","captacao"]
 .forEach(id=>{ el(id).addEventListener("input",()=>{ if(id==="laudo"){setStatusBadge();toggleLaudoDescricao();} atualizarPreview(); });
               el(id).addEventListener("change",()=>{ if(id==="laudo"){setStatusBadge();toggleLaudoDescricao();} atualizarPreview(); }); });
 
@@ -615,6 +721,14 @@ onAuthStateChanged(auth, async (u)=>{
   }
 });
 
+
+// Debitos/Financiamento toggles
+el("debitosSel").addEventListener("change",()=>{ toggleDebitos(); atualizarPreview(); });
+el("finSel").addEventListener("change",()=>{ toggleFin(); atualizarPreview(); });
+// Avaliadores checkboxes
+document.querySelectorAll(".avChk").forEach(c=>c.addEventListener("change",()=>atualizarPreview()));
+
+toggleDebitos(); toggleFin();
 setStatusBadge(); toggleLaudoDescricao(); atualizarPreview();
 </script>
 
