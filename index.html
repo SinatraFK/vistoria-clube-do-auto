@@ -101,7 +101,6 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
 .chkItem input[type="checkbox"]{width:auto;margin:0;padding:0}
 @media (max-width:760px){.chkWrap{grid-template-columns:1fr}}
 
-
 /* FIPE Modal */
 .modalOverlay{position:fixed;inset:0;background:rgba(17,24,39,.55);display:none;align-items:center;justify-content:center;padding:14px;z-index:9999}
 .modalBox{width:min(820px,100%);background:#fff;border-radius:18px;box-shadow:0 18px 45px rgba(0,0,0,.28);padding:14px;max-height:90vh;overflow:auto}
@@ -117,7 +116,6 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
 .btnSecondary{background:#6b7280;color:#fff}
 .btnSecondary:hover{opacity:.92}
 
-
 /* Draft banner */
 .draftBar{display:none;align-items:center;justify-content:space-between;gap:10px;padding:12px;border-radius:14px;background:#fff7ed;border:1px solid #fed7aa;margin:10px 0;box-shadow:0 2px 10px rgba(0,0,0,.06)}
 .draftBar .msg{font-size:13px;color:#7c2d12;font-weight:900}
@@ -125,6 +123,11 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
 .draftBar .actions button{width:auto;margin-top:0;padding:10px 12px;border-radius:12px;font-size:13px}
 .btnDanger{background:#b91c1c;color:#fff}
 .btnDanger:hover{opacity:.92}
+
+/* V5.1 layout tweaks */
+.fipeHero{border:1px solid #dbeafe;background:#eff6ff}
+.fipeHero .modalTitle{font-size:17px}
+.granizoRow{margin-bottom:10px}
 
 </style>
 </head>
@@ -164,7 +167,6 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
     <button class="btnSmall btnExit" id="btnLogout">Sair</button>
   </div>
 
-  
   <div class="draftBar" id="draftBar">
     <div class="msg" id="draftMsg">Rascunho encontrado.</div>
     <div class="actions">
@@ -180,6 +182,17 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
   </div>
 
   <div id="viewNova">
+    <!-- V5.1: Destaque FIPE no início -->
+    <div class="card fipeHero">
+      <div class="modalTitle">🔎 Consulta FIPE</div>
+      <div class="modalHint">Use a busca para preencher automaticamente <b>Modelo</b>, <b>Ano</b> e <b>Fipe</b>. (Carros)</div>
+      <div class="btnLine" style="margin-top:10px">
+        <button class="btnB" type="button" id="btnFipe">🔎 Buscar FIPE</button>
+        <button class="btnSecondary" type="button" id="btnFipeClear">Limpar FIPE</button>
+      </div>
+      <div class="hint" style="margin-top:8px">Dica: depois de aplicar, revise a versão do veículo (mantemos manual).</div>
+    </div>
+
     <div class="card">
       <h3>🚗 Veículo</h3>
       <label>Modelo <span class="hint">(obrigatório)</span></label><input id="modelo" placeholder="Ex: Fox Trend">
@@ -206,45 +219,46 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
 
     <div class="card">
       <h3>💰 Negócio</h3>
-      
-<div class="row2">
-  <div>
-    <label>Débitos do veículo</label>
-    <select id="debitosSel">
-      <option>Não</option>
-      <option>Sim</option>
-    </select>
-  </div>
-  <div id="debitosValorWrap" class="hidden">
-    <label>Valor dos débitos</label>
-    <input id="debitosValor" inputmode="numeric" placeholder="Ex: 1500">
-  </div>
-</div>
 
-<div class="row2">
-  <div>
-    <label>Financiamento</label>
-    <select id="finSel">
-      <option>Não</option>
-      <option>Sim</option>
-    </select>
-  </div>
-  <div id="finValorWrap" class="hidden">
-    <label>Valor da quitação</label>
-    <input id="finValor" inputmode="numeric" placeholder="Ex: 12000">
-  </div>
-</div>
-<div class="row2">
-        <div><label>Fipe <span class="hint">(obrigatório)</span></label><input id="fipe" inputmode="numeric" placeholder="Ex: 59000">
-      <div class="btnLine" style="margin-top:-2px">
-        <button class="btnB" type="button" id="btnFipe">🔎 Buscar FIPE</button>
-        <button class="btnSecondary" type="button" id="btnFipeClear">Limpar</button>
+      <div class="row2">
+        <div>
+          <label>Débitos do veículo</label>
+          <select id="debitosSel">
+            <option>Não</option>
+            <option>Sim</option>
+          </select>
+        </div>
+        <div id="debitosValorWrap" class="hidden">
+          <label>Valor dos débitos</label>
+          <input id="debitosValor" inputmode="numeric" placeholder="Ex: 1500">
+        </div>
       </div>
-      <div class="hint">Você pode preencher manualmente ou usar a busca. Se a consulta falhar, continue normalmente.</div>
-</div>
-        <div><label>Valor pretendido</label><input id="valorPretendido" inputmode="numeric" placeholder="Ex: 29000"></div>
+
+      <div class="row2">
+        <div>
+          <label>Financiamento</label>
+          <select id="finSel">
+            <option>Não</option>
+            <option>Sim</option>
+          </select>
+        </div>
+        <div id="finValorWrap" class="hidden">
+          <label>Valor da quitação</label>
+          <input id="finValor" inputmode="numeric" placeholder="Ex: 12000">
+        </div>
       </div>
-      <div class="hint">Sai como R$ 59.000,00</div>
+
+      <div class="row2">
+        <div>
+          <label>Fipe <span class="hint">(obrigatório)</span></label>
+          <input id="fipe" inputmode="numeric" placeholder="Ex: 59000">
+          <div class="hint">Sai como R$ 59.000,00</div>
+        </div>
+        <div>
+          <label>Valor pretendido</label>
+          <input id="valorPretendido" inputmode="numeric" placeholder="Ex: 29000">
+        </div>
+      </div>
     </div>
 
     <div class="card">
@@ -262,194 +276,193 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
       <div class="hint">Só aparece no relatório se não for “Não”.</div>
     </div>
 
-    
-<div class="card">
-  <h3>⚙️ Gastos</h3>
+    <div class="card">
+      <h3>⚙️ Gastos</h3>
 
-  <label>Motor / mecânica (texto livre)</label>
-  <textarea id="motor" placeholder="Ex: Rajando / Caixa de direção / Vazamento..."></textarea>
+      <label>Motor / mecânica (texto livre)</label>
+      <textarea id="motor" placeholder="Ex: Rajando / Caixa de direção / Vazamento..."></textarea>
 
-  <label>Luzes do painel (texto livre)</label>
-  <textarea id="luzes" placeholder="Ex: ABS / Injeção / Óleo..."></textarea>
+      <label>Luzes do painel (texto livre)</label>
+      <textarea id="luzes" placeholder="Ex: ABS / Injeção / Óleo..."></textarea>
 
-  <h3 style="margin-top:14px">🪑 Gastos internos</h3>
+      <h3 style="margin-top:14px">🪑 Gastos internos</h3>
 
-  <label>Tablier</label>
-  <select id="tablier">
-    <option>Bom</option>
-    <option>Avariado</option>
-  </select>
-
-  <div class="row2">
-    <div>
-      <label>Bancos (quais)</label>
-      <select id="bancosOnde">
-        <option value="">Selecione</option>
-        <option>Motorista</option>
-        <option>Dianteiros</option>
-        <option>Traseiros</option>
-        <option>Todos</option>
-      </select>
-    </div>
-    <div>
-      <label>Bancos (serviço)</label>
-      <select id="bancosServico">
-        <option>Bom</option>
-        <option>Faixa</option>
-        <option>Reformar</option>
-      </select>
-    </div>
-  </div>
-
-  <div class="row2">
-    <div>
-      <label>Volante</label>
-      <select id="volante">
-        <option>Bom</option>
-        <option>Encapar</option>
-        <option>Trocar</option>
-      </select>
-    </div>
-    <div>
-      <label>Manopla do câmbio</label>
-      <select id="manopla">
-        <option>Bom</option>
-        <option>Trocar</option>
-      </select>
-    </div>
-  </div>
-
-  <label>Forro de porta (selecione)</label>
-  <div style="border:1px dashed #e5e7eb;border-radius:14px;padding:12px;background:#fafafa;margin-bottom:10px">
-    <div class="row3">
-      <label style="font-weight:700"><input type="checkbox" id="forro_motorista"> Motorista</label>
-      <label style="font-weight:700"><input type="checkbox" id="forro_passageiro"> Passageiro</label>
-      <label style="font-weight:700"><input type="checkbox" id="forro_traseiro_d"> Traseiro D</label>
-      <label style="font-weight:700"><input type="checkbox" id="forro_traseiro_e"> Traseiro E</label>
-      <label style="font-weight:700"><input type="checkbox" id="forro_dianteiros"> Dianteiros</label>
-      <label style="font-weight:700"><input type="checkbox" id="forro_traseiros"> Traseiros</label>
-      <label style="font-weight:700"><input type="checkbox" id="forro_todos"> Todos</label>
-    </div>
-
-    <div style="margin-top:10px">
-      <label>Estado</label>
-      <select id="forroEstado">
+      <label>Tablier</label>
+      <select id="tablier">
         <option>Bom</option>
         <option>Avariado</option>
       </select>
-    </div>
-  </div>
 
-  <h3 style="margin-top:14px">🚗 Gastos externos</h3>
+      <div class="row2">
+        <div>
+          <label>Bancos (quais)</label>
+          <select id="bancosOnde">
+            <option value="">Selecione</option>
+            <option>Motorista</option>
+            <option>Dianteiros</option>
+            <option>Traseiros</option>
+            <option>Todos</option>
+          </select>
+        </div>
+        <div>
+          <label>Bancos (serviço)</label>
+          <select id="bancosServico">
+            <option>Bom</option>
+            <option>Faixa</option>
+            <option>Reformar</option>
+          </select>
+        </div>
+      </div>
 
-  <div class="row2">
-    <div>
-      <label>Funilaria (peças)</label>
-      <select id="funilariaPecas">
-        <option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
-        <option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option>
-      </select>
-    </div>
-    <div>
-      <label>Pneus avariados</label>
-      <select id="pneusQtd">
-        <option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
-      </select>
-    </div>
-  </div>
+      <div class="row2">
+        <div>
+          <label>Volante</label>
+          <select id="volante">
+            <option>Bom</option>
+            <option>Encapar</option>
+            <option>Trocar</option>
+          </select>
+        </div>
+        <div>
+          <label>Manopla do câmbio</label>
+          <select id="manopla">
+            <option>Bom</option>
+            <option>Trocar</option>
+          </select>
+        </div>
+      </div>
 
-  <div class="row2">
-    <label style="font-weight:700"><input type="checkbox" id="pinturaCompleta"> Pintura completa</label>
-    <label style="font-weight:700"><input type="checkbox" id="chuvaGranizo"> Chuva de granizo</label>
-  </div>
+      <label>Forro de porta (selecione)</label>
+      <div style="border:1px dashed #e5e7eb;border-radius:14px;padding:12px;background:#fafafa;margin-bottom:10px">
+        <div class="row3">
+          <label style="font-weight:700"><input type="checkbox" id="forro_motorista"> Motorista</label>
+          <label style="font-weight:700"><input type="checkbox" id="forro_passageiro"> Passageiro</label>
+          <label style="font-weight:700"><input type="checkbox" id="forro_traseiro_d"> Traseiro D</label>
+          <label style="font-weight:700"><input type="checkbox" id="forro_traseiro_e"> Traseiro E</label>
+          <label style="font-weight:700"><input type="checkbox" id="forro_dianteiros"> Dianteiros</label>
+          <label style="font-weight:700"><input type="checkbox" id="forro_traseiros"> Traseiros</label>
+          <label style="font-weight:700"><input type="checkbox" id="forro_todos"> Todos</label>
+        </div>
 
-  <div class="row2">
-    <div>
-      <label>Para-choque dianteiro</label>
-      <select id="paraChoqueD">
-        <option>Bom</option>
+        <div style="margin-top:10px">
+          <label>Estado</label>
+          <select id="forroEstado">
+            <option>Bom</option>
+            <option>Avariado</option>
+          </select>
+        </div>
+      </div>
+
+      <h3 style="margin-top:14px">🚗 Gastos externos</h3>
+
+      <div class="row2">
+        <div>
+          <label>Funilaria (peças)</label>
+          <select id="funilariaPecas">
+            <option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+            <option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option>
+          </select>
+        </div>
+        <div>
+          <label>Pneus avariados</label>
+          <select id="pneusQtd">
+            <option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row2 granizoRow">
+        <label style="font-weight:700"><input type="checkbox" id="pinturaCompleta"> Pintura completa</label>
+        <label style="font-weight:700"><input type="checkbox" id="chuvaGranizo"> Chuva de granizo</label>
+      </div>
+
+      <div class="row2">
+        <div>
+          <label>Para-choque dianteiro</label>
+          <select id="paraChoqueD">
+            <option>Bom</option>
+            <option>Troca</option>
+          </select>
+        </div>
+        <div>
+          <label>Para-choque traseiro</label>
+          <select id="paraChoqueT">
+            <option>Bom</option>
+            <option>Troca</option>
+          </select>
+        </div>
+      </div>
+
+      <h3 style="margin-top:14px">💡 Faróis e lanternas</h3>
+
+      <div class="row2">
+        <div><label>Farol (D)</label><select id="farolD"><option>Bom</option><option>Polimento</option><option>Troca</option></select></div>
+        <div><label>Farol (E)</label><select id="farolE"><option>Bom</option><option>Polimento</option><option>Troca</option></select></div>
+      </div>
+      <div class="row2">
+        <div><label>Lanterna (D)</label><select id="lanternaD"><option>Bom</option><option>Polimento</option><option>Troca</option></select></div>
+        <div><label>Lanterna (E)</label><select id="lanternaE"><option>Bom</option><option>Polimento</option><option>Troca</option></select></div>
+      </div>
+
+      <h3 style="margin-top:14px">🪟 Vidros</h3>
+
+      <label>Para-brisa</label>
+      <select id="vidroParabrisa">
+        <option>OK</option>
+        <option>Reparo</option>
         <option>Troca</option>
       </select>
+
+      <div style="border:1px dashed #e5e7eb;border-radius:14px;padding:12px;background:#fafafa;margin-bottom:10px">
+        <div class="hint">Demais vidros (marque e selecione a ação).</div>
+
+        <div class="row2">
+          <label style="font-weight:700"><input type="checkbox" id="vidro_dd_chk"> Dianteiro (D)</label>
+          <select id="vidro_dd_act"><option>Reparo</option><option>Troca</option></select>
+        </div>
+        <div class="row2">
+          <label style="font-weight:700"><input type="checkbox" id="vidro_de_chk"> Dianteiro (E)</label>
+          <select id="vidro_de_act"><option>Reparo</option><option>Troca</option></select>
+        </div>
+        <div class="row2">
+          <label style="font-weight:700"><input type="checkbox" id="vidro_td_chk"> Traseiro (D)</label>
+          <select id="vidro_td_act"><option>Reparo</option><option>Troca</option></select>
+        </div>
+        <div class="row2">
+          <label style="font-weight:700"><input type="checkbox" id="vidro_te_chk"> Traseiro (E)</label>
+          <select id="vidro_te_act"><option>Reparo</option><option>Troca</option></select>
+        </div>
+        <div class="row2">
+          <label style="font-weight:700"><input type="checkbox" id="vidro_vg_chk"> Vigia</label>
+          <select id="vidro_vg_act"><option>Reparo</option><option>Troca</option></select>
+        </div>
+      </div>
+      <div class="hint">No relatório aparecem apenas itens que geram custo. “Bom/OK/0” não aparece.</div>
     </div>
-    <div>
-      <label>Para-choque traseiro</label>
-      <select id="paraChoqueT">
-        <option>Bom</option>
-        <option>Troca</option>
-      </select>
+
+    <div class="card">
+      <h3>🛣️ Teste de Rodagem</h3>
+      <label>Observações (texto livre)</label>
+      <textarea id="testeRodagem" placeholder="Como o carro se comportou na rua (com mecânico dirigindo): trepidação, puxando, barulho..."></textarea>
+      <div class="hint">Esse item é preenchido por último e aparece separado no relatório.</div>
     </div>
-  </div>
 
-  <h3 style="margin-top:14px">💡 Faróis e lanternas</h3>
-
-  <div class="row2">
-    <div><label>Farol (D)</label><select id="farolD"><option>Bom</option><option>Polimento</option><option>Troca</option></select></div>
-    <div><label>Farol (E)</label><select id="farolE"><option>Bom</option><option>Polimento</option><option>Troca</option></select></div>
-  </div>
-  <div class="row2">
-    <div><label>Lanterna (D)</label><select id="lanternaD"><option>Bom</option><option>Polimento</option><option>Troca</option></select></div>
-    <div><label>Lanterna (E)</label><select id="lanternaE"><option>Bom</option><option>Polimento</option><option>Troca</option></select></div>
-  </div>
-
-  <h3 style="margin-top:14px">🪟 Vidros</h3>
-
-  <label>Para-brisa</label>
-  <select id="vidroParabrisa">
-    <option>OK</option>
-    <option>Reparo</option>
-    <option>Troca</option>
-  </select>
-
-  <div style="border:1px dashed #e5e7eb;border-radius:14px;padding:12px;background:#fafafa;margin-bottom:10px">
-    <div class="hint">Demais vidros (marque e selecione a ação).</div>
-
-    <div class="row2">
-      <label style="font-weight:700"><input type="checkbox" id="vidro_dd_chk"> Dianteiro (D)</label>
-      <select id="vidro_dd_act"><option>Reparo</option><option>Troca</option></select>
-    </div>
-    <div class="row2">
-      <label style="font-weight:700"><input type="checkbox" id="vidro_de_chk"> Dianteiro (E)</label>
-      <select id="vidro_de_act"><option>Reparo</option><option>Troca</option></select>
-    </div>
-    <div class="row2">
-      <label style="font-weight:700"><input type="checkbox" id="vidro_td_chk"> Traseiro (D)</label>
-      <select id="vidro_td_act"><option>Reparo</option><option>Troca</option></select>
-    </div>
-    <div class="row2">
-      <label style="font-weight:700"><input type="checkbox" id="vidro_te_chk"> Traseiro (E)</label>
-      <select id="vidro_te_act"><option>Reparo</option><option>Troca</option></select>
-    </div>
-    <div class="row2">
-      <label style="font-weight:700"><input type="checkbox" id="vidro_vg_chk"> Vigia</label>
-      <select id="vidro_vg_act"><option>Reparo</option><option>Troca</option></select>
-    </div>
-  </div>
-<div class="hint">No relatório aparecem apenas itens que geram custo. “Bom/OK/0” não aparece.</div>
-</div>
-
-<div class="card">
-  <h3>🛣️ Teste de Rodagem</h3>
-  <label>Observações (texto livre)</label>
-  <textarea id="testeRodagem" placeholder="Como o carro se comportou na rua (com mecânico dirigindo): trepidação, puxando, barulho..."></textarea>
-  <div class="hint">Esse item é preenchido por último e aparece separado no relatório.</div>
-</div>
-
-<div class="card">
-  <h3>👨‍🔧 Responsáveis</h3>
+    <div class="card">
+      <h3>👨‍🔧 Responsáveis</h3>
 
       <div class="row2">
         <div><label>Consultor <span class="hint">(obrigatório)</span></label><input id="consultor"></div>
         <div>
-  <label>Avaliadores <span class="hint">(obrigatório)</span></label>
-  <div class="chkWrap" id="avaliadoresWrap">
-    <label class="chkItem"><input type="checkbox" class="avChk" value="Lucas"> Lucas</label>
-    <label class="chkItem"><input type="checkbox" class="avChk" value="Guilherme"> Guilherme</label>
-    <label class="chkItem"><input type="checkbox" class="avChk" value="Junior"> Junior</label>
-    <label class="chkItem"><input type="checkbox" class="avChk" value="Anderson"> Anderson</label>
-    <label class="chkItem"><input type="checkbox" class="avChk" value="Thiago"> Thiago</label>
-  </div>
-  <div class="hint">Selecione 1 a 5 avaliadores.</div>
-</div>
+          <label>Avaliadores <span class="hint">(obrigatório)</span></label>
+          <div class="chkWrap" id="avaliadoresWrap">
+            <label class="chkItem"><input type="checkbox" class="avChk" value="Lucas"> Lucas</label>
+            <label class="chkItem"><input type="checkbox" class="avChk" value="Guilherme"> Guilherme</label>
+            <label class="chkItem"><input type="checkbox" class="avChk" value="Junior"> Junior</label>
+            <label class="chkItem"><input type="checkbox" class="avChk" value="Anderson"> Anderson</label>
+            <label class="chkItem"><input type="checkbox" class="avChk" value="Thiago"> Thiago</label>
+          </div>
+          <div class="hint">Selecione 1 a 5 avaliadores.</div>
+        </div>
       </div>
     </div>
 
@@ -459,11 +472,12 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
         <div><label>Cliente <span class="hint">(obrigatório)</span></label><input id="cliente"></div>
         <div><label>Local</label><input id="local"></div>
       </div>
-      
-<label>Telefone (WhatsApp)</label>
-<input id="telefone" placeholder="Ex: 11 99999-9999">
-<div class="hint">Esse telefone NÃO vai no relatório (Whats/Copiar). Fica salvo só no histórico (gestores).</div>
-<label>Captação</label>
+
+      <label>Telefone (WhatsApp)</label>
+      <input id="telefone" placeholder="Ex: 11 99999-9999">
+      <div class="hint">Esse telefone NÃO vai no relatório (Whats/Copiar). Fica salvo só no histórico (gestores).</div>
+
+      <label>Captação</label>
       <select id="captacao"><option value="">Selecione</option><option>Lead</option><option>Porta</option><option>Orgânico</option></select>
       <div class="hint">“Osasco - SP 📍” sempre aparece no relatório.</div>
     </div>
@@ -496,7 +510,6 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
     </div>
   </div>
 </section>
-
 
 <div class="modalOverlay" id="fipeModal">
   <div class="modalBox">
@@ -553,8 +566,6 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
   </div>
 </div>
 
-
-
 <div class="modalOverlay" id="favModal">
   <div class="modalBox">
     <div class="modalTop">
@@ -574,7 +585,6 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
     </div>
   </div>
 </div>
-
 
 <textarea id="copyFallback" style="position:fixed;left:-9999px;top:-9999px;"></textarea>
 
@@ -694,12 +704,9 @@ function validar(){
   return true;
 }
 
-function b(label,value){ return value ? (`*${label}:* ${value}`) : ""; }
-
 function montar(){
   const lines = [];
 
-  // 🚗 Veículo
   lines.push("🚗 *Veículo*");
   lines.push(`*Modelo:* ${v("modelo")}`);
   lines.push(`*Ano:* ${v("ano")}`);
@@ -708,7 +715,6 @@ function montar(){
   lines.push(`*Km:* ${v("km")}`);
   lines.push(`*Comprou:* ${v("kmComprou")}`);
 
-  // 💰 Negócio
   lines.push("");
   lines.push("💰 *Negócio*");
   lines.push(`*Fipe:* ${v("fipe")}`);
@@ -722,7 +728,6 @@ function montar(){
     lines.push(`*Financiamento (quitação):* ${val || "—"}`);
   }
 
-  // 📋 Laudo
   lines.push("");
   lines.push("📋 *Laudo*");
   const laudo=(v("laudo")||"APROVADO").toUpperCase();
@@ -730,105 +735,98 @@ function montar(){
   lines.push(`${ic} ${laudo}`);
   if(laudo!=="APROVADO" && v("laudoObs")) lines.push(v("laudoObs"));
 
-  // 🚨 Leilão
   const le=v("leilao");
   if(le && le.toLowerCase()!=="não"){
     lines.push("");
     lines.push(`🚨 *Leilão:* ${le}`);
   }
 
-  // ⚙️ Gastos (mantém o modelo atual)
   const gastos=[];
+  if(v("motor")) gastos.push(v("motor"));
+  if(v("luzes")) gastos.push(v("luzes"));
 
-// Motor e Luzes: entram sem rótulo (só o texto)
-if(v("motor")) gastos.push(v("motor"));
-if(v("luzes")) gastos.push(v("luzes"));
+  if(v("tablier")==="Avariado") gastos.push("Tablier: Avariado");
 
-// Internos
-if(v("tablier")==="Avariado") gastos.push("Tablier: Avariado");
+  const bo=v("bancosOnde");
+  const bs=v("bancosServico");
+  if(bo && bs && bs!=="Bom") gastos.push(`Bancos (${bo}): ${bs}`);
 
-const bo=v("bancosOnde");
-const bs=v("bancosServico");
-if(bo && bs && bs!=="Bom") gastos.push(`Bancos (${bo}): ${bs}`);
+  const vol=v("volante");
+  if(vol && vol!=="Bom") gastos.push(`Volante: ${vol}`);
 
-const vol=v("volante");
-if(vol && vol!=="Bom") gastos.push(`Volante: ${vol}`);
+  const man=v("manopla");
+  if(man && man!=="Bom") gastos.push("Manopla do câmbio: Trocar");
 
-const man=v("manopla");
-if(man && man!=="Bom") gastos.push("Manopla do câmbio: Trocar");
-
-const forroEstado=v("forroEstado");
-if(forroEstado==="Avariado"){
-  const portas=[];
-  const add=(id,label)=>{ if(el(id)?.checked) portas.push(label); };
-  add("forro_motorista","Motorista");
-  add("forro_passageiro","Passageiro");
-  add("forro_traseiro_d","Traseiro D");
-  add("forro_traseiro_e","Traseiro E");
-  add("forro_dianteiros","Dianteiros");
-  add("forro_traseiros","Traseiros");
-  add("forro_todos","Todos");
-  if(portas.length) gastos.push(`Forro de porta (${portas.join(", ")}): Avariado`);
-}
-
-// Externos
-const pecas = Number(v("funilariaPecas")||"0");
-const pintura = !!el("pinturaCompleta")?.checked;
-const granizo = !!el("chuvaGranizo")?.checked;
-if(pecas>0 || pintura || granizo){
-  const parts=[];
-  if(pecas>0) parts.push(`${pecas} ${pecas===1?"peça":"peças"}`);
-  if(pintura) parts.push("Pintura completa");
-  if(granizo) parts.push("Chuva de granizo");
-  gastos.push(`Funilaria: ${parts.join(" + ")}`);
-}
-
-const pneus = Number(v("pneusQtd")||"0");
-if(pneus>0) gastos.push(`Pneus: ${pneus} ${pneus===1?"avariado":"avariados"}`);
-
-if(v("paraChoqueD")==="Troca") gastos.push("Para-choque dianteiro: Troca");
-if(v("paraChoqueT")==="Troca") gastos.push("Para-choque traseiro: Troca");
-
-const fd=v("farolD"); if(fd && fd!=="Bom") gastos.push(`Farol (D): ${fd}`);
-const fe=v("farolE"); if(fe && fe!=="Bom") gastos.push(`Farol (E): ${fe}`);
-const ld=v("lanternaD"); if(ld && ld!=="Bom") gastos.push(`Lanterna (D): ${ld}`);
-const le2=v("lanternaE"); if(le2 && le2!=="Bom") gastos.push(`Lanterna (E): ${le2}`);
-
-const pb=v("vidroParabrisa");
-if(pb && pb!=="OK") gastos.push(`Para-brisa: ${pb}`);
-
-const vidros = [
-  ["vidro_dd_chk","vidro_dd_act","Vidro dianteiro (D)"],
-  ["vidro_de_chk","vidro_de_act","Vidro dianteiro (E)"],
-  ["vidro_td_chk","vidro_td_act","Vidro traseiro (D)"],
-  ["vidro_te_chk","vidro_te_act","Vidro traseiro (E)"],
-  ["vidro_vg_chk","vidro_vg_act","Vigia"],
-];
-vidros.forEach(([chk,act,label])=>{
-  if(el(chk)?.checked){
-    const a=v(act)||"Reparo";
-    gastos.push(`${label}: ${a}`);
+  const forroEstado=v("forroEstado");
+  if(forroEstado==="Avariado"){
+    const portas=[];
+    const add=(id,label)=>{ if(el(id)?.checked) portas.push(label); };
+    add("forro_motorista","Motorista");
+    add("forro_passageiro","Passageiro");
+    add("forro_traseiro_d","Traseiro D");
+    add("forro_traseiro_e","Traseiro E");
+    add("forro_dianteiros","Dianteiros");
+    add("forro_traseiros","Traseiros");
+    add("forro_todos","Todos");
+    if(portas.length) gastos.push(`Forro de porta (${portas.join(", ")}): Avariado`);
   }
-});
-if(gastos.length){
-  lines.push("");
-  lines.push("⚙️ *Gastos*");
-  lines.push(...gastos);
-}
 
-  
+  const pecas = Number(v("funilariaPecas")||"0");
+  const pintura = !!el("pinturaCompleta")?.checked;
+  const granizo = !!el("chuvaGranizo")?.checked;
+  if(pecas>0 || pintura || granizo){
+    const parts=[];
+    if(pecas>0) parts.push(`${pecas} ${pecas===1?"peça":"peças"}`);
+    if(pintura) parts.push("Pintura completa");
+    if(granizo) parts.push("Chuva de granizo");
+    gastos.push(`Funilaria: ${parts.join(" + ")}`);
+  }
+
+  const pneus = Number(v("pneusQtd")||"0");
+  if(pneus>0) gastos.push(`Pneus: ${pneus} ${pneus===1?"avariado":"avariados"}`);
+
+  if(v("paraChoqueD")==="Troca") gastos.push("Para-choque dianteiro: Troca");
+  if(v("paraChoqueT")==="Troca") gastos.push("Para-choque traseiro: Troca");
+
+  const fd=v("farolD"); if(fd && fd!=="Bom") gastos.push(`Farol (D): ${fd}`);
+  const fe=v("farolE"); if(fe && fe!=="Bom") gastos.push(`Farol (E): ${fe}`);
+  const ld=v("lanternaD"); if(ld && ld!=="Bom") gastos.push(`Lanterna (D): ${ld}`);
+  const le2=v("lanternaE"); if(le2 && le2!=="Bom") gastos.push(`Lanterna (E): ${le2}`);
+
+  const pb=v("vidroParabrisa");
+  if(pb && pb!=="OK") gastos.push(`Para-brisa: ${pb}`);
+
+  const vidros = [
+    ["vidro_dd_chk","vidro_dd_act","Vidro dianteiro (D)"],
+    ["vidro_de_chk","vidro_de_act","Vidro dianteiro (E)"],
+    ["vidro_td_chk","vidro_td_act","Vidro traseiro (D)"],
+    ["vidro_te_chk","vidro_te_act","Vidro traseiro (E)"],
+    ["vidro_vg_chk","vidro_vg_act","Vigia"],
+  ];
+  vidros.forEach(([chk,act,label])=>{
+    if(el(chk)?.checked){
+      const a=v(act)||"Reparo";
+      gastos.push(`${label}: ${a}`);
+    }
+  });
+
+  if(gastos.length){
+    lines.push("");
+    lines.push("⚙️ *Gastos*");
+    lines.push(...gastos);
+  }
+
   if(v("testeRodagem")){
     lines.push("");
     lines.push("🛣️ *Teste de Rodagem*");
     lines.push(v("testeRodagem"));
   }
-// 👨‍🔧 Responsáveis
+
   lines.push("");
   lines.push("👨‍🔧 *Responsáveis*");
   lines.push(`*Consultor:* ${v("consultor")}`);
   lines.push(`*Avaliadores:* ${getAvaliadoresText()}`);
 
-  // 👤 Cliente
   lines.push("");
   lines.push("👤 *Cliente*");
   lines.push(`*Cliente:* ${v("cliente")}`);
@@ -853,6 +851,24 @@ function abrirWhats(texto){
   const a=document.createElement("a"); a.href=url; a.target="_blank"; a.rel="noopener";
   document.body.appendChild(a); a.click(); a.remove();
 }
+
+// ===== Melhoria usabilidade (V5.1): lembrar último consultor =====
+const LAST_CONSULTOR_KEY = "clubeauto_last_consultor_v1";
+function loadLastConsultor(){
+  try{
+    const last = localStorage.getItem(LAST_CONSULTOR_KEY) || "";
+    if(last && !v("consultor")) el("consultor").value = last;
+  }catch(e){}
+}
+function saveLastConsultor(){
+  try{
+    const val = v("consultor");
+    if(val) localStorage.setItem(LAST_CONSULTOR_KEY, val);
+  }catch(e){}
+}
+el("consultor").addEventListener("blur", ()=>{ saveLastConsultor(); atualizarPreview(); });
+el("consultor").addEventListener("change", ()=>{ saveLastConsultor(); atualizarPreview(); });
+
 let lastSaveSig = "";
 let savingNow = false;
 let lastSaveAt = 0;
@@ -870,7 +886,6 @@ async function salvarUmaVez(texto){
   const sig = makeSaveSig(texto);
   const now = Date.now();
 
-  // evita duplicar se for o MESMO relatório em sequência (clique duplo / vários botões)
   if(sig === lastSaveSig && (now - lastSaveAt) < 15000){
     return { saved:false, reason:"dedup" };
   }
@@ -948,7 +963,7 @@ function openHistorico(){
     }).join("") || "<div class='histItem'><b>Nenhum registro.</b></div>";
 
     el("historicoList").querySelectorAll("[data-open]").forEach(btn=>{
-      btn.addEventListener("click",()=>{ const it=items.find(x=>x.id===btn.dataset.open); if(!it) return; let t=(it.reportText||""); if(canHistory && it.clienteTelefone){ t += "\n\n☎️ *Telefone:* "+it.clienteTelefone; } el("preview").innerText=t; setTab("nova"); window.scrollTo({top:0,behavior:"smooth"}); });
+      btn.addEventListener("click",()=>{ const it=items.find(x=>x.id===btn.dataset.open); if(!it) return; el("preview").innerText=(it.reportText||""); setTab("nova"); window.scrollTo({top:0,behavior:"smooth"}); });
     });
     el("historicoList").querySelectorAll("[data-copy]").forEach(btn=>{
       btn.addEventListener("click",async()=>{ const it=items.find(x=>x.id===btn.dataset.copy); if(!it) return; const ok=await copiar(it.reportText||""); if(ok) alert("Copiado!"); });
@@ -1032,10 +1047,11 @@ el("btnCreateUser").addEventListener("click", async ()=>{
 el("btnGuest").addEventListener("click", ()=>{
   isGuest=true; try{ signOut(auth);}catch(e){}
   showApp(); el("whoami").textContent="Convidado";
-  currentRole="convidado"; computePermissions(); setRoleUI(); setTab("nova"); bindDraftAutosave(); checkDraftOnEnter(); bindDraftAutosave(); checkDraftOnEnter();
+  currentRole="convidado"; computePermissions(); setRoleUI(); setTab("nova");
+  loadLastConsultor();
 });
-el("btnLogout").addEventListener("click", async ()=>{ isGuest=false; try{ await signOut(auth);}catch(e){} showLogin(); showDraftBar(null); });
-el("btnSwitchUser").addEventListener("click", ()=>{ isGuest=false; showLogin(); showDraftBar(null); });
+el("btnLogout").addEventListener("click", async ()=>{ isGuest=false; try{ await signOut(auth);}catch(e){} showLogin(); });
+el("btnSwitchUser").addEventListener("click", ()=>{ isGuest=false; showLogin(); });
 
 // Action buttons
 function setButtonsDisabled(disabled){
@@ -1065,335 +1081,9 @@ el("btnCopy").addEventListener("click", async ()=>{
 });
 
 // Bind preview
-["modelo","ano","versao","placa","km","kmComprou","debitosSel","debitosValor","finSel","finValor","fipe","valorPretendido","laudo","laudoObs","leilao","motor","luzes","testeRodagem","consultor","cliente","local","captacao","tablier","bancosOnde","bancosServico","volante","manopla","forro_motorista","forro_passageiro","forro_traseiro_d","forro_traseiro_e","forro_dianteiros","forro_traseiros","forro_todos","forroEstado","funilariaPecas","pneusQtd","pinturaCompleta","chuvaGranizo","paraChoqueD","paraChoqueT","farolD","farolE","lanternaD","lanternaE","vidroParabrisa","vidro_dd_chk","vidro_dd_act","vidro_de_chk","vidro_de_act","vidro_td_chk","vidro_td_act","vidro_te_chk","vidro_te_act","vidro_vg_chk","vidro_vg_act"] .forEach(id=>{ el(id).addEventListener("input",()=>{ if(id==="laudo"){setStatusBadge();toggleLaudoDescricao();} atualizarPreview(); });
+["modelo","ano","versao","placa","km","kmComprou","debitosSel","debitosValor","finSel","finValor","fipe","valorPretendido","laudo","laudoObs","leilao","motor","luzes","testeRodagem","consultor","cliente","local","captacao","tablier","bancosOnde","bancosServico","volante","manopla","forro_motorista","forro_passageiro","forro_traseiro_d","forro_traseiro_e","forro_dianteiros","forro_traseiros","forro_todos","forroEstado","funilariaPecas","pneusQtd","pinturaCompleta","chuvaGranizo","paraChoqueD","paraChoqueT","farolD","farolE","lanternaD","lanternaE","vidroParabrisa","vidro_dd_chk","vidro_dd_act","vidro_de_chk","vidro_de_act","vidro_td_chk","vidro_td_act","vidro_te_chk","vidro_te_act","vidro_vg_chk","vidro_vg_act"]
+.forEach(id=>{ el(id).addEventListener("input",()=>{ if(id==="laudo"){setStatusBadge();toggleLaudoDescricao();} atualizarPreview(); });
               el(id).addEventListener("change",()=>{ if(id==="laudo"){setStatusBadge();toggleLaudoDescricao();} atualizarPreview(); }); });
-
-// ===== Rascunho automático (V5) =====
-const DRAFT_KEY_PREFIX = "clubeauto_draft_v1_";
-
-function getDraftKey(){
-  if(isGuest) return DRAFT_KEY_PREFIX + "guest";
-  const u = auth.currentUser;
-  const uid = u?.uid || "";
-  return DRAFT_KEY_PREFIX + (uid || "unknown");
-}
-
-function collectFormData(){
-  const ids = [
-    "modelo","ano","versao","placa","km","kmComprou",
-    "debitoVeiculo","debitoValor","financiamento","quitacaoValor",
-    "fipe","valorPretendido",
-    "laudo","laudoObs","leilao",
-    "motor","luzes",
-    "tablier","bancosOnde","bancosServico","volante","manopla","forroEstado",
-    "funilariaPecas","pneusQtd","paraChoqueD","paraChoqueT","farolD","farolE","lanternaD","lanternaE","vidroParabrisa",
-    "vidro_dd_act","vidro_de_act","vidro_td_act","vidro_te_act","vidro_vg_act",
-    "testeRodagem",
-    "consultor",
-    "cliente","local","captacao","clienteTelefone"
-  ];
-
-  const data = { v: 1, ts: Date.now(), fields: {}, checks: {}, avals: [] };
-
-  ids.forEach(id=>{
-    const e = el(id);
-    if(!e) return;
-    data.fields[id] = (e.value ?? "").toString();
-  });
-
-  ["forro_motorista","forro_passageiro","forro_traseiro_d","forro_traseiro_e","forro_dianteiros","forro_traseiros","forro_todos",
-   "pinturaCompleta","chuvaGranizo",
-   "vidro_dd_chk","vidro_de_chk","vidro_td_chk","vidro_te_chk","vidro_vg_chk"
-  ].forEach(id=>{
-    const e = el(id);
-    if(e) data.checks[id] = !!e.checked;
-  });
-
-  ["av_lucas","av_guilherme","av_junior","av_anderson","av_thiago"].forEach(id=>{
-    const e=el(id);
-    if(e && e.checked) data.avals.push(id);
-  });
-
-  return data;
-}
-
-function applyDraft(d){
-  if(!d || !d.fields) return;
-  Object.entries(d.fields).forEach(([id,val])=>{
-    const e=el(id);
-    if(e) e.value = (val ?? "").toString();
-  });
-  if(d.checks){
-    Object.entries(d.checks).forEach(([id,val])=>{
-      const e=el(id);
-      if(e) e.checked = !!val;
-    });
-  }
-  if(Array.isArray(d.avals)){
-    ["av_lucas","av_guilherme","av_junior","av_anderson","av_thiago"].forEach(id=>{
-      const e=el(id);
-      if(e) e.checked = d.avals.includes(id);
-    });
-  }
-  setStatusBadge(); toggleLaudoDescricao();
-  toggleDebito(); toggleFin();
-  atualizarPreview();
-}
-
-function readDraft(){
-  try{
-    const raw = localStorage.getItem(getDraftKey());
-    if(!raw) return null;
-    const d = JSON.parse(raw);
-    if(!d || !d.ts) return null;
-    return d;
-  }catch(e){ return null; }
-}
-
-function writeDraft(){
-  try{
-    const d = collectFormData();
-    localStorage.setItem(getDraftKey(), JSON.stringify(d));
-  }catch(e){}
-}
-
-function clearDraft(){
-  try{ localStorage.removeItem(getDraftKey()); }catch(e){}
-}
-
-let draftTimer = null;
-function scheduleDraftSave(){
-  if(draftTimer) clearTimeout(draftTimer);
-  draftTimer = setTimeout(()=>writeDraft(), 700);
-}
-
-function showDraftBar(d){
-  const bar = el("draftBar");
-  if(!bar) return;
-  if(!d){ bar.style.display="none"; return; }
-  const when = new Intl.DateTimeFormat("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}).format(new Date(d.ts));
-  el("draftMsg").innerText = `Rascunho encontrado (${when}).`;
-  bar.style.display="flex";
-}
-
-el("btnDraftContinue").addEventListener("click", ()=>{
-  const d = readDraft();
-  if(d) applyDraft(d);
-  showDraftBar(null);
-});
-
-el("btnDraftDiscard").addEventListener("click", ()=>{
-  const ok = confirm("Descartar rascunho? Você vai perder o que estava preenchido.");
-  if(!ok) return;
-  clearDraft();
-  showDraftBar(null);
-});
-
-function clearForm(){
-  const ok = confirm("Limpar formulário? Isso não apaga o histórico na nuvem.");
-  if(!ok) return;
-
-  const fieldsToClear = [
-    "modelo","ano","versao","placa","km","kmComprou",
-    "debitoVeiculo","debitoValor","financiamento","quitacaoValor",
-    "fipe","valorPretendido",
-    "laudo","laudoObs","leilao",
-    "motor","luzes",
-    "tablier","bancosOnde","bancosServico","volante","manopla","forroEstado",
-    "funilariaPecas","pneusQtd","paraChoqueD","paraChoqueT","farolD","farolE","lanternaD","lanternaE","vidroParabrisa",
-    "vidro_dd_act","vidro_de_act","vidro_td_act","vidro_te_act","vidro_vg_act",
-    "testeRodagem",
-    "consultor",
-    "cliente","local","captacao","clienteTelefone"
-  ];
-  fieldsToClear.forEach(id=>{ const e=el(id); if(e){ e.value=""; } });
-
-  if(el("laudo")) el("laudo").value="APROVADO";
-  if(el("leilao")) el("leilao").value="Não";
-  if(el("tablier")) el("tablier").value="Bom";
-  if(el("bancosOnde")) el("bancosOnde").value="";
-  if(el("bancosServico")) el("bancosServico").value="Bom";
-  if(el("volante")) el("volante").value="Bom";
-  if(el("manopla")) el("manopla").value="Bom";
-  if(el("forroEstado")) el("forroEstado").value="Bom";
-  if(el("funilariaPecas")) el("funilariaPecas").value="0";
-  if(el("pneusQtd")) el("pneusQtd").value="0";
-  if(el("paraChoqueD")) el("paraChoqueD").value="Bom";
-  if(el("paraChoqueT")) el("paraChoqueT").value="Bom";
-  ["farolD","farolE","lanternaD","lanternaE"].forEach(id=>{ if(el(id)) el(id).value="Bom"; });
-  if(el("vidroParabrisa")) el("vidroParabrisa").value="OK";
-
-  ["forro_motorista","forro_passageiro","forro_traseiro_d","forro_traseiro_e","forro_dianteiros","forro_traseiros","forro_todos",
-   "pinturaCompleta","chuvaGranizo",
-   "vidro_dd_chk","vidro_de_chk","vidro_td_chk","vidro_te_chk","vidro_vg_chk"
-  ].forEach(id=>{ const e=el(id); if(e) e.checked=false; });
-
-  ["av_lucas","av_guilherme","av_junior","av_anderson","av_thiago"].forEach(id=>{ const e=el(id); if(e) e.checked=false; });
-
-  toggleLaudoDescricao();
-  toggleDebito();
-  toggleFin();
-  setStatusBadge();
-  atualizarPreview();
-
-  clearDraft();
-  showDraftBar(null);
-}
-
-el("btnClearForm").addEventListener("click", clearForm);
-
-function bindDraftAutosave(){
-  const watchIds = [
-    "modelo","ano","versao","placa","km","kmComprou",
-    "debitoVeiculo","debitoValor","financiamento","quitacaoValor",
-    "fipe","valorPretendido",
-    "laudo","laudoObs","leilao",
-    "motor","luzes",
-    "tablier","bancosOnde","bancosServico","volante","manopla","forroEstado",
-    "funilariaPecas","pneusQtd","paraChoqueD","paraChoqueT","farolD","farolE","lanternaD","lanternaE","vidroParabrisa",
-    "vidro_dd_act","vidro_de_act","vidro_td_act","vidro_te_act","vidro_vg_act",
-    "testeRodagem",
-    "consultor",
-    "cliente","local","captacao","clienteTelefone"
-  ];
-  watchIds.forEach(id=>{
-    const e=el(id);
-    if(!e) return;
-    e.addEventListener("input", scheduleDraftSave);
-    e.addEventListener("change", scheduleDraftSave);
-  });
-
-  ["forro_motorista","forro_passageiro","forro_traseiro_d","forro_traseiro_e","forro_dianteiros","forro_traseiros","forro_todos",
-   "pinturaCompleta","chuvaGranizo",
-   "vidro_dd_chk","vidro_de_chk","vidro_td_chk","vidro_te_chk","vidro_vg_chk",
-   "av_lucas","av_guilherme","av_junior","av_anderson","av_thiago"
-  ].forEach(id=>{
-    const e=el(id);
-    if(!e) return;
-    e.addEventListener("change", scheduleDraftSave);
-  });
-}
-
-function checkDraftOnEnter(){
-  const d = readDraft();
-  if(!d) return showDraftBar(null);
-  const hasAny = Object.values(d.fields||{}).some(x=>((x??"").toString().trim().length>0));
-  if(!hasAny) return showDraftBar(null);
-  showDraftBar(d);
-}
-
-// ===== Favoritos locais (V5) =====
-const FAV_KEY = "clubeauto_fipe_favs_v1";
-
-function readFavs(){
-  try{
-    const raw = localStorage.getItem(FAV_KEY);
-    const arr = raw ? JSON.parse(raw) : [];
-    return Array.isArray(arr) ? arr : [];
-  }catch(e){ return []; }
-}
-function saveFavs(arr){
-  try{ localStorage.setItem(FAV_KEY, JSON.stringify(arr)); }catch(e){}
-}
-function addFav(item){
-  const arr = readFavs();
-  const exists = arr.some(x=>x.brand===item.brand && x.model===item.model);
-  if(exists) return;
-  arr.unshift(item);
-  saveFavs(arr.slice(0, 20));
-}
-function renderFavList(){
-  const list = el("favList");
-  if(!list) return;
-  const favs = readFavs();
-  if(!favs.length){
-    list.innerHTML = "<div class='histItem'><b>Nenhum favorito ainda.</b></div>";
-    return;
-  }
-  list.innerHTML = favs.map((f, idx)=>`
-    <div class="histItem">
-      <div class="histTop">
-        <div>
-          <div class="histTitle">${escapeHtml(f.name||"")}</div>
-          <div class="histMeta">${escapeHtml(f.brandName||"")}</div>
-        </div>
-        <div class="histBtns" style="grid-template-columns:1fr 1fr">
-          <button class="mini mOpen" data-favopen="${idx}">Abrir FIPE</button>
-          <button class="mini" style="background:#b91c1c" data-favdel="${idx}">Remover</button>
-        </div>
-      </div>
-    </div>
-  `).join("");
-
-  list.querySelectorAll("[data-favopen]").forEach(btn=>{
-    btn.addEventListener("click", async ()=>{
-      const i = Number(btn.dataset.favopen);
-      const fav = readFavs()[i];
-      if(!fav) return;
-      await openFipe();
-      el("fipeMarca").value = fav.brand;
-      el("fipeMarca").dispatchEvent(new Event("change"));
-      setTimeout(()=>{
-        el("fipeModelo").value = fav.model;
-        el("fipeModelo").dispatchEvent(new Event("change"));
-      }, 350);
-      showFavModal(false);
-    });
-  });
-
-  list.querySelectorAll("[data-favdel]").forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      const i = Number(btn.dataset.favdel);
-      const arr = readFavs();
-      arr.splice(i,1);
-      saveFavs(arr);
-      renderFavList();
-    });
-  });
-}
-
-function showFavModal(show){
-  const m = el("favModal");
-  if(!m) return;
-  m.style.display = show ? "flex" : "none";
-  if(show) renderFavList();
-}
-
-el("btnFavOpen").addEventListener("click", ()=>showFavModal(true));
-el("btnFavClose").addEventListener("click", ()=>showFavModal(false));
-el("favModal").addEventListener("click",(ev)=>{ if(ev.target && ev.target.id==="favModal") showFavModal(false); });
-el("btnFavClear").addEventListener("click", ()=>{
-  const ok = confirm("Limpar todos os favoritos?");
-  if(!ok) return;
-  saveFavs([]);
-  renderFavList();
-});
-
-// Botão para favoritar dentro do modal FIPE
-(function injectFavButtonInFipeModal(){
-  const box = el("btnFipeApply")?.parentElement;
-  if(!box) return;
-  const btn = document.createElement("button");
-  btn.type = "button";
-  btn.className = "btnSecondary";
-  btn.id = "btnFipeFav";
-  btn.textContent = "⭐ Favoritar este modelo";
-  btn.style.marginTop = "8px";
-  box.appendChild(btn);
-
-  btn.addEventListener("click", ()=>{
-    const brand = el("fipeMarca").value;
-    const model = el("fipeModelo").value;
-    if(!brand || !model){
-      alert("Selecione Marca e Modelo para favoritar.");
-      return;
-    }
-    const brandName = el("fipeMarca").selectedOptions?.[0]?.textContent || "";
-    const modelName = el("fipeModelo").selectedOptions?.[0]?.textContent || "";
-    addFav({brand, model, brandName, name: modelName});
-    alert("Favorito salvo!");
-  });
-})();
 
 onAuthStateChanged(auth, async (u)=>{
   if(isGuest) return;
@@ -1402,28 +1092,26 @@ onAuthStateChanged(auth, async (u)=>{
     el("whoami").textContent=lower(u.email||"");
     try{ currentRole = await ensureUserDoc(u); }catch(e){ currentRole = HARD_ADMINS.has(lower(u.email||"")) ? "admin":"consultor"; }
     computePermissions(); setRoleUI(); setTab("nova");
+    loadLastConsultor();
   }else{
-    showLogin(); showDraftBar(null);
+    showLogin();
     currentRole="consultor"; computePermissions(); setRoleUI();
   }
 });
 
-
 // Debitos/Financiamento toggles
 el("debitosSel").addEventListener("change",()=>{ toggleDebitos(); atualizarPreview(); });
 el("finSel").addEventListener("change",()=>{ toggleFin(); atualizarPreview(); });
+
 // Avaliadores checkboxes
 document.querySelectorAll(".avChk").forEach(c=>c.addEventListener("change",()=>atualizarPreview()));
 
 toggleDebitos(); toggleFin();
+
 // ===== FIPE inteligente (carros) - API gratuita (parallelum) =====
 const FIPE_BASE = "https://parallelum.com.br/fipe/api/v1/carros";
 
-let fipeCache = {
-  brands: null, // [{nome,codigo}]
-  modelsByBrand: {}, // brandCode -> [{nome,codigo}]
-  yearsByModel: {}, // `${brand}-${model}` -> [{nome,codigo}]
-};
+let fipeCache = { brands: null, modelsByBrand: {}, yearsByModel: {} };
 
 function loadCache(){
   try{
@@ -1437,9 +1125,7 @@ function loadCache(){
   }catch(e){}
 }
 function saveCache(){
-  try{
-    localStorage.setItem("fipeCache_v1", JSON.stringify(fipeCache));
-  }catch(e){}
+  try{ localStorage.setItem("fipeCache_v1", JSON.stringify(fipeCache)); }catch(e){}
 }
 loadCache();
 
@@ -1504,7 +1190,6 @@ let lastFipeResult = null;
 
 function renderFipeResult(obj){
   if(!obj){ el("fipeResult").innerText="—"; return; }
-  // Valor vem pronto como "R$ 59.000,00"
   const lines = [];
   if(obj.Marca) lines.push(`Marca: ${obj.Marca}`);
   if(obj.Modelo) lines.push(`Modelo: ${obj.Modelo}`);
@@ -1540,7 +1225,7 @@ function filterModelOptions(){
   if(!sel) return;
   const all = sel.querySelectorAll("option");
   all.forEach((opt, idx)=>{
-    if(idx===0) return; // placeholder
+    if(idx===0) return;
     const show = !txt || (opt.textContent || "").toLowerCase().includes(txt);
     opt.style.display = show ? "" : "none";
   });
@@ -1556,7 +1241,6 @@ async function openFipe(){
   }catch(e){
     setFipeStatus("<span class='warn'>Não foi possível carregar marcas:</span> " + escapeHtml(e?.message||e));
   }
-  // reset
   el("fipeBuscaModelo").value = "";
   el("fipeModelo").innerHTML = "<option value=''>Selecione a marca</option>";
   el("fipeAno").innerHTML = "<option value=''>Selecione o modelo</option>";
@@ -1606,7 +1290,6 @@ el("fipeModelo").addEventListener("change", async ()=>{
   setFipeStatus("Carregando anos...");
   try{
     const years = await ensureYears(brand, model);
-    // years items are {nome,codigo}
     fillSelect("fipeAno", years, "Selecione");
     setFipeStatus("");
   }catch(e){
@@ -1621,7 +1304,6 @@ el("btnFipeApply").addEventListener("click", ()=>{
     alert("Selecione Marca, Modelo e Ano para consultar o valor.");
     return;
   }
-  // Preencher campos do formulário (sem mexer em 'versao')
   if(lastFipeResult.Modelo) el("modelo").value = lastFipeResult.Modelo;
   if(lastFipeResult.AnoModelo!=null) el("ano").value = String(lastFipeResult.AnoModelo);
   if(lastFipeResult.Valor) el("fipe").value = lastFipeResult.Valor;
@@ -1630,8 +1312,6 @@ el("btnFipeApply").addEventListener("click", ()=>{
 });
 
 setStatusBadge(); toggleLaudoDescricao(); atualizarPreview();
-
-window.addEventListener("beforeunload", ()=>{ try{ writeDraft(); }catch(e){} });
 </script>
 
 <script>
