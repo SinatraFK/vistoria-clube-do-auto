@@ -117,6 +117,15 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
 .btnSecondary{background:#6b7280;color:#fff}
 .btnSecondary:hover{opacity:.92}
 
+
+/* Draft banner */
+.draftBar{display:none;align-items:center;justify-content:space-between;gap:10px;padding:12px;border-radius:14px;background:#fff7ed;border:1px solid #fed7aa;margin:10px 0;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+.draftBar .msg{font-size:13px;color:#7c2d12;font-weight:900}
+.draftBar .actions{display:flex;gap:10px;flex-wrap:wrap}
+.draftBar .actions button{width:auto;margin-top:0;padding:10px 12px;border-radius:12px;font-size:13px}
+.btnDanger{background:#b91c1c;color:#fff}
+.btnDanger:hover{opacity:.92}
+
 </style>
 </head>
 
@@ -155,6 +164,15 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
     <button class="btnSmall btnExit" id="btnLogout">Sair</button>
   </div>
 
+  
+  <div class="draftBar" id="draftBar">
+    <div class="msg" id="draftMsg">Rascunho encontrado.</div>
+    <div class="actions">
+      <button class="btnP" type="button" id="btnDraftContinue">Continuar</button>
+      <button class="btnDanger" type="button" id="btnDraftDiscard">Descartar</button>
+    </div>
+  </div>
+
   <div class="tabs">
     <button class="tabbtn active" id="tabNova">Nova avaliação</button>
     <button class="tabbtn" id="tabHist">Histórico</button>
@@ -165,6 +183,9 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
     <div class="card">
       <h3>🚗 Veículo</h3>
       <label>Modelo <span class="hint">(obrigatório)</span></label><input id="modelo" placeholder="Ex: Fox Trend">
+      <div class="btnLine" style="margin-top:-2px">
+        <button class="btnSecondary" type="button" id="btnFavOpen">⭐ Modelos rápidos</button>
+      </div>
       <div class="row2">
         <div><label>Ano <span class="hint">(obrigatório)</span></label><input id="ano" placeholder="Ex: 2012/2013"></div>
         <div><label>Versão <span class="hint">(obrigatório)</span></label>
@@ -451,6 +472,8 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
       <h3>✅ Finalizar</h3>
       <button class="btnW" id="btnWhats">📲 Enviar relatório (WhatsApp)</button>
       <button class="btnB" id="btnCopy">📋 Copiar relatório</button>
+      <button class="btnG" type="button" id="btnClearForm">🧹 Limpar formulário</button>
+
       <h3 style="margin-top:14px;">Prévia</h3>
       <div class="preview" id="preview"></div>
       <div class="hint" id="saveHint" style="margin-top:10px"></div>
@@ -525,6 +548,28 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
           <button class="btnP" type="button" id="btnFipeApply">Aplicar no formulário</button>
           <div class="hint" id="fipeStatus" style="margin-top:8px"></div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="modalOverlay" id="favModal">
+  <div class="modalBox">
+    <div class="modalTop">
+      <div>
+        <div class="modalTitle">⭐ Modelos rápidos</div>
+        <div class="modalHint">Selecione um modelo favorito para abrir a busca FIPE já filtrada.</div>
+      </div>
+      <button class="btnX" type="button" id="btnFavClose">Fechar</button>
+    </div>
+
+    <div class="card" style="box-shadow:none;border:1px solid #e5e7eb;margin-top:12px">
+      <div class="hint">Dica: adicione favoritos dentro da busca FIPE (botão “⭐ Favoritar este modelo”).</div>
+      <div id="favList"></div>
+      <div class="btnLine">
+        <button class="btnDanger" type="button" id="btnFavClear">Limpar favoritos</button>
       </div>
     </div>
   </div>
@@ -987,10 +1032,10 @@ el("btnCreateUser").addEventListener("click", async ()=>{
 el("btnGuest").addEventListener("click", ()=>{
   isGuest=true; try{ signOut(auth);}catch(e){}
   showApp(); el("whoami").textContent="Convidado";
-  currentRole="convidado"; computePermissions(); setRoleUI(); setTab("nova");
+  currentRole="convidado"; computePermissions(); setRoleUI(); setTab("nova"); bindDraftAutosave(); checkDraftOnEnter(); bindDraftAutosave(); checkDraftOnEnter();
 });
-el("btnLogout").addEventListener("click", async ()=>{ isGuest=false; try{ await signOut(auth);}catch(e){} showLogin(); });
-el("btnSwitchUser").addEventListener("click", ()=>{ isGuest=false; showLogin(); });
+el("btnLogout").addEventListener("click", async ()=>{ isGuest=false; try{ await signOut(auth);}catch(e){} showLogin(); showDraftBar(null); });
+el("btnSwitchUser").addEventListener("click", ()=>{ isGuest=false; showLogin(); showDraftBar(null); });
 
 // Action buttons
 function setButtonsDisabled(disabled){
@@ -1023,6 +1068,333 @@ el("btnCopy").addEventListener("click", async ()=>{
 ["modelo","ano","versao","placa","km","kmComprou","debitosSel","debitosValor","finSel","finValor","fipe","valorPretendido","laudo","laudoObs","leilao","motor","luzes","testeRodagem","consultor","cliente","local","captacao","tablier","bancosOnde","bancosServico","volante","manopla","forro_motorista","forro_passageiro","forro_traseiro_d","forro_traseiro_e","forro_dianteiros","forro_traseiros","forro_todos","forroEstado","funilariaPecas","pneusQtd","pinturaCompleta","chuvaGranizo","paraChoqueD","paraChoqueT","farolD","farolE","lanternaD","lanternaE","vidroParabrisa","vidro_dd_chk","vidro_dd_act","vidro_de_chk","vidro_de_act","vidro_td_chk","vidro_td_act","vidro_te_chk","vidro_te_act","vidro_vg_chk","vidro_vg_act"] .forEach(id=>{ el(id).addEventListener("input",()=>{ if(id==="laudo"){setStatusBadge();toggleLaudoDescricao();} atualizarPreview(); });
               el(id).addEventListener("change",()=>{ if(id==="laudo"){setStatusBadge();toggleLaudoDescricao();} atualizarPreview(); }); });
 
+// ===== Rascunho automático (V5) =====
+const DRAFT_KEY_PREFIX = "clubeauto_draft_v1_";
+
+function getDraftKey(){
+  if(isGuest) return DRAFT_KEY_PREFIX + "guest";
+  const u = auth.currentUser;
+  const uid = u?.uid || "";
+  return DRAFT_KEY_PREFIX + (uid || "unknown");
+}
+
+function collectFormData(){
+  const ids = [
+    "modelo","ano","versao","placa","km","kmComprou",
+    "debitoVeiculo","debitoValor","financiamento","quitacaoValor",
+    "fipe","valorPretendido",
+    "laudo","laudoObs","leilao",
+    "motor","luzes",
+    "tablier","bancosOnde","bancosServico","volante","manopla","forroEstado",
+    "funilariaPecas","pneusQtd","paraChoqueD","paraChoqueT","farolD","farolE","lanternaD","lanternaE","vidroParabrisa",
+    "vidro_dd_act","vidro_de_act","vidro_td_act","vidro_te_act","vidro_vg_act",
+    "testeRodagem",
+    "consultor",
+    "cliente","local","captacao","clienteTelefone"
+  ];
+
+  const data = { v: 1, ts: Date.now(), fields: {}, checks: {}, avals: [] };
+
+  ids.forEach(id=>{
+    const e = el(id);
+    if(!e) return;
+    data.fields[id] = (e.value ?? "").toString();
+  });
+
+  ["forro_motorista","forro_passageiro","forro_traseiro_d","forro_traseiro_e","forro_dianteiros","forro_traseiros","forro_todos",
+   "pinturaCompleta","chuvaGranizo",
+   "vidro_dd_chk","vidro_de_chk","vidro_td_chk","vidro_te_chk","vidro_vg_chk"
+  ].forEach(id=>{
+    const e = el(id);
+    if(e) data.checks[id] = !!e.checked;
+  });
+
+  ["av_lucas","av_guilherme","av_junior","av_anderson","av_thiago"].forEach(id=>{
+    const e=el(id);
+    if(e && e.checked) data.avals.push(id);
+  });
+
+  return data;
+}
+
+function applyDraft(d){
+  if(!d || !d.fields) return;
+  Object.entries(d.fields).forEach(([id,val])=>{
+    const e=el(id);
+    if(e) e.value = (val ?? "").toString();
+  });
+  if(d.checks){
+    Object.entries(d.checks).forEach(([id,val])=>{
+      const e=el(id);
+      if(e) e.checked = !!val;
+    });
+  }
+  if(Array.isArray(d.avals)){
+    ["av_lucas","av_guilherme","av_junior","av_anderson","av_thiago"].forEach(id=>{
+      const e=el(id);
+      if(e) e.checked = d.avals.includes(id);
+    });
+  }
+  setStatusBadge(); toggleLaudoDescricao();
+  toggleDebito(); toggleFin();
+  atualizarPreview();
+}
+
+function readDraft(){
+  try{
+    const raw = localStorage.getItem(getDraftKey());
+    if(!raw) return null;
+    const d = JSON.parse(raw);
+    if(!d || !d.ts) return null;
+    return d;
+  }catch(e){ return null; }
+}
+
+function writeDraft(){
+  try{
+    const d = collectFormData();
+    localStorage.setItem(getDraftKey(), JSON.stringify(d));
+  }catch(e){}
+}
+
+function clearDraft(){
+  try{ localStorage.removeItem(getDraftKey()); }catch(e){}
+}
+
+let draftTimer = null;
+function scheduleDraftSave(){
+  if(draftTimer) clearTimeout(draftTimer);
+  draftTimer = setTimeout(()=>writeDraft(), 700);
+}
+
+function showDraftBar(d){
+  const bar = el("draftBar");
+  if(!bar) return;
+  if(!d){ bar.style.display="none"; return; }
+  const when = new Intl.DateTimeFormat("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}).format(new Date(d.ts));
+  el("draftMsg").innerText = `Rascunho encontrado (${when}).`;
+  bar.style.display="flex";
+}
+
+el("btnDraftContinue").addEventListener("click", ()=>{
+  const d = readDraft();
+  if(d) applyDraft(d);
+  showDraftBar(null);
+});
+
+el("btnDraftDiscard").addEventListener("click", ()=>{
+  const ok = confirm("Descartar rascunho? Você vai perder o que estava preenchido.");
+  if(!ok) return;
+  clearDraft();
+  showDraftBar(null);
+});
+
+function clearForm(){
+  const ok = confirm("Limpar formulário? Isso não apaga o histórico na nuvem.");
+  if(!ok) return;
+
+  const fieldsToClear = [
+    "modelo","ano","versao","placa","km","kmComprou",
+    "debitoVeiculo","debitoValor","financiamento","quitacaoValor",
+    "fipe","valorPretendido",
+    "laudo","laudoObs","leilao",
+    "motor","luzes",
+    "tablier","bancosOnde","bancosServico","volante","manopla","forroEstado",
+    "funilariaPecas","pneusQtd","paraChoqueD","paraChoqueT","farolD","farolE","lanternaD","lanternaE","vidroParabrisa",
+    "vidro_dd_act","vidro_de_act","vidro_td_act","vidro_te_act","vidro_vg_act",
+    "testeRodagem",
+    "consultor",
+    "cliente","local","captacao","clienteTelefone"
+  ];
+  fieldsToClear.forEach(id=>{ const e=el(id); if(e){ e.value=""; } });
+
+  if(el("laudo")) el("laudo").value="APROVADO";
+  if(el("leilao")) el("leilao").value="Não";
+  if(el("tablier")) el("tablier").value="Bom";
+  if(el("bancosOnde")) el("bancosOnde").value="";
+  if(el("bancosServico")) el("bancosServico").value="Bom";
+  if(el("volante")) el("volante").value="Bom";
+  if(el("manopla")) el("manopla").value="Bom";
+  if(el("forroEstado")) el("forroEstado").value="Bom";
+  if(el("funilariaPecas")) el("funilariaPecas").value="0";
+  if(el("pneusQtd")) el("pneusQtd").value="0";
+  if(el("paraChoqueD")) el("paraChoqueD").value="Bom";
+  if(el("paraChoqueT")) el("paraChoqueT").value="Bom";
+  ["farolD","farolE","lanternaD","lanternaE"].forEach(id=>{ if(el(id)) el(id).value="Bom"; });
+  if(el("vidroParabrisa")) el("vidroParabrisa").value="OK";
+
+  ["forro_motorista","forro_passageiro","forro_traseiro_d","forro_traseiro_e","forro_dianteiros","forro_traseiros","forro_todos",
+   "pinturaCompleta","chuvaGranizo",
+   "vidro_dd_chk","vidro_de_chk","vidro_td_chk","vidro_te_chk","vidro_vg_chk"
+  ].forEach(id=>{ const e=el(id); if(e) e.checked=false; });
+
+  ["av_lucas","av_guilherme","av_junior","av_anderson","av_thiago"].forEach(id=>{ const e=el(id); if(e) e.checked=false; });
+
+  toggleLaudoDescricao();
+  toggleDebito();
+  toggleFin();
+  setStatusBadge();
+  atualizarPreview();
+
+  clearDraft();
+  showDraftBar(null);
+}
+
+el("btnClearForm").addEventListener("click", clearForm);
+
+function bindDraftAutosave(){
+  const watchIds = [
+    "modelo","ano","versao","placa","km","kmComprou",
+    "debitoVeiculo","debitoValor","financiamento","quitacaoValor",
+    "fipe","valorPretendido",
+    "laudo","laudoObs","leilao",
+    "motor","luzes",
+    "tablier","bancosOnde","bancosServico","volante","manopla","forroEstado",
+    "funilariaPecas","pneusQtd","paraChoqueD","paraChoqueT","farolD","farolE","lanternaD","lanternaE","vidroParabrisa",
+    "vidro_dd_act","vidro_de_act","vidro_td_act","vidro_te_act","vidro_vg_act",
+    "testeRodagem",
+    "consultor",
+    "cliente","local","captacao","clienteTelefone"
+  ];
+  watchIds.forEach(id=>{
+    const e=el(id);
+    if(!e) return;
+    e.addEventListener("input", scheduleDraftSave);
+    e.addEventListener("change", scheduleDraftSave);
+  });
+
+  ["forro_motorista","forro_passageiro","forro_traseiro_d","forro_traseiro_e","forro_dianteiros","forro_traseiros","forro_todos",
+   "pinturaCompleta","chuvaGranizo",
+   "vidro_dd_chk","vidro_de_chk","vidro_td_chk","vidro_te_chk","vidro_vg_chk",
+   "av_lucas","av_guilherme","av_junior","av_anderson","av_thiago"
+  ].forEach(id=>{
+    const e=el(id);
+    if(!e) return;
+    e.addEventListener("change", scheduleDraftSave);
+  });
+}
+
+function checkDraftOnEnter(){
+  const d = readDraft();
+  if(!d) return showDraftBar(null);
+  const hasAny = Object.values(d.fields||{}).some(x=>((x??"").toString().trim().length>0));
+  if(!hasAny) return showDraftBar(null);
+  showDraftBar(d);
+}
+
+// ===== Favoritos locais (V5) =====
+const FAV_KEY = "clubeauto_fipe_favs_v1";
+
+function readFavs(){
+  try{
+    const raw = localStorage.getItem(FAV_KEY);
+    const arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr) ? arr : [];
+  }catch(e){ return []; }
+}
+function saveFavs(arr){
+  try{ localStorage.setItem(FAV_KEY, JSON.stringify(arr)); }catch(e){}
+}
+function addFav(item){
+  const arr = readFavs();
+  const exists = arr.some(x=>x.brand===item.brand && x.model===item.model);
+  if(exists) return;
+  arr.unshift(item);
+  saveFavs(arr.slice(0, 20));
+}
+function renderFavList(){
+  const list = el("favList");
+  if(!list) return;
+  const favs = readFavs();
+  if(!favs.length){
+    list.innerHTML = "<div class='histItem'><b>Nenhum favorito ainda.</b></div>";
+    return;
+  }
+  list.innerHTML = favs.map((f, idx)=>`
+    <div class="histItem">
+      <div class="histTop">
+        <div>
+          <div class="histTitle">${escapeHtml(f.name||"")}</div>
+          <div class="histMeta">${escapeHtml(f.brandName||"")}</div>
+        </div>
+        <div class="histBtns" style="grid-template-columns:1fr 1fr">
+          <button class="mini mOpen" data-favopen="${idx}">Abrir FIPE</button>
+          <button class="mini" style="background:#b91c1c" data-favdel="${idx}">Remover</button>
+        </div>
+      </div>
+    </div>
+  `).join("");
+
+  list.querySelectorAll("[data-favopen]").forEach(btn=>{
+    btn.addEventListener("click", async ()=>{
+      const i = Number(btn.dataset.favopen);
+      const fav = readFavs()[i];
+      if(!fav) return;
+      await openFipe();
+      el("fipeMarca").value = fav.brand;
+      el("fipeMarca").dispatchEvent(new Event("change"));
+      setTimeout(()=>{
+        el("fipeModelo").value = fav.model;
+        el("fipeModelo").dispatchEvent(new Event("change"));
+      }, 350);
+      showFavModal(false);
+    });
+  });
+
+  list.querySelectorAll("[data-favdel]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const i = Number(btn.dataset.favdel);
+      const arr = readFavs();
+      arr.splice(i,1);
+      saveFavs(arr);
+      renderFavList();
+    });
+  });
+}
+
+function showFavModal(show){
+  const m = el("favModal");
+  if(!m) return;
+  m.style.display = show ? "flex" : "none";
+  if(show) renderFavList();
+}
+
+el("btnFavOpen").addEventListener("click", ()=>showFavModal(true));
+el("btnFavClose").addEventListener("click", ()=>showFavModal(false));
+el("favModal").addEventListener("click",(ev)=>{ if(ev.target && ev.target.id==="favModal") showFavModal(false); });
+el("btnFavClear").addEventListener("click", ()=>{
+  const ok = confirm("Limpar todos os favoritos?");
+  if(!ok) return;
+  saveFavs([]);
+  renderFavList();
+});
+
+// Botão para favoritar dentro do modal FIPE
+(function injectFavButtonInFipeModal(){
+  const box = el("btnFipeApply")?.parentElement;
+  if(!box) return;
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "btnSecondary";
+  btn.id = "btnFipeFav";
+  btn.textContent = "⭐ Favoritar este modelo";
+  btn.style.marginTop = "8px";
+  box.appendChild(btn);
+
+  btn.addEventListener("click", ()=>{
+    const brand = el("fipeMarca").value;
+    const model = el("fipeModelo").value;
+    if(!brand || !model){
+      alert("Selecione Marca e Modelo para favoritar.");
+      return;
+    }
+    const brandName = el("fipeMarca").selectedOptions?.[0]?.textContent || "";
+    const modelName = el("fipeModelo").selectedOptions?.[0]?.textContent || "";
+    addFav({brand, model, brandName, name: modelName});
+    alert("Favorito salvo!");
+  });
+})();
+
 onAuthStateChanged(auth, async (u)=>{
   if(isGuest) return;
   if(u){
@@ -1031,7 +1403,7 @@ onAuthStateChanged(auth, async (u)=>{
     try{ currentRole = await ensureUserDoc(u); }catch(e){ currentRole = HARD_ADMINS.has(lower(u.email||"")) ? "admin":"consultor"; }
     computePermissions(); setRoleUI(); setTab("nova");
   }else{
-    showLogin();
+    showLogin(); showDraftBar(null);
     currentRole="consultor"; computePermissions(); setRoleUI();
   }
 });
@@ -1258,6 +1630,8 @@ el("btnFipeApply").addEventListener("click", ()=>{
 });
 
 setStatusBadge(); toggleLaudoDescricao(); atualizarPreview();
+
+window.addEventListener("beforeunload", ()=>{ try{ writeDraft(); }catch(e){} });
 </script>
 
 <script>
