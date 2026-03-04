@@ -256,7 +256,7 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, limit, onSnapshot, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+import { getFirestore, collection, addDoc, deleteDoc, serverTimestamp, query, orderBy, limit, onSnapshot, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCvn2_z1FN2XMN_pgR9IiExRkRNMgZfhIY",
@@ -386,14 +386,50 @@ function abrirWhats(texto){
   const a=document.createElement("a"); a.href=url; a.target="_blank"; a.rel="noopener";
   document.body.appendChild(a); a.click(); a.remove();
 }
-async function salvar(texto){
-  if(isGuest) return;
-  const u=auth.currentUser; if(!u) return;
+let lastSaveSig = "";
+let savingNow = false;
+let lastSaveAt = 0;
+
+function makeSaveSig(texto){
+  const u = auth.currentUser;
+  const uid = u?.uid || "";
+  return uid + "||" + texto;
+}
+
+async function salvarUmaVez(texto){
+  if(isGuest) return { saved:false, reason:"guest" };
+  const u=auth.currentUser; if(!u) return { saved:false, reason:"no-user" };
+
+  const sig = makeSaveSig(texto);
+  const now = Date.now();
+
+  // evita duplicar se for o MESMO relatório em sequência (clique duplo / vários botões)
+  if(sig === lastSaveSig && (now - lastSaveAt) < 15000){
+    return { saved:false, reason:"dedup" };
+  }
+  if(savingNow) return { saved:false, reason:"in-flight" };
+
+  savingNow = true;
   try{
-    await addDoc(collection(db,"vistorias"),{createdAt:serverTimestamp(),createdByEmail:lower(u.email||""),createdByUid:u.uid,roleAtCreation:currentRole,modelo:v("modelo"),placa:v("placa"),laudo:(v("laudo")||"APROVADO").toUpperCase(),reportText:texto});
+    await addDoc(collection(db,"vistorias"),{
+      createdAt:serverTimestamp(),
+      createdByEmail:lower(u.email||""),
+      createdByUid:u.uid,
+      roleAtCreation:currentRole,
+      modelo:v("modelo"),
+      placa:v("placa"),
+      laudo:(v("laudo")||"APROVADO").toUpperCase(),
+      reportText:texto
+    });
+    lastSaveSig = sig;
+    lastSaveAt = now;
     el("saveHint").innerHTML="<span class='ok'>Salvo na nuvem.</span>";
+    return { saved:true };
   }catch(e){
     el("saveHint").innerHTML="<span class='warn'>Falha ao salvar:</span> "+(e?.message||e);
+    return { saved:false, reason:"error", error:e };
+  }finally{
+    savingNow = false;
   }
 }
 
@@ -432,12 +468,14 @@ function openHistorico(){
       const icon=(la==="REPROVADO")?"🔴":(la==="APONTAMENTO")?"🟡":"🟢";
       const title=`${icon} ${escapeHtml(it.modelo||"-")} — ${escapeHtml(it.placa||"-")}`;
       const meta=`${escapeHtml(formatDate(it.createdAt))} • ${escapeHtml(it.createdByEmail||"")}`;
+      const delBtn = isAdmin ? `<button class="mini" style="background:#b91c1c" data-del="${it.id}">Excluir</button>` : "";
       return `<div class="histItem">
         <div class="histTop"><div><div class="histTitle">${title}</div><div class="histMeta">${meta}</div></div><div class="histMeta"><b>${escapeHtml(la)}</b></div></div>
         <div class="histBtns">
           <button class="mini mOpen" data-open="${it.id}">Abrir</button>
           <button class="mini mCopy" data-copy="${it.id}">Copiar</button>
           <button class="mini mSend" data-send="${it.id}">Whats</button>
+          ${delBtn}
         </div>
       </div>`;
     }).join("") || "<div class='histItem'><b>Nenhum registro.</b></div>";
@@ -451,6 +489,21 @@ function openHistorico(){
     el("historicoList").querySelectorAll("[data-send]").forEach(btn=>{
       btn.addEventListener("click",()=>{ const it=items.find(x=>x.id===btn.dataset.send); if(!it) return; abrirWhats(it.reportText||""); });
     });
+    if(isAdmin){
+      el("historicoList").querySelectorAll("[data-del]").forEach(btn=>{
+        btn.addEventListener("click", async ()=>{
+          const id = btn.dataset.del;
+          const ok = confirm("Excluir este relatório do histórico? Essa ação não pode ser desfeita.");
+          if(!ok) return;
+          try{
+            await deleteDoc(doc(db,"vistorias", id));
+            alert("Excluído!");
+          }catch(e){
+            alert("Erro ao excluir: "+(e?.message||e));
+          }
+        });
+      });
+    }
   },(err)=>{
     el("historicoList").innerHTML="<div class='histItem'><b>Erro:</b> "+escapeHtml(err?.message||err)+"</div>";
   });
@@ -518,8 +571,31 @@ el("btnLogout").addEventListener("click", async ()=>{ isGuest=false; try{ await 
 el("btnSwitchUser").addEventListener("click", ()=>{ isGuest=false; showLogin(); });
 
 // Action buttons
-el("btnWhats").addEventListener("click", async ()=>{ if(!validar()) return; const texto=montar(); await salvar(texto); abrirWhats(texto); });
-el("btnCopy").addEventListener("click", async ()=>{ if(!validar()) return; const texto=montar(); await salvar(texto); const ok=await copiar(texto); if(ok) alert("Copiado!"); });
+function setButtonsDisabled(disabled){
+  el("btnWhats").disabled = disabled;
+  el("btnCopy").disabled = disabled;
+  el("btnWhats").style.opacity = disabled ? "0.6" : "1";
+  el("btnCopy").style.opacity = disabled ? "0.6" : "1";
+}
+
+el("btnWhats").addEventListener("click", async ()=>{
+  if(!validar()) return;
+  const texto=montar();
+  setButtonsDisabled(true);
+  await salvarUmaVez(texto);
+  abrirWhats(texto);
+  setButtonsDisabled(false);
+});
+
+el("btnCopy").addEventListener("click", async ()=>{
+  if(!validar()) return;
+  const texto=montar();
+  setButtonsDisabled(true);
+  await salvarUmaVez(texto);
+  const ok=await copiar(texto);
+  if(ok) alert("Copiado!");
+  setButtonsDisabled(false);
+});
 
 // Bind preview
 ["modelo","ano","versao","placa","km","kmComprou","fipe","valorPretendido","laudo","laudoObs","leilao","motor","luzes","ar","testeRodagem","consultor","avaliadores","cliente","local","captacao"]
