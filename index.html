@@ -67,6 +67,7 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
 .ok{color:#065f46;font-weight:900}
 .warn{color:#b91c1c;font-weight:900}
 .preview{white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;background:#fcfcfc;border:1px dashed #cfd4dc;padding:12px;border-radius:14px}
+
 /* Login */
 #screenLogin{display:block}
 .loginWrap{max-width:440px;margin:10vh auto 0 auto;background:#fff;padding:18px;border-radius:18px;box-shadow:0 12px 30px rgba(0,0,0,.18)}
@@ -76,6 +77,7 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
 .loginBtns{display:grid;grid-template-columns:1fr;gap:10px;margin-top:6px}
 .loginRow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media (max-width:520px){.loginRow{grid-template-columns:1fr}}
+
 /* Histórico */
 .histItem{border:1px solid #e5e7eb;border-radius:14px;padding:12px;margin-bottom:10px;background:#fafafa}
 .histTop{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
@@ -87,6 +89,7 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
 .mOpen{background:#111827}
 .mCopy{background:#1976d2}
 .mSend{background:#25D366}
+
 /* Usuários */
 .userItem{border:1px solid #e5e7eb;border-radius:14px;padding:12px;margin-bottom:10px;background:#fafafa}
 .userTop{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
@@ -129,6 +132,10 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
 .fipeHero .modalTitle{font-size:17px}
 .granizoRow{margin-bottom:10px}
 
+/* V7 - atalhos */
+.quickBar{display:flex;gap:8px;flex-wrap:wrap;margin-top:-2px;margin-bottom:10px}
+.quickBtn{width:auto;padding:8px 10px;border-radius:999px;border:1px solid #e5e7eb;background:#fff;font-size:12px;font-weight:900;cursor:pointer}
+.quickBtn:hover{background:#f9fafb}
 </style>
 </head>
 
@@ -195,10 +202,16 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
 
     <div class="card">
       <h3>🚗 Veículo</h3>
-      <label>Modelo <span class="hint">(obrigatório)</span></label><input id="modelo" placeholder="Ex: Fox Trend">
+
+      <!-- V7: datalist para auto-complete -->
+      <datalist id="modeloDatalist"></datalist>
+
+      <label>Modelo <span class="hint">(obrigatório)</span></label>
+      <input id="modelo" placeholder="Ex: Fox Trend" list="modeloDatalist">
       <div class="btnLine" style="margin-top:-2px">
         <button class="btnSecondary" type="button" id="btnFavOpen">⭐ Modelos rápidos</button>
       </div>
+
       <div class="row2">
         <div><label>Ano <span class="hint">(obrigatório)</span></label><input id="ano" placeholder="Ex: 2012/2013"></div>
         <div><label>Versão <span class="hint">(obrigatório)</span></label>
@@ -209,11 +222,13 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
           </select>
         </div>
       </div>
+
       <div class="row3">
         <div><label>Placa <span class="hint">(obrigatório)</span></label><input id="placa" placeholder="Ex: EPX5C99"></div>
         <div><label>Km <span class="hint">(obrigatório)</span></label><input id="km" inputmode="numeric" placeholder="Ex: 21000"></div>
         <div><label>Comprou (Km) <span class="hint">(obrigatório)</span></label><input id="kmComprou" inputmode="numeric" placeholder="Ex: 10000"></div>
       </div>
+
       <div class="hint">Digite só números. O app formata (ex: 21000 → 21.000).</div>
     </div>
 
@@ -281,9 +296,13 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
 
       <label>Motor / mecânica (texto livre)</label>
       <textarea id="motor" placeholder="Ex: Rajando / Caixa de direção / Vazamento..."></textarea>
+      <!-- V7 atalhos motor -->
+      <div class="quickBar" id="motorQuickBar"></div>
 
       <label>Luzes do painel (texto livre)</label>
       <textarea id="luzes" placeholder="Ex: ABS / Injeção / Óleo..."></textarea>
+      <!-- V7 atalhos luzes -->
+      <div class="quickBar" id="luzesQuickBar"></div>
 
       <h3 style="margin-top:14px">🪑 Gastos internos</h3>
 
@@ -577,7 +596,7 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
     </div>
 
     <div class="card" style="box-shadow:none;border:1px solid #e5e7eb;margin-top:12px">
-      <div class="hint">Dica: adicione favoritos dentro da busca FIPE (botão “⭐ Favoritar este modelo”).</div>
+      <div class="hint">Dica: favoritos serão adicionados automaticamente conforme o time usa modelos (V7 auto-complete).</div>
       <div id="favList"></div>
       <div class="btnLine">
         <button class="btnDanger" type="button" id="btnFavClear">Limpar favoritos</button>
@@ -620,8 +639,187 @@ const el=(id)=>document.getElementById(id);
 const v=(id)=>(el(id).value??"").toString().trim();
 const lower=(s)=>(s??"").toString().trim().toLowerCase();
 
+/* =========================
+   V7 — produtividade
+========================= */
+const V7_MEM_KEY = "clubeauto_mem_v7";                 // consultor/local/captacao/avaliadores
+const V7_MODELOS_KEY = "clubeauto_modelos_v7";         // lista de modelos usados (para autocomplete)
+const V7_AVSTAT_KEY = "clubeauto_avaliadores_stat_v7"; // contagem local de avaliadores (mais usados)
+const V7_FAV_KEY = "clubeauto_fav_modelos_v7";         // “favoritos” (na prática: modelos mais usados)
+
+function safeJsonParse(raw, fallback){
+  try{ return JSON.parse(raw); }catch(e){ return fallback; }
+}
+
+function getMem(){
+  const obj = safeJsonParse(localStorage.getItem(V7_MEM_KEY) || "null", null);
+  return (obj && typeof obj === "object") ? obj : {};
+}
+function setMem(partial){
+  const cur = getMem();
+  const next = { ...cur, ...partial, _ts: Date.now() };
+  try{ localStorage.setItem(V7_MEM_KEY, JSON.stringify(next)); }catch(e){}
+}
+
+function getSelectedAvaliadores(){
+  return Array.from(document.querySelectorAll(".avChk:checked"))
+    .map(x=>x.value).filter(Boolean);
+}
+function setSelectedAvaliadores(list){
+  const want = new Set((list||[]).map(x=>String(x)));
+  document.querySelectorAll(".avChk").forEach(chk=>{
+    chk.checked = want.has(chk.value);
+  });
+}
+
+function restoreMemToUI(){
+  const mem = getMem();
+  if(mem.consultor && !v("consultor")) el("consultor").value = mem.consultor;
+  if(mem.local && !v("local")) el("local").value = mem.local;
+  if(mem.captacao && !v("captacao")) el("captacao").value = mem.captacao;
+
+  // Avaliadores: primeiro tenta última seleção
+  if(Array.isArray(mem.avaliadores) && mem.avaliadores.length){
+    setSelectedAvaliadores(mem.avaliadores);
+  }else{
+    // Se não tem, tenta pré-marcar top 2 “mais usados”
+    const stat = safeJsonParse(localStorage.getItem(V7_AVSTAT_KEY) || "{}", {});
+    const top = Object.entries(stat)
+      .sort((a,b)=>(Number(b[1]||0)-Number(a[1]||0)))
+      .slice(0,2)
+      .map(([name])=>name);
+    if(top.length) setSelectedAvaliadores(top);
+  }
+}
+
+let memSaveTimer = null;
+function scheduleMemSave(){
+  if(memSaveTimer) clearTimeout(memSaveTimer);
+  memSaveTimer = setTimeout(()=>{
+    const partial = {
+      consultor: v("consultor"),
+      local: v("local"),
+      captacao: v("captacao"),
+      avaliadores: getSelectedAvaliadores()
+    };
+    setMem(partial);
+  }, 350);
+}
+
+// ---- Auto-complete Modelo ----
+function getModelos(){
+  const arr = safeJsonParse(localStorage.getItem(V7_MODELOS_KEY) || "[]", []);
+  return Array.isArray(arr) ? arr.map(x=>String(x)).filter(Boolean) : [];
+}
+function setModelos(arr){
+  const uniq = Array.from(new Set((arr||[]).map(s=>String(s).trim()).filter(Boolean)));
+  // mantém leve
+  const limited = uniq.slice(0, 250);
+  try{ localStorage.setItem(V7_MODELOS_KEY, JSON.stringify(limited)); }catch(e){}
+}
+function addModeloToList(name){
+  const n = String(name||"").trim();
+  if(!n) return;
+  const arr = getModelos();
+  if(arr.some(x=>x.toLowerCase()===n.toLowerCase())) return;
+  arr.unshift(n);
+  setModelos(arr);
+  refreshModeloDatalist();
+}
+function refreshModeloDatalist(filterText=""){
+  const dl = el("modeloDatalist");
+  if(!dl) return;
+  const q = String(filterText||"").trim().toLowerCase();
+  const arr = getModelos();
+  const filtered = (!q || q.length<2)
+    ? arr.slice(0, 20)
+    : arr.filter(x=>x.toLowerCase().includes(q)).slice(0, 20);
+
+  dl.innerHTML = filtered.map(x=>`<option value="${escapeHtml(x)}"></option>`).join("");
+}
+
+// ---- Atalhos Gastos ----
+function ensureToken(text, token){
+  const t = String(text||"").trim();
+  const tk = String(token||"").trim();
+  if(!tk) return t;
+  const has = t.toLowerCase().split(/[\n\/,;]+/).map(s=>s.trim()).filter(Boolean).includes(tk.toLowerCase());
+  if(has) return t;
+
+  if(!t) return tk;
+  // padrão do seu texto: " / "
+  if(t.endsWith("/") || t.endsWith("/ ")) return t + " " + tk;
+  return t + " / " + tk;
+}
+function renderQuickBar(containerId, targetTextareaId, tokens){
+  const wrap = el(containerId);
+  const ta = el(targetTextareaId);
+  if(!wrap || !ta) return;
+  wrap.innerHTML = tokens.map(tok=>`<button type="button" class="quickBtn" data-tok="${escapeHtml(tok)}">${escapeHtml(tok)}</button>`).join("");
+  wrap.querySelectorAll("button[data-tok]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      ta.value = ensureToken(ta.value, btn.dataset.tok);
+      scheduleMemSave();
+      atualizarPreview();
+      ta.focus();
+    });
+  });
+}
+
+// ---- “Favoritos” (aproveita modelos mais usados)
+// Simples: usa os modelos do autocomplete como lista e exibe no modal
+function getFavModelos(){
+  return safeJsonParse(localStorage.getItem(V7_FAV_KEY) || "[]", []);
+}
+function setFavModelos(arr){
+  const uniq = Array.from(new Set((arr||[]).map(s=>String(s).trim()).filter(Boolean)));
+  try{ localStorage.setItem(V7_FAV_KEY, JSON.stringify(uniq.slice(0, 40))); }catch(e){}
+}
+function pushFavModelo(name){
+  const n = String(name||"").trim();
+  if(!n) return;
+  const arr = getFavModelos();
+  const next = [n, ...arr.filter(x=>x.toLowerCase()!==n.toLowerCase())];
+  setFavModelos(next);
+  renderFavModal();
+}
+function showFavModal(show){
+  const m = el("favModal");
+  if(!m) return;
+  m.style.display = show ? "flex" : "none";
+}
+function renderFavModal(){
+  const list = el("favList");
+  if(!list) return;
+  const favs = getFavModelos();
+  if(!favs.length){
+    list.innerHTML = "<div class='hint'>Nenhum favorito ainda. Use FIPE ou digite modelos que o app vai sugerindo.</div>";
+    return;
+  }
+  list.innerHTML = favs.map(m=>`
+    <div class="histItem" style="margin-bottom:8px">
+      <div class="histTop">
+        <div><div class="histTitle">⭐ ${escapeHtml(m)}</div><div class="histMeta">Clique para aplicar no campo Modelo</div></div>
+      </div>
+      <div class="histBtns" style="grid-template-columns:1fr">
+        <button class="mini mOpen" data-fav="${escapeHtml(m)}">Usar este modelo</button>
+      </div>
+    </div>
+  `).join("");
+  list.querySelectorAll("[data-fav]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      el("modelo").value = btn.dataset.fav || "";
+      atualizarPreview();
+      showFavModal(false);
+      el("modelo").focus();
+    });
+  });
+}
+
+/* ========================= */
+
 function getAvaliadores(){
-  return Array.from(document.querySelectorAll(".avChk:checked")).map(x=>x.value).filter(Boolean);
+  return getSelectedAvaliadores();
 }
 function getAvaliadoresText(){
   return getAvaliadores().join("/");
@@ -866,8 +1064,8 @@ function saveLastConsultor(){
     if(val) localStorage.setItem(LAST_CONSULTOR_KEY, val);
   }catch(e){}
 }
-el("consultor").addEventListener("blur", ()=>{ saveLastConsultor(); atualizarPreview(); });
-el("consultor").addEventListener("change", ()=>{ saveLastConsultor(); atualizarPreview(); });
+el("consultor").addEventListener("blur", ()=>{ saveLastConsultor(); scheduleMemSave(); atualizarPreview(); });
+el("consultor").addEventListener("change", ()=>{ saveLastConsultor(); scheduleMemSave(); atualizarPreview(); });
 
 let lastSaveSig = "";
 let savingNow = false;
@@ -877,6 +1075,18 @@ function makeSaveSig(texto){
   const u = auth.currentUser;
   const uid = u?.uid || "";
   return uid + "||" + texto;
+}
+
+function bumpAvaliadoresStats(avList){
+  try{
+    const stat = safeJsonParse(localStorage.getItem(V7_AVSTAT_KEY) || "{}", {});
+    (avList||[]).forEach(name=>{
+      const k = String(name||"");
+      if(!k) return;
+      stat[k] = Number(stat[k]||0) + 1;
+    });
+    localStorage.setItem(V7_AVSTAT_KEY, JSON.stringify(stat));
+  }catch(e){}
 }
 
 async function salvarUmaVez(texto){
@@ -906,6 +1116,11 @@ async function salvarUmaVez(texto){
     lastSaveSig = sig;
     lastSaveAt = now;
     el("saveHint").innerHTML="<span class='ok'>Salvo na nuvem.</span>";
+
+    // V7: registra “mais usados” localmente
+    bumpAvaliadoresStats(getAvaliadores());
+    scheduleMemSave();
+
     return { saved:true };
   }catch(e){
     el("saveHint").innerHTML="<span class='warn'>Falha ao salvar:</span> "+(e?.message||e);
@@ -963,13 +1178,24 @@ function openHistorico(){
     }).join("") || "<div class='histItem'><b>Nenhum registro.</b></div>";
 
     el("historicoList").querySelectorAll("[data-open]").forEach(btn=>{
-      btn.addEventListener("click",()=>{ const it=items.find(x=>x.id===btn.dataset.open); if(!it) return; el("preview").innerText=(it.reportText||""); setTab("nova"); window.scrollTo({top:0,behavior:"smooth"}); });
+      btn.addEventListener("click",()=>{
+        const it=items.find(x=>x.id===btn.dataset.open); if(!it) return;
+        el("preview").innerText=(it.reportText||"");
+        setTab("nova");
+        window.scrollTo({top:0,behavior:"smooth"});
+      });
     });
     el("historicoList").querySelectorAll("[data-copy]").forEach(btn=>{
-      btn.addEventListener("click",async()=>{ const it=items.find(x=>x.id===btn.dataset.copy); if(!it) return; const ok=await copiar(it.reportText||""); if(ok) alert("Copiado!"); });
+      btn.addEventListener("click",async()=>{
+        const it=items.find(x=>x.id===btn.dataset.copy); if(!it) return;
+        const ok=await copiar(it.reportText||""); if(ok) alert("Copiado!");
+      });
     });
     el("historicoList").querySelectorAll("[data-send]").forEach(btn=>{
-      btn.addEventListener("click",()=>{ const it=items.find(x=>x.id===btn.dataset.send); if(!it) return; abrirWhats(it.reportText||""); });
+      btn.addEventListener("click",()=>{
+        const it=items.find(x=>x.id===btn.dataset.send); if(!it) return;
+        abrirWhats(it.reportText||"");
+      });
     });
     if(isAdmin){
       el("historicoList").querySelectorAll("[data-del]").forEach(btn=>{
@@ -1021,7 +1247,9 @@ function openUsers(){
         try{
           await updateDoc(doc(db,"users",id),{role:newRole,updatedAt:serverTimestamp()});
           alert("Cargo atualizado!");
-          if(auth.currentUser && id===auth.currentUser.uid){ currentRole=newRole; computePermissions(); setRoleUI(); }
+          if(auth.currentUser && id===auth.currentUser.uid){
+            currentRole=newRole; computePermissions(); setRoleUI();
+          }
         }catch(e){ alert("Erro: "+(e?.message||e)); }
       });
     });
@@ -1048,7 +1276,15 @@ el("btnGuest").addEventListener("click", ()=>{
   isGuest=true; try{ signOut(auth);}catch(e){}
   showApp(); el("whoami").textContent="Convidado";
   currentRole="convidado"; computePermissions(); setRoleUI(); setTab("nova");
+
+  // V7: restaura memória
   loadLastConsultor();
+  restoreMemToUI();
+  refreshModeloDatalist();
+
+  // atalhos
+  renderQuickBar("motorQuickBar","motor",["Pneu","Caixa direção","Embreagem","Suspensão","Vazamento","Correia"]);
+  renderQuickBar("luzesQuickBar","luzes",["ABS","Injeção","Óleo","Airbag","Bateria"]);
 });
 el("btnLogout").addEventListener("click", async ()=>{ isGuest=false; try{ await signOut(auth);}catch(e){} showLogin(); });
 el("btnSwitchUser").addEventListener("click", ()=>{ isGuest=false; showLogin(); });
@@ -1066,6 +1302,11 @@ el("btnWhats").addEventListener("click", async ()=>{
   const texto=montar();
   setButtonsDisabled(true);
   await salvarUmaVez(texto);
+
+  // V7: aprende modelo e favoritos
+  addModeloToList(v("modelo"));
+  pushFavModelo(v("modelo"));
+
   abrirWhats(texto);
   setButtonsDisabled(false);
 });
@@ -1075,15 +1316,103 @@ el("btnCopy").addEventListener("click", async ()=>{
   const texto=montar();
   setButtonsDisabled(true);
   await salvarUmaVez(texto);
+
+  // V7: aprende modelo e favoritos
+  addModeloToList(v("modelo"));
+  pushFavModelo(v("modelo"));
+
   const ok=await copiar(texto);
   if(ok) alert("Copiado!");
   setButtonsDisabled(false);
 });
 
+// V7: Limpar formulário (agora funciona)
+function clearForm(keepMem=true){
+  const idsToClear = [
+    "modelo","ano","versao","placa","km","kmComprou","fipe","valorPretendido",
+    "debitosValor","finValor","laudoObs","motor","luzes","testeRodagem",
+    "cliente","telefone","local"
+  ];
+  idsToClear.forEach(id=>{
+    const e = el(id);
+    if(!e) return;
+    if(e.tagName==="SELECT") e.value="";
+    else e.value="";
+  });
+
+  // selects com defaults
+  el("debitosSel").value="Não";
+  el("finSel").value="Não";
+  el("laudo").value="APROVADO";
+  el("leilao").value="Não";
+  el("tablier").value="Bom";
+  el("bancosOnde").value="";
+  el("bancosServico").value="Bom";
+  el("volante").value="Bom";
+  el("manopla").value="Bom";
+  el("funilariaPecas").value="0";
+  el("pneusQtd").value="0";
+  el("paraChoqueD").value="Bom";
+  el("paraChoqueT").value="Bom";
+  el("farolD").value="Bom";
+  el("farolE").value="Bom";
+  el("lanternaD").value="Bom";
+  el("lanternaE").value="Bom";
+  el("vidroParabrisa").value="OK";
+  el("forroEstado").value="Bom";
+  ["pinturaCompleta","chuvaGranizo","forro_motorista","forro_passageiro","forro_traseiro_d","forro_traseiro_e","forro_dianteiros","forro_traseiros","forro_todos",
+   "vidro_dd_chk","vidro_de_chk","vidro_td_chk","vidro_te_chk","vidro_vg_chk"].forEach(id=>{
+    const c=el(id); if(c) c.checked=false;
+  });
+  ["vidro_dd_act","vidro_de_act","vidro_td_act","vidro_te_act","vidro_vg_act"].forEach(id=>{
+    const s=el(id); if(s) s.value="Reparo";
+  });
+
+  toggleDebitos(); toggleFin();
+  setStatusBadge(); toggleLaudoDescricao();
+
+  if(!keepMem){
+    try{ localStorage.removeItem(V7_MEM_KEY); }catch(e){}
+  }else{
+    // mantém consultor/local/captação/avaliadores “memorizados”
+    restoreMemToUI();
+  }
+
+  el("saveHint").innerHTML="";
+  atualizarPreview();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+el("btnClearForm").addEventListener("click", ()=>{
+  const ok = confirm("Limpar o formulário atual? (Consultor/Local/Captação/Avaliadores ficam salvos para agilizar.)");
+  if(!ok) return;
+  clearForm(true);
+});
+
 // Bind preview
-["modelo","ano","versao","placa","km","kmComprou","debitosSel","debitosValor","finSel","finValor","fipe","valorPretendido","laudo","laudoObs","leilao","motor","luzes","testeRodagem","consultor","cliente","local","captacao","tablier","bancosOnde","bancosServico","volante","manopla","forro_motorista","forro_passageiro","forro_traseiro_d","forro_traseiro_e","forro_dianteiros","forro_traseiros","forro_todos","forroEstado","funilariaPecas","pneusQtd","pinturaCompleta","chuvaGranizo","paraChoqueD","paraChoqueT","farolD","farolE","lanternaD","lanternaE","vidroParabrisa","vidro_dd_chk","vidro_dd_act","vidro_de_chk","vidro_de_act","vidro_td_chk","vidro_td_act","vidro_te_chk","vidro_te_act","vidro_vg_chk","vidro_vg_act"]
-.forEach(id=>{ el(id).addEventListener("input",()=>{ if(id==="laudo"){setStatusBadge();toggleLaudoDescricao();} atualizarPreview(); });
-              el(id).addEventListener("change",()=>{ if(id==="laudo"){setStatusBadge();toggleLaudoDescricao();} atualizarPreview(); }); });
+["modelo","ano","versao","placa","km","kmComprou","debitosSel","debitosValor","finSel","finValor","fipe","valorPretendido","laudo","laudoObs","leilao","motor","luzes","testeRodagem","consultor","cliente","local","telefone","captacao","tablier","bancosOnde","bancosServico","volante","manopla","forro_motorista","forro_passageiro","forro_traseiro_d","forro_traseiro_e","forro_dianteiros","forro_traseiros","forro_todos","forroEstado","funilariaPecas","pneusQtd","pinturaCompleta","chuvaGranizo","paraChoqueD","paraChoqueT","farolD","farolE","lanternaD","lanternaE","vidroParabrisa","vidro_dd_chk","vidro_dd_act","vidro_de_chk","vidro_de_act","vidro_td_chk","vidro_td_act","vidro_te_chk","vidro_te_act","vidro_vg_chk","vidro_vg_act"]
+.forEach(id=>{
+  el(id).addEventListener("input",()=>{
+    if(id==="laudo"){setStatusBadge();toggleLaudoDescricao();}
+    if(id==="modelo"){ refreshModeloDatalist(v("modelo")); }
+    scheduleMemSave();
+    atualizarPreview();
+  });
+  el(id).addEventListener("change",()=>{
+    if(id==="laudo"){setStatusBadge();toggleLaudoDescricao();}
+    if(id==="modelo"){ refreshModeloDatalist(v("modelo")); }
+    scheduleMemSave();
+    atualizarPreview();
+  });
+});
+
+// Modelo: aprende ao sair do campo
+el("modelo").addEventListener("blur", ()=>{
+  if(v("modelo")){
+    addModeloToList(v("modelo"));
+    pushFavModelo(v("modelo"));
+  }
+});
 
 onAuthStateChanged(auth, async (u)=>{
   if(isGuest) return;
@@ -1092,7 +1421,16 @@ onAuthStateChanged(auth, async (u)=>{
     el("whoami").textContent=lower(u.email||"");
     try{ currentRole = await ensureUserDoc(u); }catch(e){ currentRole = HARD_ADMINS.has(lower(u.email||"")) ? "admin":"consultor"; }
     computePermissions(); setRoleUI(); setTab("nova");
+
+    // V7: restaura memória e autocomplete
     loadLastConsultor();
+    restoreMemToUI();
+    refreshModeloDatalist();
+
+    // V7: atalhos
+    renderQuickBar("motorQuickBar","motor",["Pneu","Caixa direção","Embreagem","Suspensão","Vazamento","Correia"]);
+    renderQuickBar("luzesQuickBar","luzes",["ABS","Injeção","Óleo","Airbag","Bateria"]);
+
   }else{
     showLogin();
     currentRole="consultor"; computePermissions(); setRoleUI();
@@ -1104,11 +1442,16 @@ el("debitosSel").addEventListener("change",()=>{ toggleDebitos(); atualizarPrevi
 el("finSel").addEventListener("change",()=>{ toggleFin(); atualizarPreview(); });
 
 // Avaliadores checkboxes
-document.querySelectorAll(".avChk").forEach(c=>c.addEventListener("change",()=>atualizarPreview()));
+document.querySelectorAll(".avChk").forEach(c=>c.addEventListener("change",()=>{
+  scheduleMemSave();
+  atualizarPreview();
+}));
 
 toggleDebitos(); toggleFin();
 
-// ===== FIPE inteligente (carros) - API gratuita (parallelum) =====
+/* =========================
+   FIPE inteligente (carros) - API gratuita (parallelum)
+========================= */
 const FIPE_BASE = "https://parallelum.com.br/fipe/api/v1/carros";
 
 let fipeCache = { brands: null, modelsByBrand: {}, yearsByModel: {} };
@@ -1307,11 +1650,35 @@ el("btnFipeApply").addEventListener("click", ()=>{
   if(lastFipeResult.Modelo) el("modelo").value = lastFipeResult.Modelo;
   if(lastFipeResult.AnoModelo!=null) el("ano").value = String(lastFipeResult.AnoModelo);
   if(lastFipeResult.Valor) el("fipe").value = lastFipeResult.Valor;
+
+  // V7: aprende modelo e “favorita”
+  if(lastFipeResult.Modelo){
+    addModeloToList(lastFipeResult.Modelo);
+    pushFavModelo(lastFipeResult.Modelo);
+  }
+
+  scheduleMemSave();
   atualizarPreview();
   showFipeModal(false);
 });
 
 setStatusBadge(); toggleLaudoDescricao(); atualizarPreview();
+
+/* =========================
+   V7: Modal favoritos (simples)
+========================= */
+el("btnFavOpen").addEventListener("click", ()=>{
+  renderFavModal();
+  showFavModal(true);
+});
+el("btnFavClose").addEventListener("click", ()=>showFavModal(false));
+el("favModal").addEventListener("click",(ev)=>{ if(ev.target && ev.target.id==="favModal") showFavModal(false); });
+el("btnFavClear").addEventListener("click", ()=>{
+  const ok = confirm("Limpar a lista de modelos rápidos?");
+  if(!ok) return;
+  try{ localStorage.removeItem(V7_FAV_KEY); }catch(e){}
+  renderFavModal();
+});
 </script>
 
 <script>
