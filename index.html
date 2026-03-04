@@ -1,8 +1,555 @@
-<!DOCTYPE html> <html lang="pt-BR"> <head> <meta charset="UTF-8" /> <meta name="viewport" content="width=device-width,initial-scale=1" /> <title>Clube do Auto - Avaliação Comercial</title> <link rel="manifest" href="manifest.webmanifest"> <meta name="theme-color" content="#111827"> <meta name="mobile-web-app-capable" content="yes"> <meta name="apple-mobile-web-app-capable" content="yes"> <link rel="apple-touch-icon" href="icon-192.png"> <style> :root{--preto:#111827;--verde:#16a34a;--verde2:#22c55e;--cinza:#f2f4f7;--borda:#cfd4dc;--texto:#0b1220} body{font-family:Arial,Helvetica,sans-serif;background:var(--cinza);margin:0;padding:14px;max-width:980px;margin-inline:auto;color:var(--texto)} .hidden{display:none!important} .topbar{display:flex;align-items:center;gap:14px;background:var(--preto);color:#fff;padding:12px;border-radius:14px;box-shadow:0 8px 22px rgba(0,0,0,.18);margin-bottom:12px} .topbar img{width:150px;height:auto;display:block} .topbarTitle{flex:1;display:flex;flex-direction:column;gap:6px} .topbarTitle .main{font-weight:900;letter-spacing:.5px;font-size:18px} .userline{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:12px;opacity:.95} .chip{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.08)} .dot{width:10px;height:10px;border-radius:50%;background:#2e7d32} .btnSmall{border:none;border-radius:10px;padding:9px 11px;font-weight:900;cursor:pointer} .btnExit{background:var(--verde);color:#fff} .btnExit:hover{background:var(--verde2)} .btnGhost{background:rgba(255,255,255,.08);color:#fff} .btnGhost:hover{background:rgba(255,255,255,.14)} .tabs{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0} .tabbtn{border:none;border-radius:12px;padding:11px 14px;font-weight:900;cursor:pointer;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.08);color:var(--preto)} .tabbtn.active{background:var(--verde);color:#fff} .tabbtn.active:hover{background:var(--verde2)} .card{background:#fff;padding:14px;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.10);margin-bottom:14px} label{font-weight:800;font-size:13px} input,select,textarea{width:100%;padding:10px;margin-top:6px;margin-bottom:10px;border-radius:12px;border:1px solid var(--borda);font-size:15px;outline:none;background:#fff} textarea{resize:vertical;min-height:80px} .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px} .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px} @media (max-width:760px){.row2,.row3{grid-template-columns:1fr}} button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;font-weight:900;cursor:pointer;margin-top:8px} .btnW{background:#25D366;color:#fff} .btnB{background:#1976d2;color:#fff} .btnG{background:#6b7280;color:#fff} .btnP{background:var(--verde);color:#fff} .btnP:hover{background:var(--verde2)} .hint{font-size:12px;color:#666;margin-top:-6px;margin-bottom:10px} .ok{color:#065f46;font-weight:900} .warn{color:#b91c1c;font-weight:900} .preview{white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;background:#fcfcfc;border:1px dashed #cfd4dc;padding:12px;border-radius:14px} /* Login */ #screenLogin{display:block} .loginWrap{max-width:440px;margin:10vh auto 0 auto;background:#fff;padding:18px;border-radius:18px;box-shadow:0 12px 30px rgba(0,0,0,.18)} .loginLogo{width:240px;display:block;margin:0 auto 14px auto} .loginTitle{margin:0;text-align:center;font-size:20px;font-weight:900;color:var(--preto)} .loginSubtitle{margin:10px 0 16px 0;text-align:center;color:#6b7280} .loginBtns{display:grid;grid-template-columns:1fr;gap:10px;margin-top:6px} .loginRow{display:grid;grid-template-columns:1fr 1fr;gap:10px} @media (max-width:520px){.loginRow{grid-template-columns:1fr}} /* Histórico */ .histItem{border:1px solid #e5e7eb;border-radius:14px;padding:12px;margin-bottom:10px;background:#fafafa} .histTop{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap} .histTitle{font-weight:900} .histMeta{font-size:12px;color:#666;margin-top:4px} .histBtns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px} @media (max-width:760px){.histBtns{grid-template-columns:1fr 1fr}} .mini{padding:10px;border-radius:12px;font-size:13px;font-weight:900;color:#fff;border:none;cursor:pointer} .mOpen{background:#111827} .mCopy{background:#1976d2} .mSend{background:#25D366} /* Usuários */ .userItem{border:1px solid #e5e7eb;border-radius:14px;padding:12px;margin-bottom:10px;background:#fafafa} .userTop{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap} .userEmail{font-weight:900} .userMeta{font-size:12px;color:#666;margin-top:4px} .userActions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px} @media (max-width:760px){.userActions{grid-template-columns:1fr}} .badgeRole{display:inline-block;padding:4px 10px;border-radius:999px;background:#111827;color:#fff;font-size:12px;font-weight:900} </style> </head> <body> <section id="screenLogin"> <div class="loginWrap"> <img src="logo.png" class="loginLogo" alt="Logo"> <div class="loginTitle">AVALIAÇÃO COMERCIAL</div> <div class="loginSubtitle">Entre para salvar na nuvem. Histórico por cargo. Painel de usuários só Admin.</div> <div class="loginRow"> <div><label>E-mail</label><input id="loginEmail" inputmode="email" placeholder="ex: consultor@clube.com"></div> <div><label>Senha</label><input id="loginPass" type="password" placeholder="••••••••"></div> </div> <div class="loginBtns"> <button class="btnP" id="btnDoLogin">Entrar</button> <button class="btnG" id="btnCreateUser">Cadastrar</button> <button class="btnB" id="btnGuest">Convidado</button> </div> <div class="hint" id="loginHint" style="margin-top:12px"></div> </div> </section> <section id="screenApp" class="hidden"> <div class="topbar"> <img src="logo.png" alt="Logo"> <div class="topbarTitle"> <div class="main">AVALIAÇÃO COMERCIAL</div> <div class="userline"> <span class="chip"><span class="dot" id="dot"></span><span id="statusTxt">APROVADO</span></span> <span class="chip" id="whoami">—</span> <span class="chip"><span id="roleTxt">consultor</span></span> </div> </div> <button class="btnSmall btnGhost" id="btnSwitchUser">Trocar usuário</button> <button class="btnSmall btnExit" id="btnLogout">Sair</button> </div> <div class="tabs"> <button class="tabbtn active" id="tabNova">Nova avaliação</button> <button class="tabbtn" id="tabHist">Histórico</button> <button class="tabbtn hidden" id="tabUsers">Usuários</button> </div> <div id="viewNova"> <div class="card"> <h3>🚗 Veículo</h3> <label>Modelo <span class="hint">(obrigatório)</span></label><input id="modelo" placeholder="Ex: Fox Trend"> <div class="row2"> <div><label>Ano <span class="hint">(obrigatório)</span></label><input id="ano" placeholder="Ex: 2012/2013"></div> <div><label>Versão <span class="hint">(obrigatório)</span></label> <select id="versao"> <option value="">Selecione</option> <option>Básico</option><option>Completo</option><option>Completo menos ar</option><option>Completo + 7 Lugares</option> <option>Apenas Vidros Elétricos</option><option>Apenas direção</option> </select> </div> </div> <div class="row3"> <div><label>Placa <span class="hint">(obrigatório)</span></label><input id="placa" placeholder="Ex: EPX5C99"></div> <div><label>Km <span class="hint">(obrigatório)</span></label><input id="km" inputmode="numeric" placeholder="Ex: 21000"></div> <div><label>Comprou (Km) <span class="hint">(obrigatório)</span></label><input id="kmComprou" inputmode="numeric" placeholder="Ex: 10000"></div> </div> <div class="hint">Digite só números. O app formata (ex: 21000 → 21.000).</div> </div> <div class="card"> <h3>💰 Negócio</h3> <div class="row2"> <div><label>Fipe <span class="hint">(obrigatório)</span></label><input id="fipe" inputmode="numeric" placeholder="Ex: 59000"></div> <div><label>Valor pretendido</label><input id="valorPretendido" inputmode="numeric" placeholder="Ex: 29000"></div> </div> <div class="hint">Sai como R$ 59.000,00</div> </div> <div class="card"> <h3>📋 Laudo</h3> <label>Status</label> <select id="laudo"><option>APROVADO</option><option>APONTAMENTO</option><option>REPROVADO</option></select> <div id="laudoObsWrap"> <label>Descrição do laudo</label> <textarea id="laudoObs" placeholder="Longarina, painel, colunas, chassi..."></textarea> </div> <h3 style="margin-top:14px">🚨 Leilão</h3> <label>Situação</label> <select id="leilao"><option>Não</option><option>Financeira</option><option>Pequena monta</option><option>Média monta</option></select> <div class="hint">Só aparece no relatório se não for “Não”.</div> </div> <div class="card"> <h3>⚙️ Gastos</h3> <label>Motor</label><textarea id="motor" placeholder="Batendo, rajando, fumando..."></textarea> <label>Luzes do painel</label><textarea id="luzes" placeholder="Injeção, óleo, ABS..."></textarea> <label>Ar-condicionado</label><select id="ar"><option>Bom</option><option>Não gela</option><option>Não funciona</option><option>Não possui</option></select> <label>Teste de Rodagem</label><textarea id="testeRodagem" placeholder="Trepidação, puxando, barulho..."></textarea> <div class="hint">No relatório aparecem apenas itens que geram custo.</div> </div> <div class="card"> <h3>👨‍🔧 Responsáveis</h3> <div class="row2"> <div><label>Consultor <span class="hint">(obrigatório)</span></label><input id="consultor"></div> <div><label>Avaliadores <span class="hint">(obrigatório)</span></label><input id="avaliadores"></div> </div> </div> <div class="card"> <h3>👤 Cliente</h3> <div class="row2"> <div><label>Cliente <span class="hint">(obrigatório)</span></label><input id="cliente"></div> <div><label>Local</label><input id="local"></div> </div> <label>Captação</label> <select id="captacao"><option value="">Selecione</option><option>Lead</option><option>Porta</option><option>Orgânico</option></select> <div class="hint">“Osasco - SP 📍” sempre aparece no relatório.</div> </div> <div class="card"> <h3>✅ Finalizar</h3> <button class="btnW" id="btnWhats">📲 Enviar relatório (WhatsApp)</button> <button class="btnB" id="btnCopy">📋 Copiar relatório</button> <h3 style="margin-top:14px;">Prévia</h3> <div class="preview" id="preview"></div> <div class="hint" id="saveHint" style="margin-top:10px"></div> </div> </div> <div id="viewHistorico" class="hidden"> <div class="card"> <h3>☁️ Histórico</h3> <div class="hint" id="histHint"></div> <div id="historicoList"></div> </div> </div> <div id="viewUsers" class="hidden"> <div class="card"> <h3>👥 Usuários (Admin)</h3> <div class="hint" id="usersHint"></div> <div id="usersList"></div> </div> </div> </section> <textarea id="copyFallback" style="position:fixed;left:-9999px;top:-9999px;"></textarea> <script type="module"> import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js"; import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js"; import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, limit, onSnapshot, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";const firebaseConfig = {
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Clube do Auto - Avaliação Comercial</title>
+
+<meta name="theme-color" content="#111827">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+<!-- GitHub Pages base -->
+<script>
+  // Em produção (GitHub Pages) o app roda em /vistoria-clube-do-auto/
+  // Em dev/local, usamos "/"
+  window.BASE_HREF = location.hostname.includes("github.io") ? "/vistoria-clube-do-auto/" : "/";
+</script>
+
+<link rel="manifest" id="manifestLink" href="">
+<link rel="apple-touch-icon" id="appleIconLink" href="">
+
+<script>
+  // aplica paths corretos o quanto antes
+  (function () {
+    const base = window.BASE_HREF || "/";
+    const ml = document.getElementById("manifestLink");
+    const al = document.getElementById("appleIconLink");
+    if (ml) ml.href = base + "manifest.webmanifest";
+    if (al) al.href = base + "icon-192.png";
+  })();
+</script>
+
+<style>
+:root{--preto:#111827;--verde:#16a34a;--verde2:#22c55e;--cinza:#f2f4f7;--borda:#cfd4dc;--texto:#0b1220}
+body{font-family:Arial,Helvetica,sans-serif;background:var(--cinza);margin:0;padding:14px;max-width:980px;margin-inline:auto;color:var(--texto)}
+.hidden{display:none!important}
+.topbar{display:flex;align-items:center;gap:14px;background:var(--preto);color:#fff;padding:12px;border-radius:14px;box-shadow:0 8px 22px rgba(0,0,0,.18);margin-bottom:12px}
+.topbar img{width:150px;height:auto;display:block}
+.topbarTitle{flex:1;display:flex;flex-direction:column;gap:6px}
+.topbarTitle .main{font-weight:900;letter-spacing:.5px;font-size:18px}
+.userline{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:12px;opacity:.95}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.08)}
+.dot{width:10px;height:10px;border-radius:50%;background:#2e7d32}
+.btnSmall{border:none;border-radius:10px;padding:9px 11px;font-weight:900;cursor:pointer}
+.btnExit{background:var(--verde);color:#fff}
+.btnExit:hover{background:var(--verde2)}
+.btnGhost{background:rgba(255,255,255,.08);color:#fff}
+.btnGhost:hover{background:rgba(255,255,255,.14)}
+.tabs{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+.tabbtn{border:none;border-radius:12px;padding:11px 14px;font-weight:900;cursor:pointer;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.08);color:var(--preto)}
+.tabbtn.active{background:var(--verde);color:#fff}
+.tabbtn.active:hover{background:var(--verde2)}
+.card{background:#fff;padding:14px;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.10);margin-bottom:14px}
+label{font-weight:800;font-size:13px}
+input,select,textarea{width:100%;padding:10px;margin-top:6px;margin-bottom:10px;border-radius:12px;border:1px solid var(--borda);font-size:15px;outline:none;background:#fff}
+textarea{resize:vertical;min-height:80px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+@media (max-width:760px){.row2,.row3{grid-template-columns:1fr}}
+button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;font-weight:900;cursor:pointer;margin-top:8px}
+.btnW{background:#25D366;color:#fff}
+.btnB{background:#1976d2;color:#fff}
+.btnG{background:#6b7280;color:#fff}
+.btnP{background:var(--verde);color:#fff}
+.btnP:hover{background:var(--verde2)}
+.hint{font-size:12px;color:#666;margin-top:-6px;margin-bottom:10px}
+.ok{color:#065f46;font-weight:900}
+.warn{color:#b91c1c;font-weight:900}
+.preview{white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;background:#fcfcfc;border:1px dashed #cfd4dc;padding:12px;border-radius:14px}
+/* Login */
+#screenLogin{display:block}
+.loginWrap{max-width:440px;margin:10vh auto 0 auto;background:#fff;padding:18px;border-radius:18px;box-shadow:0 12px 30px rgba(0,0,0,.18)}
+.loginLogo{width:240px;display:block;margin:0 auto 14px auto}
+.loginTitle{margin:0;text-align:center;font-size:20px;font-weight:900;color:var(--preto)}
+.loginSubtitle{margin:10px 0 16px 0;text-align:center;color:#6b7280}
+.loginBtns{display:grid;grid-template-columns:1fr;gap:10px;margin-top:6px}
+.loginRow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:520px){.loginRow{grid-template-columns:1fr}}
+/* Histórico */
+.histItem{border:1px solid #e5e7eb;border-radius:14px;padding:12px;margin-bottom:10px;background:#fafafa}
+.histTop{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.histTitle{font-weight:900}
+.histMeta{font-size:12px;color:#666;margin-top:4px}
+.histBtns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+@media (max-width:760px){.histBtns{grid-template-columns:1fr 1fr}}
+.mini{padding:10px;border-radius:12px;font-size:13px;font-weight:900;color:#fff;border:none;cursor:pointer}
+.mOpen{background:#111827}
+.mCopy{background:#1976d2}
+.mSend{background:#25D366}
+/* Usuários */
+.userItem{border:1px solid #e5e7eb;border-radius:14px;padding:12px;margin-bottom:10px;background:#fafafa}
+.userTop{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.userEmail{font-weight:900}
+.userMeta{font-size:12px;color:#666;margin-top:4px}
+.userActions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+@media (max-width:760px){.userActions{grid-template-columns:1fr}}
+.badgeRole{display:inline-block;padding:4px 10px;border-radius:999px;background:#111827;color:#fff;font-size:12px;font-weight:900}
+</style>
+</head>
+
+<body>
+
+<section id="screenLogin">
+  <div class="loginWrap">
+    <img id="logoLogin" class="loginLogo" alt="Logo">
+    <div class="loginTitle">AVALIAÇÃO COMERCIAL</div>
+    <div class="loginSubtitle">Entre para salvar na nuvem. Histórico por cargo. Painel de usuários só Admin.</div>
+    <div class="loginRow">
+      <div><label>E-mail</label><input id="loginEmail" inputmode="email" placeholder="ex: consultor@clube.com"></div>
+      <div><label>Senha</label><input id="loginPass" type="password" placeholder="••••••••"></div>
+    </div>
+    <div class="loginBtns">
+      <button class="btnP" id="btnDoLogin">Entrar</button>
+      <button class="btnG" id="btnCreateUser">Cadastrar</button>
+      <button class="btnB" id="btnGuest">Convidado</button>
+    </div>
+    <div class="hint" id="loginHint" style="margin-top:12px"></div>
+  </div>
+</section>
+
+<section id="screenApp" class="hidden">
+  <div class="topbar">
+    <img id="logoTop" alt="Logo">
+    <div class="topbarTitle">
+      <div class="main">AVALIAÇÃO COMERCIAL</div>
+      <div class="userline">
+        <span class="chip"><span class="dot" id="dot"></span><span id="statusTxt">APROVADO</span></span>
+        <span class="chip" id="whoami">—</span>
+        <span class="chip"><span id="roleTxt">consultor</span></span>
+      </div>
+    </div>
+    <button class="btnSmall btnGhost" id="btnSwitchUser">Trocar usuário</button>
+    <button class="btnSmall btnExit" id="btnLogout">Sair</button>
+  </div>
+
+  <div class="tabs">
+    <button class="tabbtn active" id="tabNova">Nova avaliação</button>
+    <button class="tabbtn" id="tabHist">Histórico</button>
+    <button class="tabbtn hidden" id="tabUsers">Usuários</button>
+  </div>
+
+  <div id="viewNova">
+    <div class="card">
+      <h3>🚗 Veículo</h3>
+      <label>Modelo <span class="hint">(obrigatório)</span></label><input id="modelo" placeholder="Ex: Fox Trend">
+      <div class="row2">
+        <div><label>Ano <span class="hint">(obrigatório)</span></label><input id="ano" placeholder="Ex: 2012/2013"></div>
+        <div><label>Versão <span class="hint">(obrigatório)</span></label>
+          <select id="versao">
+            <option value="">Selecione</option>
+            <option>Básico</option><option>Completo</option><option>Completo menos ar</option><option>Completo + 7 Lugares</option>
+            <option>Apenas Vidros Elétricos</option><option>Apenas direção</option>
+          </select>
+        </div>
+      </div>
+      <div class="row3">
+        <div><label>Placa <span class="hint">(obrigatório)</span></label><input id="placa" placeholder="Ex: EPX5C99"></div>
+        <div><label>Km <span class="hint">(obrigatório)</span></label><input id="km" inputmode="numeric" placeholder="Ex: 21000"></div>
+        <div><label>Comprou (Km) <span class="hint">(obrigatório)</span></label><input id="kmComprou" inputmode="numeric" placeholder="Ex: 10000"></div>
+      </div>
+      <div class="hint">Digite só números. O app formata (ex: 21000 → 21.000).</div>
+    </div>
+
+    <div class="card">
+      <h3>💰 Negócio</h3>
+      <div class="row2">
+        <div><label>Fipe <span class="hint">(obrigatório)</span></label><input id="fipe" inputmode="numeric" placeholder="Ex: 59000"></div>
+        <div><label>Valor pretendido</label><input id="valorPretendido" inputmode="numeric" placeholder="Ex: 29000"></div>
+      </div>
+      <div class="hint">Sai como R$ 59.000,00</div>
+    </div>
+
+    <div class="card">
+      <h3>📋 Laudo</h3>
+      <label>Status</label>
+      <select id="laudo"><option>APROVADO</option><option>APONTAMENTO</option><option>REPROVADO</option></select>
+      <div id="laudoObsWrap">
+        <label>Descrição do laudo</label>
+        <textarea id="laudoObs" placeholder="Longarina, painel, colunas, chassi..."></textarea>
+      </div>
+
+      <h3 style="margin-top:14px">🚨 Leilão</h3>
+      <label>Situação</label>
+      <select id="leilao"><option>Não</option><option>Financeira</option><option>Pequena monta</option><option>Média monta</option></select>
+      <div class="hint">Só aparece no relatório se não for “Não”.</div>
+    </div>
+
+    <div class="card">
+      <h3>⚙️ Gastos</h3>
+      <label>Motor</label><textarea id="motor" placeholder="Batendo, rajando, fumando..."></textarea>
+      <label>Luzes do painel</label><textarea id="luzes" placeholder="Injeção, óleo, ABS..."></textarea>
+      <label>Ar-condicionado</label><select id="ar"><option>Bom</option><option>Não gela</option><option>Não funciona</option><option>Não possui</option></select>
+      <label>Teste de Rodagem</label><textarea id="testeRodagem" placeholder="Trepidação, puxando, barulho..."></textarea>
+      <div class="hint">No relatório aparecem apenas itens que geram custo.</div>
+    </div>
+
+    <div class="card">
+      <h3>👨‍🔧 Responsáveis</h3>
+      <div class="row2">
+        <div><label>Consultor <span class="hint">(obrigatório)</span></label><input id="consultor"></div>
+        <div><label>Avaliadores <span class="hint">(obrigatório)</span></label><input id="avaliadores"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>👤 Cliente</h3>
+      <div class="row2">
+        <div><label>Cliente <span class="hint">(obrigatório)</span></label><input id="cliente"></div>
+        <div><label>Local</label><input id="local"></div>
+      </div>
+      <label>Captação</label>
+      <select id="captacao"><option value="">Selecione</option><option>Lead</option><option>Porta</option><option>Orgânico</option></select>
+      <div class="hint">“Osasco - SP 📍” sempre aparece no relatório.</div>
+    </div>
+
+    <div class="card">
+      <h3>✅ Finalizar</h3>
+      <button class="btnW" id="btnWhats">📲 Enviar relatório (WhatsApp)</button>
+      <button class="btnB" id="btnCopy">📋 Copiar relatório</button>
+      <h3 style="margin-top:14px;">Prévia</h3>
+      <div class="preview" id="preview"></div>
+      <div class="hint" id="saveHint" style="margin-top:10px"></div>
+    </div>
+  </div>
+
+  <div id="viewHistorico" class="hidden">
+    <div class="card">
+      <h3>☁️ Histórico</h3>
+      <div class="hint" id="histHint"></div>
+      <div id="historicoList"></div>
+    </div>
+  </div>
+
+  <div id="viewUsers" class="hidden">
+    <div class="card">
+      <h3>👥 Usuários (Admin)</h3>
+      <div class="hint" id="usersHint"></div>
+      <div id="usersList"></div>
+    </div>
+  </div>
+</section>
+
+<textarea id="copyFallback" style="position:fixed;left:-9999px;top:-9999px;"></textarea>
+
+<script>
+  // Paths corretos para assets (logo)
+  document.addEventListener("DOMContentLoaded", () => {
+    const base = window.BASE_HREF || "/";
+    const a = document.getElementById("logoLogin");
+    const b = document.getElementById("logoTop");
+    if (a) a.src = base + "logo.png";
+    if (b) b.src = base + "logo.png";
+  });
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, limit, onSnapshot, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+const firebaseConfig = {
   apiKey: "AIzaSyCvn2_z1FN2XMN_pgR9IiExRkRNMgZfhIY",
   authDomain: "clube-do-auto.firebaseapp.com",
   projectId: "clube-do-auto",
   storageBucket: "clube-do-auto.firebasestorage.app",
   messagingSenderId: "647571720442",
   appId: "1:647571720442:web:4257dd525b59bd89b62143"
-}; const HARD_ADMINS = new Set(["admin@clubedoauto.com","frank.since96@gmail.com"].map(s=>s.toLowerCase())); const ROLE_ORDER = ["consultor","closer","gerente","admin"]; const el=(id)=>document.getElementById(id); const v=(id)=>(el(id).value??"").toString().trim(); const lower=(s)=>(s??"").toString().trim().toLowerCase(); const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app); await setPersistence(auth, browserLocalPersistence); let isGuest=false, currentRole="consultor", canHistory=false, isAdmin=false; let unsubHist=null, unsubUsers=null; function computePermissions(){ canHistory=(currentRole==="admin"||currentRole==="gerente"||currentRole==="closer"); isAdmin=(currentRole==="admin"); } function setRoleUI(){ el("roleTxt").textContent=currentRole; el("tabUsers").classList.toggle("hidden", !isAdmin); } function showLogin(){ el("screenLogin").style.display="block"; el("screenApp").classList.add("hidden"); } function showApp(){ el("screenLogin").style.display="none"; el("screenApp").classList.remove("hidden"); } async function ensureUserDoc(user){ const uid=user.uid; const email=lower(user.email||""); const ref=doc(db,"users",uid); const snap=await getDoc(ref); if(!snap.exists()){ const role=HARD_ADMINS.has(email)?"admin":"consultor"; await setDoc(ref,{uid,email,role,createdAt:serverTimestamp(),updatedAt:serverTimestamp()},{merge:true}); return role; } const data=snap.data()||{}; let role=(data.role || (HARD_ADMINS.has(email)?"admin":"consultor")).toString(); if(HARD_ADMINS.has(email) && role!=="admin"){ await setDoc(ref,{role:"admin",updatedAt:serverTimestamp()},{merge:true}); role="admin"; } return role; } function onlyDigits(s){ return (s??"").toString().replace(/[^\d]/g,""); } function fmtKM(raw){ const d=onlyDigits(raw); if(!d) return ""; return new Intl.NumberFormat("pt-BR").format(Number(d)); } function fmtBRL(raw){ const d=onlyDigits(raw); if(!d) return ""; return new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(Number(d)).replace(/ /g," "); } ["km","kmComprou"].forEach(id=>el(id).addEventListener("blur",()=>{ if(v(id)) el(id).value=fmtKM(v(id)); atualizarPreview(); })); ["fipe","valorPretendido"].forEach(id=>el(id).addEventListener("blur",()=>{ if(v(id)) el(id).value=fmtBRL(v(id)); atualizarPreview(); })); function setStatusBadge(){ const s=(v("laudo")||"APROVADO").toUpperCase(); el("statusTxt").innerText=s; el("dot").style.background = (s==="REPROVADO")?"#d32f2f":(s==="APONTAMENTO")?"#f9a825":"#2e7d32"; } function toggleLaudoDescricao(){ const s=(v("laudo")||"APROVADO").toUpperCase(); if(s==="APROVADO"){ el("laudoObsWrap").style.display="none"; el("laudoObs").value=""; } else el("laudoObsWrap").style.display="block"; } function focusWarn(id,msg){ alert(msg); el(id).focus(); el(id).scrollIntoView({behavior:"smooth",block:"center"}); return false; } function validar(){ if(!v("modelo")) return focusWarn("modelo","Obrigatório: Modelo"); if(!v("ano")) return focusWarn("ano","Obrigatório: Ano"); if(!v("versao")) return focusWarn("versao","Obrigatório: Versão"); if(!v("placa")) return focusWarn("placa","Obrigatório: Placa"); if(!v("km")) return focusWarn("km","Obrigatório: Km"); if(!v("kmComprou")) return focusWarn("kmComprou","Obrigatório: Comprou"); if(!v("fipe")) return focusWarn("fipe","Obrigatório: Fipe"); const s=(v("laudo")||"APROVADO").toUpperCase(); if(s!=="APROVADO" && !v("laudoObs")) return focusWarn("laudoObs","Descreva o laudo."); if(!v("consultor")) return focusWarn("consultor","Obrigatório: Consultor"); if(!v("avaliadores")) return focusWarn("avaliadores","Obrigatório: Avaliadores"); if(!v("cliente")) return focusWarn("cliente","Obrigatório: Cliente"); return true; } function b(label,value){ return value ? (*${label}:* ${value}) : ""; } function montar(){ const laudo=(v("laudo")||"APROVADO").toUpperCase(); const ic=(laudo==="REPROVADO")?"🔴":(laudo==="APONTAMENTO")?"🟡":"🟢"; let r=""; r += b("Modelo", v("modelo")); r += "\n\n" + b("Ano", v("ano")); r += "\n\n" + b("Versão", v("versao")); r += "\n\n" + b("Placa", v("placa")); r += "\n\n" + b("Km", v("km")); r += "\n" + b("Comprou", v("kmComprou")); r += "\n\n📊 *Fipe:* " + v("fipe"); if(v("valorPretendido")) r += "\n" + b("Valor pretendido", v("valorPretendido")); r += "\n\n📋 *Laudo*\n" + ic + " " + laudo; if(laudo!=="APROVADO" && v("laudoObs")) r += "\n" + v("laudoObs"); const le=v("leilao"); if(le && le.toLowerCase()!=="não") r += "\n\n🚨 *Leilão:* " + le; const gastos=[]; if(v("motor")) gastos.push(v("motor")); if(v("luzes")) gastos.push(v("luzes")); const ar=v("ar"); if(ar && ar!=="Bom" && ar!=="Não possui") gastos.push("Ar-condicionado: "+ar); if(v("testeRodagem")) gastos.push("Teste de Rodagem: "+v("testeRodagem")); if(gastos.length) r += "\n\n⚙️ Gastos\n" + gastos.join("\n"); r += "\n\n" + b("Consultor", v("consultor")); r += "\n" + b("Avaliadores", v("avaliadores")); r += "\n\n" + b("Cliente", v("cliente")); if(v("local")) r += "\n" + b("Local", v("local")); if(v("captacao")) r += "\n" + b("Captação", v("captacao")); r += "\n\nOsasco - SP 📍"; return r.trim(); } function atualizarPreview(){ el("preview").innerText = montar(); } async function copiar(texto){ try{ await navigator.clipboard.writeText(texto); return true; }catch(e){} const ta=el("copyFallback"); ta.value=texto; ta.focus(); ta.select(); try{ if(document.execCommand("copy")) return true; }catch(e){} window.prompt("Copie:", texto); return false; } function abrirWhats(texto){ const url="https://wa.me/?text="+encodeURIComponent(texto); const a=document.createElement("a"); a.href=url; a.target="_blank"; a.rel="noopener"; document.body.appendChild(a); a.click(); a.remove(); } async function salvar(texto){ if(isGuest) return; const u=auth.currentUser; if(!u) return; try{ await addDoc(collection(db,"vistorias"),{createdAt:serverTimestamp(),createdByEmail:lower(u.email||""),createdByUid:u.uid,roleAtCreation:currentRole,modelo:v("modelo"),placa:v("placa"),laudo:(v("laudo")||"APROVADO").toUpperCase(),reportText:texto}); el("saveHint").innerHTML="<span class='ok'>Salvo na nuvem.</span>"; }catch(e){ el("saveHint").innerHTML="<span class='warn'>Falha ao salvar:</span> "+(e?.message||e); } } function escapeHtml(s){ return (s??"").toString().replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;"); } function formatDate(ts){ try{ const d=ts?.toDate?ts.toDate():null; if(!d) return ""; return new Intl.DateTimeFormat("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}).format(d); }catch(e){ return ""; } } function setTab(tab){ const nova=tab==="nova", hist=tab==="hist", users=tab==="users"; el("tabNova").classList.toggle("active", nova); el("tabHist").classList.toggle("active", hist); el("tabUsers").classList.toggle("active", users); el("viewNova").classList.toggle("hidden", !nova); el("viewHistorico").classList.toggle("hidden", !hist); el("viewUsers").classList.toggle("hidden", !users); if(hist) openHistorico(); if(users) openUsers(); } el("tabNova").addEventListener("click",()=>setTab("nova")); el("tabHist").addEventListener("click",()=>setTab("hist")); el("tabUsers").addEventListener("click",()=>setTab("users")); function openHistorico(){ el("historicoList").innerHTML=""; el("histHint").innerHTML=""; if(isGuest){ el("histHint").innerHTML="<span class='warn'>Convidado não tem histórico.</span>"; return; } if(!canHistory){ el("histHint").innerHTML="<span class='warn'>Seu cargo não tem acesso ao histórico.</span>"; return; } if(unsubHist) unsubHist(); const qy=query(collection(db,"vistorias"), orderBy("createdAt","desc"), limit(200)); unsubHist=onSnapshot(qy,(snap)=>{ const items=snap.docs.map(d=>({id:d.id,...d.data()})); el("historicoList").innerHTML = items.map(it=>{ const la=(it.laudo||"APROVADO").toUpperCase(); const icon=(la==="REPROVADO")?"🔴":(la==="APONTAMENTO")?"🟡":"🟢"; const title=${icon} ${escapeHtml(it.modelo||"-")} — ${escapeHtml(it.placa||"-")}; const meta=${escapeHtml(formatDate(it.createdAt))} • ${escapeHtml(it.createdByEmail||"")}; return <div class="histItem"> <div class="histTop"><div><div class="histTitle">${title}</div><div class="histMeta">${meta}</div></div><div class="histMeta"><b>${escapeHtml(la)}</b></div></div> <div class="histBtns"> <button class="mini mOpen" data-open="${it.id}">Abrir</button> <button class="mini mCopy" data-copy="${it.id}">Copiar</button> <button class="mini mSend" data-send="${it.id}">Whats</button> </div> </div>; }).join("") || "<div class='histItem'><b>Nenhum registro.</b></div>"; el("historicoList").querySelectorAll("[data-open]").forEach(btn=>{ btn.addEventListener("click",()=>{ const it=items.find(x=>x.id===btn.dataset.open); if(!it) return; el("preview").innerText=it.reportText||""; setTab("nova"); window.scrollTo({top:0,behavior:"smooth"}); }); }); el("historicoList").querySelectorAll("[data-copy]").forEach(btn=>{ btn.addEventListener("click",async()=>{ const it=items.find(x=>x.id===btn.dataset.copy); if(!it) return; const ok=await copiar(it.reportText||""); if(ok) alert("Copiado!"); }); }); el("historicoList").querySelectorAll("[data-send]").forEach(btn=>{ btn.addEventListener("click",()=>{ const it=items.find(x=>x.id===btn.dataset.send); if(!it) return; abrirWhats(it.reportText||""); }); }); },(err)=>{ el("historicoList").innerHTML="<div class='histItem'><b>Erro:</b> "+escapeHtml(err?.message||err)+"</div>"; }); } function openUsers(){ el("usersList").innerHTML=""; el("usersHint").innerHTML=""; if(isGuest){ el("usersHint").innerHTML="<span class='warn'>Convidado não tem acesso.</span>"; return; } if(!isAdmin){ el("usersHint").innerHTML="<span class='warn'>Apenas Admin.</span>"; return; } if(unsubUsers) unsubUsers(); const qy=query(collection(db,"users"), orderBy("email","asc"), limit(500)); unsubUsers=onSnapshot(qy,(snap)=>{ const users=snap.docs.map(d=>({id:d.id,...d.data()})); el("usersList").innerHTML = users.map(u=>{ const opts=ROLE_ORDER.map(r=><option value="${r}" ${r===u.role?"selected":""}>${r}</option>).join(""); return <div class="userItem"> <div class="userTop"> <div><div class="userEmail">${escapeHtml(u.email||"")}</div><div class="userMeta">UID: ${escapeHtml(u.uid||u.id)}</div></div> <div class="badgeRole">${escapeHtml(u.role||"consultor")}</div> </div> <div class="userActions"> <div><label>Alterar cargo</label><select data-role="${u.id}">${opts}</select></div> <div><button class="btnP" data-save="${u.id}">Salvar cargo</button></div> </div> </div>; }).join("") || "<div class='userItem'><b>Nenhum usuário.</b></div>"; el("usersList").querySelectorAll("[data-save]").forEach(btn=>{ btn.addEventListener("click",async()=>{ const id=btn.dataset.save; const sel=el("usersList").querySelector(select[data-role="${id}"]); const newRole=(sel?.value||"consultor").toString(); try{ await updateDoc(doc(db,"users",id),{role:newRole,updatedAt:serverTimestamp()}); alert("Cargo atualizado!"); if(auth.currentUser && id===auth.currentUser.uid){ currentRole=newRole; computePermissions(); setRoleUI(); } }catch(e){ alert("Erro: "+(e?.message||e)); } }); }); },(err)=>{ el("usersList").innerHTML="<div class='userItem'><b>Erro:</b> "+escapeHtml(err?.message||err)+"</div>"; }); } // Login buttons el("btnDoLogin").addEventListener("click", async ()=>{ const email=v("loginEmail"), pass=v("loginPass"); if(!email||!pass) return el("loginHint").innerHTML="<span class='warn'>Preencha e-mail e senha.</span>"; try{ await signInWithEmailAndPassword(auth,email,pass); isGuest=false; el("loginHint").innerHTML=""; } catch(e){ el("loginHint").innerHTML="<span class='warn'>Erro no login:</span> "+(e?.message||e); } }); el("btnCreateUser").addEventListener("click", async ()=>{ const email=v("loginEmail"), pass=v("loginPass"); if(!email||!pass) return el("loginHint").innerHTML="<span class='warn'>Preencha e-mail e senha.</span>"; if(pass.length<6) return el("loginHint").innerHTML="<span class='warn'>Senha mínima: 6 caracteres.</span>"; try{ await createUserWithEmailAndPassword(auth,email,pass); isGuest=false; el("loginHint").innerHTML="<span class='ok'>Usuário cadastrado!</span>"; } catch(e){ el("loginHint").innerHTML="<span class='warn'>Erro ao cadastrar:</span> "+(e?.message||e); } }); el("btnGuest").addEventListener("click", ()=>{ isGuest=true; try{ signOut(auth);}catch(e){} showApp(); el("whoami").textContent="Convidado"; currentRole="convidado"; computePermissions(); setRoleUI(); setTab("nova"); }); el("btnLogout").addEventListener("click", async ()=>{ isGuest=false; try{ await signOut(auth);}catch(e){} showLogin(); }); el("btnSwitchUser").addEventListener("click", ()=>{ isGuest=false; showLogin(); }); // Action buttons el("btnWhats").addEventListener("click", async ()=>{ if(!validar()) return; const texto=montar(); await salvar(texto); abrirWhats(texto); }); el("btnCopy").addEventListener("click", async ()=>{ if(!validar()) return; const texto=montar(); await salvar(texto); const ok=await copiar(texto); if(ok) alert("Copiado!"); }); // Bind preview ["modelo","ano","versao","placa","km","kmComprou","fipe","valorPretendido","laudo","laudoObs","leilao","motor","luzes","ar","testeRodagem","consultor","avaliadores","cliente","local","captacao"] .forEach(id=>{ el(id).addEventListener("input",()=>{ if(id==="laudo"){setStatusBadge();toggleLaudoDescricao();} atualizarPreview(); }); el(id).addEventListener("change",()=>{ if(id==="laudo"){setStatusBadge();toggleLaudoDescricao();} atualizarPreview(); }); }); onAuthStateChanged(auth, async (u)=>{ if(isGuest) return; if(u){ showApp(); el("whoami").textContent=lower(u.email||""); try{ currentRole = await ensureUserDoc(u); }catch(e){ currentRole = HARD_ADMINS.has(lower(u.email||"")) ? "admin":"consultor"; } computePermissions(); setRoleUI(); setTab("nova"); }else{ showLogin(); currentRole="consultor"; computePermissions(); setRoleUI(); } }); setStatusBadge(); toggleLaudoDescricao(); atualizarPreview(); </script> <script> if("serviceWorker" in navigator){ window.addEventListener("load", ()=> navigator.serviceWorker.register("./sw.js").catch(()=>{})); } </script> </body> </html>
+};
+
+const HARD_ADMINS = new Set(["admin@clubedoauto.com","frank.since96@gmail.com"].map(s=>s.toLowerCase()));
+const ROLE_ORDER = ["consultor","closer","gerente","admin"];
+
+const el=(id)=>document.getElementById(id);
+const v=(id)=>(el(id).value??"").toString().trim();
+const lower=(s)=>(s??"").toString().trim().toLowerCase();
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+await setPersistence(auth, browserLocalPersistence);
+
+let isGuest=false, currentRole="consultor", canHistory=false, isAdmin=false;
+let unsubHist=null, unsubUsers=null;
+
+function computePermissions(){ canHistory=(currentRole==="admin"||currentRole==="gerente"||currentRole==="closer"); isAdmin=(currentRole==="admin"); }
+function setRoleUI(){ el("roleTxt").textContent=currentRole; el("tabUsers").classList.toggle("hidden", !isAdmin); }
+
+function showLogin(){ el("screenLogin").style.display="block"; el("screenApp").classList.add("hidden"); }
+function showApp(){ el("screenLogin").style.display="none"; el("screenApp").classList.remove("hidden"); }
+
+async function ensureUserDoc(user){
+  const uid=user.uid; const email=lower(user.email||"");
+  const ref=doc(db,"users",uid); const snap=await getDoc(ref);
+  if(!snap.exists()){
+    const role=HARD_ADMINS.has(email)?"admin":"consultor";
+    await setDoc(ref,{uid,email,role,createdAt:serverTimestamp(),updatedAt:serverTimestamp()},{merge:true});
+    return role;
+  }
+  const data=snap.data()||{};
+  let role=(data.role || (HARD_ADMINS.has(email)?"admin":"consultor")).toString();
+  if(HARD_ADMINS.has(email) && role!=="admin"){
+    await setDoc(ref,{role:"admin",updatedAt:serverTimestamp()},{merge:true});
+    role="admin";
+  }
+  return role;
+}
+
+function onlyDigits(s){ return (s??"").toString().replace(/[^\d]/g,""); }
+function fmtKM(raw){ const d=onlyDigits(raw); if(!d) return ""; return new Intl.NumberFormat("pt-BR").format(Number(d)); }
+function fmtBRL(raw){ const d=onlyDigits(raw); if(!d) return ""; return new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(Number(d)).replace(/ /g," "); }
+["km","kmComprou"].forEach(id=>el(id).addEventListener("blur",()=>{ if(v(id)) el(id).value=fmtKM(v(id)); atualizarPreview(); }));
+["fipe","valorPretendido"].forEach(id=>el(id).addEventListener("blur",()=>{ if(v(id)) el(id).value=fmtBRL(v(id)); atualizarPreview(); }));
+
+function setStatusBadge(){
+  const s=(v("laudo")||"APROVADO").toUpperCase();
+  el("statusTxt").innerText=s;
+  el("dot").style.background = (s==="REPROVADO")?"#d32f2f":(s==="APONTAMENTO")?"#f9a825":"#2e7d32";
+}
+function toggleLaudoDescricao(){
+  const s=(v("laudo")||"APROVADO").toUpperCase();
+  if(s==="APROVADO"){ el("laudoObsWrap").style.display="none"; el("laudoObs").value=""; }
+  else el("laudoObsWrap").style.display="block";
+}
+
+function focusWarn(id,msg){ alert(msg); el(id).focus(); el(id).scrollIntoView({behavior:"smooth",block:"center"}); return false; }
+function validar(){
+  if(!v("modelo")) return focusWarn("modelo","Obrigatório: Modelo");
+  if(!v("ano")) return focusWarn("ano","Obrigatório: Ano");
+  if(!v("versao")) return focusWarn("versao","Obrigatório: Versão");
+  if(!v("placa")) return focusWarn("placa","Obrigatório: Placa");
+  if(!v("km")) return focusWarn("km","Obrigatório: Km");
+  if(!v("kmComprou")) return focusWarn("kmComprou","Obrigatório: Comprou");
+  if(!v("fipe")) return focusWarn("fipe","Obrigatório: Fipe");
+  const s=(v("laudo")||"APROVADO").toUpperCase();
+  if(s!=="APROVADO" && !v("laudoObs")) return focusWarn("laudoObs","Descreva o laudo.");
+  if(!v("consultor")) return focusWarn("consultor","Obrigatório: Consultor");
+  if(!v("avaliadores")) return focusWarn("avaliadores","Obrigatório: Avaliadores");
+  if(!v("cliente")) return focusWarn("cliente","Obrigatório: Cliente");
+  return true;
+}
+
+function b(label,value){ return value ? (`*${label}:* ${value}`) : ""; }
+
+function montar(){
+  const laudo=(v("laudo")||"APROVADO").toUpperCase();
+  const ic=(laudo==="REPROVADO")?"🔴":(laudo==="APONTAMENTO")?"🟡":"🟢";
+  let r="";
+  r += b("Modelo", v("modelo"));
+  r += "\n\n" + b("Ano", v("ano"));
+  r += "\n\n" + b("Versão", v("versao"));
+  r += "\n\n" + b("Placa", v("placa"));
+  r += "\n\n" + b("Km", v("km"));
+  r += "\n" + b("Comprou", v("kmComprou"));
+  r += "\n\n📊 *Fipe:* " + v("fipe");
+  if(v("valorPretendido")) r += "\n" + b("Valor pretendido", v("valorPretendido"));
+  r += "\n\n📋 *Laudo*\n" + ic + " " + laudo;
+  if(laudo!=="APROVADO" && v("laudoObs")) r += "\n" + v("laudoObs");
+  const le=v("leilao"); if(le && le.toLowerCase()!=="não") r += "\n\n🚨 *Leilão:* " + le;
+
+  const gastos=[];
+  if(v("motor")) gastos.push(v("motor"));
+  if(v("luzes")) gastos.push(v("luzes"));
+  const ar=v("ar"); if(ar && ar!=="Bom" && ar!=="Não possui") gastos.push("Ar-condicionado: "+ar);
+  if(v("testeRodagem")) gastos.push("Teste de Rodagem: "+v("testeRodagem"));
+  if(gastos.length) r += "\n\n⚙️ Gastos\n" + gastos.join("\n");
+
+  r += "\n\n" + b("Consultor", v("consultor"));
+  r += "\n" + b("Avaliadores", v("avaliadores"));
+  r += "\n\n" + b("Cliente", v("cliente"));
+  if(v("local")) r += "\n" + b("Local", v("local"));
+  if(v("captacao")) r += "\n" + b("Captação", v("captacao"));
+  r += "\n\nOsasco - SP 📍";
+  return r.trim();
+}
+
+function atualizarPreview(){ el("preview").innerText = montar(); }
+
+async function copiar(texto){
+  try{ await navigator.clipboard.writeText(texto); return true; }catch(e){}
+  const ta=el("copyFallback"); ta.value=texto; ta.focus(); ta.select();
+  try{ if(document.execCommand("copy")) return true; }catch(e){}
+  window.prompt("Copie:", texto); return false;
+}
+function abrirWhats(texto){
+  const url="https://wa.me/?text="+encodeURIComponent(texto);
+  const a=document.createElement("a"); a.href=url; a.target="_blank"; a.rel="noopener";
+  document.body.appendChild(a); a.click(); a.remove();
+}
+async function salvar(texto){
+  if(isGuest) return;
+  const u=auth.currentUser; if(!u) return;
+  try{
+    await addDoc(collection(db,"vistorias"),{createdAt:serverTimestamp(),createdByEmail:lower(u.email||""),createdByUid:u.uid,roleAtCreation:currentRole,modelo:v("modelo"),placa:v("placa"),laudo:(v("laudo")||"APROVADO").toUpperCase(),reportText:texto});
+    el("saveHint").innerHTML="<span class='ok'>Salvo na nuvem.</span>";
+  }catch(e){
+    el("saveHint").innerHTML="<span class='warn'>Falha ao salvar:</span> "+(e?.message||e);
+  }
+}
+
+function escapeHtml(s){ return (s??"").toString().replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;"); }
+function formatDate(ts){
+  try{ const d=ts?.toDate?ts.toDate():null; if(!d) return "";
+    return new Intl.DateTimeFormat("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}).format(d);
+  }catch(e){ return ""; }
+}
+
+function setTab(tab){
+  const nova=tab==="nova", hist=tab==="hist", users=tab==="users";
+  el("tabNova").classList.toggle("active", nova);
+  el("tabHist").classList.toggle("active", hist);
+  el("tabUsers").classList.toggle("active", users);
+  el("viewNova").classList.toggle("hidden", !nova);
+  el("viewHistorico").classList.toggle("hidden", !hist);
+  el("viewUsers").classList.toggle("hidden", !users);
+  if(hist) openHistorico();
+  if(users) openUsers();
+}
+el("tabNova").addEventListener("click",()=>setTab("nova"));
+el("tabHist").addEventListener("click",()=>setTab("hist"));
+el("tabUsers").addEventListener("click",()=>setTab("users"));
+
+function openHistorico(){
+  el("historicoList").innerHTML=""; el("histHint").innerHTML="";
+  if(isGuest){ el("histHint").innerHTML="<span class='warn'>Convidado não tem histórico.</span>"; return; }
+  if(!canHistory){ el("histHint").innerHTML="<span class='warn'>Seu cargo não tem acesso ao histórico.</span>"; return; }
+  if(unsubHist) unsubHist();
+  const qy=query(collection(db,"vistorias"), orderBy("createdAt","desc"), limit(200));
+  unsubHist=onSnapshot(qy,(snap)=>{
+    const items=snap.docs.map(d=>({id:d.id,...d.data()}));
+    el("historicoList").innerHTML = items.map(it=>{
+      const la=(it.laudo||"APROVADO").toUpperCase();
+      const icon=(la==="REPROVADO")?"🔴":(la==="APONTAMENTO")?"🟡":"🟢";
+      const title=`${icon} ${escapeHtml(it.modelo||"-")} — ${escapeHtml(it.placa||"-")}`;
+      const meta=`${escapeHtml(formatDate(it.createdAt))} • ${escapeHtml(it.createdByEmail||"")}`;
+      return `<div class="histItem">
+        <div class="histTop"><div><div class="histTitle">${title}</div><div class="histMeta">${meta}</div></div><div class="histMeta"><b>${escapeHtml(la)}</b></div></div>
+        <div class="histBtns">
+          <button class="mini mOpen" data-open="${it.id}">Abrir</button>
+          <button class="mini mCopy" data-copy="${it.id}">Copiar</button>
+          <button class="mini mSend" data-send="${it.id}">Whats</button>
+        </div>
+      </div>`;
+    }).join("") || "<div class='histItem'><b>Nenhum registro.</b></div>";
+
+    el("historicoList").querySelectorAll("[data-open]").forEach(btn=>{
+      btn.addEventListener("click",()=>{ const it=items.find(x=>x.id===btn.dataset.open); if(!it) return; el("preview").innerText=it.reportText||""; setTab("nova"); window.scrollTo({top:0,behavior:"smooth"}); });
+    });
+    el("historicoList").querySelectorAll("[data-copy]").forEach(btn=>{
+      btn.addEventListener("click",async()=>{ const it=items.find(x=>x.id===btn.dataset.copy); if(!it) return; const ok=await copiar(it.reportText||""); if(ok) alert("Copiado!"); });
+    });
+    el("historicoList").querySelectorAll("[data-send]").forEach(btn=>{
+      btn.addEventListener("click",()=>{ const it=items.find(x=>x.id===btn.dataset.send); if(!it) return; abrirWhats(it.reportText||""); });
+    });
+  },(err)=>{
+    el("historicoList").innerHTML="<div class='histItem'><b>Erro:</b> "+escapeHtml(err?.message||err)+"</div>";
+  });
+}
+
+function openUsers(){
+  el("usersList").innerHTML=""; el("usersHint").innerHTML="";
+  if(isGuest){ el("usersHint").innerHTML="<span class='warn'>Convidado não tem acesso.</span>"; return; }
+  if(!isAdmin){ el("usersHint").innerHTML="<span class='warn'>Apenas Admin.</span>"; return; }
+  if(unsubUsers) unsubUsers();
+  const qy=query(collection(db,"users"), orderBy("email","asc"), limit(500));
+  unsubUsers=onSnapshot(qy,(snap)=>{
+    const users=snap.docs.map(d=>({id:d.id,...d.data()}));
+    el("usersList").innerHTML = users.map(u=>{
+      const opts=ROLE_ORDER.map(r=>`<option value="${r}" ${r===u.role?"selected":""}>${r}</option>`).join("");
+      return `<div class="userItem">
+        <div class="userTop">
+          <div><div class="userEmail">${escapeHtml(u.email||"")}</div><div class="userMeta">UID: ${escapeHtml(u.uid||u.id)}</div></div>
+          <div class="badgeRole">${escapeHtml(u.role||"consultor")}</div>
+        </div>
+        <div class="userActions">
+          <div><label>Alterar cargo</label><select data-role="${u.id}">${opts}</select></div>
+          <div><button class="btnP" data-save="${u.id}">Salvar cargo</button></div>
+        </div>
+      </div>`;
+    }).join("") || "<div class='userItem'><b>Nenhum usuário.</b></div>";
+
+    el("usersList").querySelectorAll("[data-save]").forEach(btn=>{
+      btn.addEventListener("click",async()=>{
+        const id=btn.dataset.save;
+        const sel=el("usersList").querySelector(`select[data-role="${id}"]`);
+        const newRole=(sel?.value||"consultor").toString();
+        try{
+          await updateDoc(doc(db,"users",id),{role:newRole,updatedAt:serverTimestamp()});
+          alert("Cargo atualizado!");
+          if(auth.currentUser && id===auth.currentUser.uid){ currentRole=newRole; computePermissions(); setRoleUI(); }
+        }catch(e){ alert("Erro: "+(e?.message||e)); }
+      });
+    });
+  },(err)=>{
+    el("usersList").innerHTML="<div class='userItem'><b>Erro:</b> "+escapeHtml(err?.message||err)+"</div>";
+  });
+}
+
+// Login buttons
+el("btnDoLogin").addEventListener("click", async ()=>{
+  const email=v("loginEmail"), pass=v("loginPass");
+  if(!email||!pass) return el("loginHint").innerHTML="<span class='warn'>Preencha e-mail e senha.</span>";
+  try{ await signInWithEmailAndPassword(auth,email,pass); isGuest=false; el("loginHint").innerHTML=""; }
+  catch(e){ el("loginHint").innerHTML="<span class='warn'>Erro no login:</span> "+(e?.message||e); }
+});
+el("btnCreateUser").addEventListener("click", async ()=>{
+  const email=v("loginEmail"), pass=v("loginPass");
+  if(!email||!pass) return el("loginHint").innerHTML="<span class='warn'>Preencha e-mail e senha.</span>";
+  if(pass.length<6) return el("loginHint").innerHTML="<span class='warn'>Senha mínima: 6 caracteres.</span>";
+  try{ await createUserWithEmailAndPassword(auth,email,pass); isGuest=false; el("loginHint").innerHTML="<span class='ok'>Usuário cadastrado!</span>"; }
+  catch(e){ el("loginHint").innerHTML="<span class='warn'>Erro ao cadastrar:</span> "+(e?.message||e); }
+});
+el("btnGuest").addEventListener("click", ()=>{
+  isGuest=true; try{ signOut(auth);}catch(e){}
+  showApp(); el("whoami").textContent="Convidado";
+  currentRole="convidado"; computePermissions(); setRoleUI(); setTab("nova");
+});
+el("btnLogout").addEventListener("click", async ()=>{ isGuest=false; try{ await signOut(auth);}catch(e){} showLogin(); });
+el("btnSwitchUser").addEventListener("click", ()=>{ isGuest=false; showLogin(); });
+
+// Action buttons
+el("btnWhats").addEventListener("click", async ()=>{ if(!validar()) return; const texto=montar(); await salvar(texto); abrirWhats(texto); });
+el("btnCopy").addEventListener("click", async ()=>{ if(!validar()) return; const texto=montar(); await salvar(texto); const ok=await copiar(texto); if(ok) alert("Copiado!"); });
+
+// Bind preview
+["modelo","ano","versao","placa","km","kmComprou","fipe","valorPretendido","laudo","laudoObs","leilao","motor","luzes","ar","testeRodagem","consultor","avaliadores","cliente","local","captacao"]
+.forEach(id=>{ el(id).addEventListener("input",()=>{ if(id==="laudo"){setStatusBadge();toggleLaudoDescricao();} atualizarPreview(); });
+              el(id).addEventListener("change",()=>{ if(id==="laudo"){setStatusBadge();toggleLaudoDescricao();} atualizarPreview(); }); });
+
+onAuthStateChanged(auth, async (u)=>{
+  if(isGuest) return;
+  if(u){
+    showApp();
+    el("whoami").textContent=lower(u.email||"");
+    try{ currentRole = await ensureUserDoc(u); }catch(e){ currentRole = HARD_ADMINS.has(lower(u.email||"")) ? "admin":"consultor"; }
+    computePermissions(); setRoleUI(); setTab("nova");
+  }else{
+    showLogin();
+    currentRole="consultor"; computePermissions(); setRoleUI();
+  }
+});
+
+setStatusBadge(); toggleLaudoDescricao(); atualizarPreview();
+</script>
+
+<script>
+if("serviceWorker" in navigator){
+  window.addEventListener("load", ()=> {
+    const base = window.BASE_HREF || "/";
+    navigator.serviceWorker.register(base + "sw.js").catch(()=>{});
+  });
+}
+</script>
+
+</body>
+</html>
