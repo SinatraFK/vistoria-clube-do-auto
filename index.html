@@ -219,17 +219,178 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
       <div class="hint">Só aparece no relatório se não for “Não”.</div>
     </div>
 
-    <div class="card">
-      <h3>⚙️ Gastos</h3>
-      <label>Motor</label><textarea id="motor" placeholder="Batendo, rajando, fumando..."></textarea>
-      <label>Luzes do painel</label><textarea id="luzes" placeholder="Injeção, óleo, ABS..."></textarea>
-      <label>Ar-condicionado</label><select id="ar"><option>Bom</option><option>Não gela</option><option>Não funciona</option><option>Não possui</option></select>
-      <label>Teste de Rodagem</label><textarea id="testeRodagem" placeholder="Trepidação, puxando, barulho..."></textarea>
-      <div class="hint">No relatório aparecem apenas itens que geram custo.</div>
+    
+<div class="card">
+  <h3>⚙️ Gastos</h3>
+
+  <label>Motor / mecânica (texto livre)</label>
+  <textarea id="motor" placeholder="Ex: Rajando / Caixa de direção / Vazamento..."></textarea>
+
+  <label>Luzes do painel (texto livre)</label>
+  <textarea id="luzes" placeholder="Ex: ABS / Injeção / Óleo..."></textarea>
+
+  <h3 style="margin-top:14px">🪑 Gastos internos</h3>
+
+  <label>Tablier</label>
+  <select id="tablier">
+    <option>Bom</option>
+    <option>Avariado</option>
+  </select>
+
+  <div class="row2">
+    <div>
+      <label>Bancos (quais)</label>
+      <select id="bancosOnde">
+        <option value="">Selecione</option>
+        <option>Motorista</option>
+        <option>Dianteiros</option>
+        <option>Traseiros</option>
+        <option>Todos</option>
+      </select>
+    </div>
+    <div>
+      <label>Bancos (serviço)</label>
+      <select id="bancosServico">
+        <option>Bom</option>
+        <option>Faixa</option>
+        <option>Reformar</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="row2">
+    <div>
+      <label>Volante</label>
+      <select id="volante">
+        <option>Bom</option>
+        <option>Encapar</option>
+        <option>Trocar</option>
+      </select>
+    </div>
+    <div>
+      <label>Manopla do câmbio</label>
+      <select id="manopla">
+        <option>Bom</option>
+        <option>Trocar</option>
+      </select>
+    </div>
+  </div>
+
+  <label>Forro de porta (selecione)</label>
+  <div style="border:1px dashed #e5e7eb;border-radius:14px;padding:12px;background:#fafafa;margin-bottom:10px">
+    <div class="row3">
+      <label style="font-weight:700"><input type="checkbox" id="forro_motorista"> Motorista</label>
+      <label style="font-weight:700"><input type="checkbox" id="forro_passageiro"> Passageiro</label>
+      <label style="font-weight:700"><input type="checkbox" id="forro_traseiro_d"> Traseiro D</label>
+      <label style="font-weight:700"><input type="checkbox" id="forro_traseiro_e"> Traseiro E</label>
+      <label style="font-weight:700"><input type="checkbox" id="forro_dianteiros"> Dianteiros</label>
+      <label style="font-weight:700"><input type="checkbox" id="forro_traseiros"> Traseiros</label>
+      <label style="font-weight:700"><input type="checkbox" id="forro_todos"> Todos</label>
     </div>
 
-    <div class="card">
-      <h3>👨‍🔧 Responsáveis</h3>
+    <div style="margin-top:10px">
+      <label>Estado</label>
+      <select id="forroEstado">
+        <option>Bom</option>
+        <option>Avariado</option>
+      </select>
+    </div>
+  </div>
+
+  <h3 style="margin-top:14px">🚗 Gastos externos</h3>
+
+  <div class="row2">
+    <div>
+      <label>Funilaria (peças)</label>
+      <select id="funilariaPecas">
+        <option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+        <option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option>
+      </select>
+    </div>
+    <div>
+      <label>Pneus avariados</label>
+      <select id="pneusQtd">
+        <option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="row2">
+    <label style="font-weight:700"><input type="checkbox" id="pinturaCompleta"> Pintura completa</label>
+    <label style="font-weight:700"><input type="checkbox" id="chuvaGranizo"> Chuva de granizo</label>
+  </div>
+
+  <div class="row2">
+    <div>
+      <label>Para-choque dianteiro</label>
+      <select id="paraChoqueD">
+        <option>Bom</option>
+        <option>Troca</option>
+      </select>
+    </div>
+    <div>
+      <label>Para-choque traseiro</label>
+      <select id="paraChoqueT">
+        <option>Bom</option>
+        <option>Troca</option>
+      </select>
+    </div>
+  </div>
+
+  <h3 style="margin-top:14px">💡 Faróis e lanternas</h3>
+
+  <div class="row2">
+    <div><label>Farol (D)</label><select id="farolD"><option>Bom</option><option>Polimento</option><option>Troca</option></select></div>
+    <div><label>Farol (E)</label><select id="farolE"><option>Bom</option><option>Polimento</option><option>Troca</option></select></div>
+  </div>
+  <div class="row2">
+    <div><label>Lanterna (D)</label><select id="lanternaD"><option>Bom</option><option>Polimento</option><option>Troca</option></select></div>
+    <div><label>Lanterna (E)</label><select id="lanternaE"><option>Bom</option><option>Polimento</option><option>Troca</option></select></div>
+  </div>
+
+  <h3 style="margin-top:14px">🪟 Vidros</h3>
+
+  <label>Para-brisa</label>
+  <select id="vidroParabrisa">
+    <option>OK</option>
+    <option>Reparo</option>
+    <option>Troca</option>
+  </select>
+
+  <div style="border:1px dashed #e5e7eb;border-radius:14px;padding:12px;background:#fafafa;margin-bottom:10px">
+    <div class="hint">Demais vidros (marque e selecione a ação).</div>
+
+    <div class="row2">
+      <label style="font-weight:700"><input type="checkbox" id="vidro_dd_chk"> Dianteiro (D)</label>
+      <select id="vidro_dd_act"><option>Reparo</option><option>Troca</option></select>
+    </div>
+    <div class="row2">
+      <label style="font-weight:700"><input type="checkbox" id="vidro_de_chk"> Dianteiro (E)</label>
+      <select id="vidro_de_act"><option>Reparo</option><option>Troca</option></select>
+    </div>
+    <div class="row2">
+      <label style="font-weight:700"><input type="checkbox" id="vidro_td_chk"> Traseiro (D)</label>
+      <select id="vidro_td_act"><option>Reparo</option><option>Troca</option></select>
+    </div>
+    <div class="row2">
+      <label style="font-weight:700"><input type="checkbox" id="vidro_te_chk"> Traseiro (E)</label>
+      <select id="vidro_te_act"><option>Reparo</option><option>Troca</option></select>
+    </div>
+    <div class="row2">
+      <label style="font-weight:700"><input type="checkbox" id="vidro_vg_chk"> Vigia</label>
+      <select id="vidro_vg_act"><option>Reparo</option><option>Troca</option></select>
+    </div>
+  </div>
+
+  <label>Teste de Rodagem (texto livre)</label>
+  <textarea id="testeRodagem" placeholder="Trepidação, puxando, barulho..."></textarea>
+
+  <div class="hint">No relatório aparecem apenas itens que geram custo. “Bom/OK/0” não aparece.</div>
+</div>
+
+<div class="card">
+  <h3>👨‍🔧 Responsáveis</h3>
+
       <div class="row2">
         <div><label>Consultor <span class="hint">(obrigatório)</span></label><input id="consultor"></div>
         <div>
@@ -451,15 +612,85 @@ function montar(){
 
   // ⚙️ Gastos (mantém o modelo atual)
   const gastos=[];
-  if(v("motor")) gastos.push(v("motor"));
-  if(v("luzes")) gastos.push(v("luzes"));
-  const ar=v("ar"); if(ar && ar!=="Bom" && ar!=="Não possui") gastos.push("Ar-condicionado: "+ar);
-  if(v("testeRodagem")) gastos.push("Teste de Rodagem: "+v("testeRodagem"));
-  if(gastos.length){
-    lines.push("");
-    lines.push("⚙️ *Gastos*");
-    lines.push(...gastos);
+
+// Motor e Luzes: entram sem rótulo (só o texto)
+if(v("motor")) gastos.push(v("motor"));
+if(v("luzes")) gastos.push(v("luzes"));
+
+// Internos
+if(v("tablier")==="Avariado") gastos.push("Tablier: Avariado");
+
+const bo=v("bancosOnde");
+const bs=v("bancosServico");
+if(bo && bs && bs!=="Bom") gastos.push(`Bancos (${bo}): ${bs}`);
+
+const vol=v("volante");
+if(vol && vol!=="Bom") gastos.push(`Volante: ${vol}`);
+
+const man=v("manopla");
+if(man && man!=="Bom") gastos.push("Manopla do câmbio: Trocar");
+
+const forroEstado=v("forroEstado");
+if(forroEstado==="Avariado"){
+  const portas=[];
+  const add=(id,label)=>{ if(el(id)?.checked) portas.push(label); };
+  add("forro_motorista","Motorista");
+  add("forro_passageiro","Passageiro");
+  add("forro_traseiro_d","Traseiro D");
+  add("forro_traseiro_e","Traseiro E");
+  add("forro_dianteiros","Dianteiros");
+  add("forro_traseiros","Traseiros");
+  add("forro_todos","Todos");
+  if(portas.length) gastos.push(`Forro de porta (${portas.join(", ")}): Avariado`);
+}
+
+// Externos
+const pecas = Number(v("funilariaPecas")||"0");
+const pintura = !!el("pinturaCompleta")?.checked;
+const granizo = !!el("chuvaGranizo")?.checked;
+if(pecas>0 || pintura || granizo){
+  const parts=[];
+  if(pecas>0) parts.push(`${pecas} ${pecas===1?"peça":"peças"}`);
+  if(pintura) parts.push("Pintura completa");
+  if(granizo) parts.push("Chuva de granizo");
+  gastos.push(`Funilaria: ${parts.join(" + ")}`);
+}
+
+const pneus = Number(v("pneusQtd")||"0");
+if(pneus>0) gastos.push(`Pneus: ${pneus} ${pneus===1?"avariado":"avariados"}`);
+
+if(v("paraChoqueD")==="Troca") gastos.push("Para-choque dianteiro: Troca");
+if(v("paraChoqueT")==="Troca") gastos.push("Para-choque traseiro: Troca");
+
+const fd=v("farolD"); if(fd && fd!=="Bom") gastos.push(`Farol (D): ${fd}`);
+const fe=v("farolE"); if(fe && fe!=="Bom") gastos.push(`Farol (E): ${fe}`);
+const ld=v("lanternaD"); if(ld && ld!=="Bom") gastos.push(`Lanterna (D): ${ld}`);
+const le2=v("lanternaE"); if(le2 && le2!=="Bom") gastos.push(`Lanterna (E): ${le2}`);
+
+const pb=v("vidroParabrisa");
+if(pb && pb!=="OK") gastos.push(`Para-brisa: ${pb}`);
+
+const vidros = [
+  ["vidro_dd_chk","vidro_dd_act","Vidro dianteiro (D)"],
+  ["vidro_de_chk","vidro_de_act","Vidro dianteiro (E)"],
+  ["vidro_td_chk","vidro_td_act","Vidro traseiro (D)"],
+  ["vidro_te_chk","vidro_te_act","Vidro traseiro (E)"],
+  ["vidro_vg_chk","vidro_vg_act","Vigia"],
+];
+vidros.forEach(([chk,act,label])=>{
+  if(el(chk)?.checked){
+    const a=v(act)||"Reparo";
+    gastos.push(`${label}: ${a}`);
   }
+});
+
+if(v("testeRodagem")) gastos.push(v("testeRodagem"));
+
+if(gastos.length){
+  lines.push("");
+  lines.push("⚙️ *Gastos*");
+  lines.push(...gastos);
+}
 
   // 👨‍🔧 Responsáveis
   lines.push("");
@@ -704,8 +935,7 @@ el("btnCopy").addEventListener("click", async ()=>{
 });
 
 // Bind preview
-["modelo","ano","versao","placa","km","kmComprou","debitosSel","debitosValor","finSel","finValor","fipe","valorPretendido","laudo","laudoObs","leilao","motor","luzes","ar","testeRodagem","consultor","cliente","local","captacao"]
-.forEach(id=>{ el(id).addEventListener("input",()=>{ if(id==="laudo"){setStatusBadge();toggleLaudoDescricao();} atualizarPreview(); });
+["modelo","ano","versao","placa","km","kmComprou","debitosSel","debitosValor","finSel","finValor","fipe","valorPretendido","laudo","laudoObs","leilao","motor","luzes","testeRodagem","consultor","cliente","local","captacao","tablier","bancosOnde","bancosServico","volante","manopla","forro_motorista","forro_passageiro","forro_traseiro_d","forro_traseiro_e","forro_dianteiros","forro_traseiros","forro_todos","forroEstado","funilariaPecas","pneusQtd","pinturaCompleta","chuvaGranizo","paraChoqueD","paraChoqueT","farolD","farolE","lanternaD","lanternaE","vidroParabrisa","vidro_dd_chk","vidro_dd_act","vidro_de_chk","vidro_de_act","vidro_td_chk","vidro_td_act","vidro_te_chk","vidro_te_act","vidro_vg_chk","vidro_vg_act"] .forEach(id=>{ el(id).addEventListener("input",()=>{ if(id==="laudo"){setStatusBadge();toggleLaudoDescricao();} atualizarPreview(); });
               el(id).addEventListener("change",()=>{ if(id==="laudo"){setStatusBadge();toggleLaudoDescricao();} atualizarPreview(); }); });
 
 onAuthStateChanged(auth, async (u)=>{
