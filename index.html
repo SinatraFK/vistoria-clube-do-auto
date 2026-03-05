@@ -149,6 +149,26 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
 .badgeWarn{background:#fef9c3;color:#854d0e}
 .badgeBad{background:#fee2e2;color:#991b1b}
 
+
+/* ===== V9: Produtividade (autocomplete + atalhos + funilaria visual) ===== */
+.autoWrap{position:relative}
+.autoList{position:absolute;left:0;right:0;top:100%;z-index:50;background:#fff;border:1px solid #e5e7eb;border-radius:14px;box-shadow:0 10px 24px rgba(0,0,0,.12);max-height:220px;overflow:auto;margin-top:6px;display:none}
+.autoItem{padding:10px 12px;cursor:pointer;font-weight:800}
+.autoItem:hover{background:#f3f4f6}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.chipBtn{width:auto;padding:10px 12px;border-radius:999px;border:1px solid #e5e7eb;background:#fff;font-weight:900;cursor:pointer}
+.chipBtn:hover{background:#f3f4f6}
+.smallBtn{width:auto;padding:10px 12px;border-radius:12px;font-size:13px;font-weight:900}
+.btnDark{background:#111827;color:#fff}
+.btnDark:hover{opacity:.9}
+
+/* Funilaria visual modal */
+.partGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+@media (max-width:760px){.partGrid{grid-template-columns:repeat(2,1fr)}}
+.partBtn{padding:12px;border-radius:14px;border:1px solid #e5e7eb;background:#fff;font-weight:900;cursor:pointer}
+.partBtn.active{background:#dcfce7;border-color:#86efac}
+.partHint{font-size:12px;color:#6b7280;margin-top:8px}
+
 </style>
 </head>
 
@@ -216,7 +236,11 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
 
     <div class="card">
       <h3>🚗 Veículo</h3>
-      <label>Modelo <span class="hint">(obrigatório)</span></label><input id="modelo" placeholder="Ex: Fox Trend">
+      <label>Modelo <span class="hint">(obrigatório)</span></label>
+      <div class="autoWrap">
+        <input id="modelo" placeholder="Ex: Fox Trend">
+        <div class="autoList" id="modeloAutoList"></div>
+      </div>
       <div class="btnLine" style="margin-top:-2px">
         <button class="btnSecondary" type="button" id="btnFavOpen">⭐ Modelos rápidos</button>
       </div>
@@ -302,9 +326,25 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
 
       <label>Motor / mecânica (texto livre)</label>
       <textarea id="motor" placeholder="Ex: Rajando / Caixa de direção / Vazamento..."></textarea>
+      <div class="hint">Atalhos rápidos (toque para adicionar):</div>
+      <div class="chips" id="motorChips">
+        <button class="chipBtn" type="button" data-add-motor="Rajando">Rajando</button>
+        <button class="chipBtn" type="button" data-add-motor="Vazamento">Vazamento</button>
+        <button class="chipBtn" type="button" data-add-motor="Caixa de direção">Caixa direção</button>
+        <button class="chipBtn" type="button" data-add-motor="Correia">Correia</button>
+        <button class="chipBtn" type="button" data-add-motor="Embreagem">Embreagem</button>
+      </div>
 
       <label>Luzes do painel (texto livre)</label>
       <textarea id="luzes" placeholder="Ex: ABS / Injeção / Óleo..."></textarea>
+      <div class="hint">Atalhos rápidos (toque para adicionar):</div>
+      <div class="chips" id="luzesChips">
+        <button class="chipBtn" type="button" data-add-luzes="ABS">ABS</button>
+        <button class="chipBtn" type="button" data-add-luzes="Injeção">Injeção</button>
+        <button class="chipBtn" type="button" data-add-luzes="Óleo">Óleo</button>
+        <button class="chipBtn" type="button" data-add-luzes="Airbag">Airbag</button>
+        <button class="chipBtn" type="button" data-add-luzes="Bateria">Bateria</button>
+      </div>
 
       <h3 style="margin-top:14px">🪑 Gastos internos</h3>
 
@@ -379,6 +419,7 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
       <div class="row2">
         <div>
           <label>Funilaria (peças)</label>
+          <div class="btnLine" style="margin-top:6px"><button class="smallBtn btnDark" type="button" id="btnFunilariaVisual">🧩 Seleção visual</button></div>
           <select id="funilariaPecas">
             <option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
             <option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option>
@@ -634,6 +675,29 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
   </div>
 </div>
 
+
+<div class="modalOverlay" id="funilariaModal">
+  <div class="modalBox">
+    <div class="modalTop">
+      <div>
+        <div class="modalTitle">🧩 Funilaria (Seleção visual)</div>
+        <div class="modalHint">Marque as peças avariadas. Ao aplicar, ajustamos “Funilaria (peças)” automaticamente e adicionamos no relatório.</div>
+      </div>
+      <button class="btnX" type="button" id="btnFunilariaClose">Fechar</button>
+    </div>
+
+    <div class="card" style="box-shadow:none;border:1px solid #e5e7eb;margin-top:12px">
+      <div class="partGrid" id="funilariaParts"></div>
+      <div class="partHint" id="funilariaCountHint">0 peças selecionadas.</div>
+      <div class="btnLine" style="margin-top:12px">
+        <button class="btnSecondary" type="button" id="btnFunilariaClear">Limpar seleção</button>
+        <button class="btnP" type="button" id="btnFunilariaApply">Aplicar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <textarea id="copyFallback" style="position:fixed;left:-9999px;top:-9999px;"></textarea>
 
 <script>
@@ -827,7 +891,9 @@ function montar(){
     if(pecas>0) parts.push(`${pecas} ${pecas===1?"peça":"peças"}`);
     if(pintura) parts.push("Pintura completa");
     if(granizo) parts.push("Chuva de granizo");
-    gastos.push(`Funilaria: ${parts.join(" + ")}`);
+    let extra="";
+    try{ if(funilariaSelected && funilariaSelected.length){ extra = ` (visual: ${funilariaSelected.join(", ")})`; } }catch(e){}
+    gastos.push(`Funilaria: ${parts.join(" + ")}${extra}`);
   }
 
   const pneus = Number(v("pneusQtd")||"0");
@@ -888,6 +954,87 @@ function montar(){
 
 function atualizarPreview(){ el("preview").innerText = montar(); }
 
+
+// ===== V9: Autocomplete de Modelo (rápido) =====
+const LAST_MODELOS_KEY = "clubeauto_last_modelos_v1";
+const MAX_MODELOS = 30;
+
+function loadModelosList(){
+  const set = new Set();
+  try{
+    const raw = localStorage.getItem(LAST_MODELOS_KEY) || "[]";
+    const arr = JSON.parse(raw);
+    if(Array.isArray(arr)) arr.forEach(x=>{ if(x) set.add(String(x)); });
+  }catch(e){}
+  // adiciona favoritos FIPE (se existir)
+  try{
+    const favRaw = localStorage.getItem("fipeFavModels_v1") || "[]";
+    const fav = JSON.parse(favRaw);
+    if(Array.isArray(fav)){
+      fav.forEach(x=>{ if(x && x.name) set.add(String(x.name)); });
+    }
+  }catch(e){}
+  return Array.from(set).slice(0, 200);
+}
+
+function saveModeloToRecent(name){
+  const n = (name||"").toString().trim();
+  if(!n) return;
+  try{
+    const raw = localStorage.getItem(LAST_MODELOS_KEY) || "[]";
+    let arr = [];
+    try{ arr = JSON.parse(raw); }catch(e){ arr = []; }
+    if(!Array.isArray(arr)) arr = [];
+    arr = [n, ...arr.filter(x=>String(x).toLowerCase()!==n.toLowerCase())].slice(0, MAX_MODELOS);
+    localStorage.setItem(LAST_MODELOS_KEY, JSON.stringify(arr));
+  }catch(e){}
+}
+
+function showModeloList(items){
+  const box = el("modeloAutoList");
+  if(!box) return;
+  if(!items.length){ box.style.display="none"; box.innerHTML=""; return; }
+  box.innerHTML = items.slice(0, 10).map(it=>`<div class="autoItem" data-modelo="${escapeHtml(it)}">${escapeHtml(it)}</div>`).join("");
+  box.style.display = "block";
+  box.querySelectorAll("[data-modelo]").forEach(div=>{
+    div.addEventListener("click", ()=>{
+      el("modelo").value = div.dataset.modelo || "";
+      box.style.display="none";
+      saveModeloToRecent(el("modelo").value);
+      atualizarPreview();
+    });
+  });
+}
+
+function closeModeloList(){
+  const box = el("modeloAutoList");
+  if(box){ box.style.display="none"; }
+}
+
+el("modelo").addEventListener("input", ()=>{
+  const q = (v("modelo")||"").toLowerCase();
+  if(!q){ closeModeloList(); return; }
+  const all = loadModelosList();
+  const hits = all.filter(x=>x.toLowerCase().includes(q));
+  showModeloList(hits);
+});
+
+el("modelo").addEventListener("blur", ()=>{
+  // pequeno delay pra permitir click
+  setTimeout(()=>{
+    closeModeloList();
+    saveModeloToRecent(v("modelo"));
+  }, 150);
+});
+
+document.addEventListener("click",(e)=>{
+  const box = el("modeloAutoList");
+  if(!box) return;
+  if(e.target===el("modelo") || box.contains(e.target)) return;
+  closeModeloList();
+});
+
+
 async function copiar(texto){
   try{ await navigator.clipboard.writeText(texto); return true; }catch(e){}
   const ta=el("copyFallback"); ta.value=texto; ta.focus(); ta.select();
@@ -916,6 +1063,47 @@ function saveLastConsultor(){
 }
 el("consultor").addEventListener("blur", ()=>{ saveLastConsultor(); atualizarPreview(); });
 el("consultor").addEventListener("change", ()=>{ saveLastConsultor(); atualizarPreview(); });
+
+
+// ===== V9: Memória rápida (consultor já existe) + local + captação + avaliadores =====
+const LAST_LOCAL_KEY = "clubeauto_last_local_v1";
+const LAST_CAPTACAO_KEY = "clubeauto_last_captacao_v1";
+const LAST_AVALIADORES_KEY = "clubeauto_last_avaliadores_v1";
+
+function loadLastLocalCaptacaoAvaliadores(){
+  try{
+    const lastLocal = localStorage.getItem(LAST_LOCAL_KEY) || "";
+    if(lastLocal && !v("local")) el("local").value = lastLocal;
+
+    const lastCap = localStorage.getItem(LAST_CAPTACAO_KEY) || "";
+    if(lastCap && !v("captacao")) el("captacao").value = lastCap;
+
+    const rawAv = localStorage.getItem(LAST_AVALIADORES_KEY) || "";
+    if(rawAv){
+      const arr = JSON.parse(rawAv);
+      if(Array.isArray(arr) && arr.length){
+        document.querySelectorAll(".avChk").forEach(chk=>{
+          chk.checked = arr.includes(chk.value);
+        });
+      }
+    }
+  }catch(e){}
+}
+
+function saveLastLocalCaptacaoAvaliadores(){
+  try{
+    const loc = v("local");
+    if(loc) localStorage.setItem(LAST_LOCAL_KEY, loc);
+    const cap = v("captacao");
+    if(cap) localStorage.setItem(LAST_CAPTACAO_KEY, cap);
+    const av = getAvaliadores();
+    if(av && av.length) localStorage.setItem(LAST_AVALIADORES_KEY, JSON.stringify(av));
+  }catch(e){}
+}
+el("local").addEventListener("blur", ()=>{ saveLastLocalCaptacaoAvaliadores(); atualizarPreview(); });
+el("captacao").addEventListener("change", ()=>{ saveLastLocalCaptacaoAvaliadores(); atualizarPreview(); });
+document.querySelectorAll(".avChk").forEach(c=>c.addEventListener("change", ()=>{ saveLastLocalCaptacaoAvaliadores(); atualizarPreview(); }));
+
 
 let lastSaveSig = "";
 let savingNow = false;
@@ -957,6 +1145,9 @@ async function salvarUmaVez(texto){
     lastSaveSig = sig;
     lastSaveAt = now;
     el("saveHint").innerHTML="<span class='ok'>Salvo na nuvem.</span>";
+    try{ saveModeloToRecent(v("modelo")); }catch(e){}
+    try{ saveLastLocalCaptacaoAvaliadores(); }catch(e){}
+    try{ saveLastConsultor(); }catch(e){}
     return { saved:true };
   }catch(e){
     el("saveHint").innerHTML="<span class='warn'>Falha ao salvar:</span> "+(e?.message||e);
@@ -1264,6 +1455,7 @@ el("btnGuest").addEventListener("click", ()=>{
   showApp(); el("whoami").textContent="Convidado";
   currentRole="convidado"; computePermissions(); setRoleUI(); setTab("nova");
   loadLastConsultor();
+  loadLastLocalCaptacaoAvaliadores();
 });
 el("btnLogout").addEventListener("click", async ()=>{ isGuest=false; try{ await signOut(auth);}catch(e){} showLogin(); });
 el("btnSwitchUser").addEventListener("click", ()=>{ isGuest=false; showLogin(); });
@@ -1308,6 +1500,7 @@ onAuthStateChanged(auth, async (u)=>{
     try{ currentRole = await ensureUserDoc(u); }catch(e){ currentRole = HARD_ADMINS.has(lower(u.email||"")) ? "admin":"consultor"; }
     computePermissions(); setRoleUI(); setTab("nova");
     loadLastConsultor();
+  loadLastLocalCaptacaoAvaliadores();
   }else{
     showLogin();
     currentRole="consultor"; computePermissions(); setRoleUI();
@@ -1525,6 +1718,92 @@ el("btnFipeApply").addEventListener("click", ()=>{
   atualizarPreview();
   showFipeModal(false);
 });
+
+
+
+// ===== V9: Funilaria visual =====
+const FUNI_KEY = "clubeauto_funilaria_parts_v1";
+let funilariaSelected = [];
+
+function loadFunilariaSelected(){
+  try{
+    const raw = localStorage.getItem(FUNI_KEY) || "[]";
+    const arr = JSON.parse(raw);
+    if(Array.isArray(arr)) funilariaSelected = arr.filter(Boolean);
+  }catch(e){ funilariaSelected = []; }
+}
+function saveFunilariaSelected(){
+  try{ localStorage.setItem(FUNI_KEY, JSON.stringify(funilariaSelected||[])); }catch(e){}
+}
+function showFunilariaModal(show){
+  const m = el("funilariaModal");
+  if(!m) return;
+  m.style.display = show ? "flex" : "none";
+}
+function renderFunilariaParts(){
+  const wrap = el("funilariaParts");
+  if(!wrap) return;
+  const parts = ["Capô", "Para-lama D", "Para-lama E", "Porta Dianteira D", "Porta Dianteira E", "Porta Traseira D", "Porta Traseira E", "Teto", "Porta-malas", "Para-choque Dianteiro", "Para-choque Traseiro", "Retrovisor D", "Retrovisor E"];
+  wrap.innerHTML = parts.map(p=>{
+    const on = funilariaSelected.includes(p);
+    return `<button type="button" class="partBtn ${on?"active":""}" data-part="${escapeHtml(p)}">${escapeHtml(p)}</button>`;
+  }).join("");
+  wrap.querySelectorAll("[data-part]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const p = btn.dataset.part || "";
+      if(!p) return;
+      if(funilariaSelected.includes(p)) funilariaSelected = funilariaSelected.filter(x=>x!==p);
+      else funilariaSelected = [...funilariaSelected, p];
+      renderFunilariaParts();
+    });
+  });
+  el("funilariaCountHint").innerText = `${funilariaSelected.length} peças selecionadas.`;
+}
+
+function applyFunilariaToForm(){
+  // Ajusta o select de peças para pelo menos a quantidade selecionada (sem ultrapassar 12)
+  const qtd = Math.min(funilariaSelected.length, 12);
+  if(qtd>0){
+    el("funilariaPecas").value = String(qtd);
+  }
+  atualizarPreview();
+  saveFunilariaSelected();
+}
+
+loadFunilariaSelected();
+
+el("btnFunilariaVisual").addEventListener("click", ()=>{
+  renderFunilariaParts();
+  showFunilariaModal(true);
+});
+el("btnFunilariaClose").addEventListener("click", ()=>showFunilariaModal(false));
+el("funilariaModal").addEventListener("click",(ev)=>{ if(ev.target && ev.target.id==="funilariaModal") showFunilariaModal(false); });
+el("btnFunilariaClear").addEventListener("click", ()=>{ funilariaSelected=[]; renderFunilariaParts(); });
+el("btnFunilariaApply").addEventListener("click", ()=>{ applyFunilariaToForm(); showFunilariaModal(false); });
+
+
+// ===== V9: Atalhos rápidos (chips) =====
+function appendToField(fieldId, text){
+  const e = el(fieldId);
+  if(!e) return;
+  const cur = (e.value||"").trim();
+  if(!cur) e.value = text;
+  else{
+    // evita duplicar igual
+    const parts = cur.split("/").map(x=>x.trim()).filter(Boolean);
+    if(parts.map(x=>x.toLowerCase()).includes(text.toLowerCase())) return;
+    e.value = cur + " / " + text;
+  }
+  atualizarPreview();
+}
+
+document.querySelectorAll("[data-add-motor]").forEach(btn=>{
+  btn.addEventListener("click", ()=> appendToField("motor", btn.getAttribute("data-add-motor")));
+});
+document.querySelectorAll("[data-add-luzes]").forEach(btn=>{
+  btn.addEventListener("click", ()=> appendToField("luzes", btn.getAttribute("data-add-luzes")));
+});
+
 
 setStatusBadge(); toggleLaudoDescricao(); atualizarPreview();
 </script>
