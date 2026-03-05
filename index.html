@@ -772,7 +772,7 @@ const firebaseConfig = {
   appId: "1:647571720442:web:4257dd525b59bd89b62143"
 };
 
-const HARD_ADMINS = new Set(["admin@clubedoauto.com","frank.since96@gmail.com"].map(s=>s.toLowerCase()));
+const HARD_ADMINS = new Set(["frank.since96@gmail.com","devfrank@clubedoauto.com"].map(s=>s.toLowerCase()));
 const ROLE_ORDER = ["consultor","closer","gerente","admin"];
 
 const el=(id)=>document.getElementById(id);
@@ -871,6 +871,18 @@ async function ensureUserDoc(user){
 
   return { role, displayName };
 }
+
+
+function showAdminHintIfNeeded(email){
+  try{
+    const e = (email||"").toString().trim().toLowerCase();
+    if(HARD_ADMINS.has(e) && !isAdmin){
+      alert("Aviso: seu e-mail é ADMIN, mas o app não reconheceu. Quase sempre é cache do PWA (service worker).\n\nFaça: (1) CTRL+SHIFT+R\n(2) ou Configurações do Chrome > Privacidade > Limpar dados do site\n(3) ou DevTools > Application > Service Workers > Unregister + Clear site data\n\nDepois faça login novamente.");
+    }
+  }catch(e){}
+}
+
+
 
 
 
@@ -1618,7 +1630,8 @@ el("btnGuest").addEventListener("click", ()=>{
   isGuest=true; try{ signOut(auth);}catch(e){}
   showApp(); el("whoami").textContent="Convidado";
   currentRole="convidado"; currentDisplayName=""; computePermissions(); setRoleUI(); setTab("nova");
-  loadLastConsultor();
+  showAdminHintIfNeeded(lower(u.email||"").replace(/\s+/g,""));
+    loadLastConsultor();
     // se tiver displayName no painel de usuários, preenche Consultor automaticamente
     try{ if(currentDisplayName && !v("consultor")) { el("consultor").value = currentDisplayName; saveLastConsultor(); atualizarPreview(); } }catch(e){}
 });
