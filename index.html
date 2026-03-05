@@ -85,8 +85,8 @@ button{width:100%;
 .histItem{border:1px solid #e5e7eb;border-radius:14px;padding:12px;margin-bottom:10px;background:#fafafa}
 .histTop{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .histTitle{font-weight:900}
-.histMeta{font-size:12px;color:#666;margin-top:4px}
-.histBtns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.histMeta{font-size:12px;color:#666;margin-top:4px;white-space:pre-line}
+.histBtns{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
 @media (max-width:760px){.histBtns{grid-template-columns:1fr 1fr}}
 .mini{padding:10px;border-radius:12px;font-size:13px;font-weight:900;color:#fff;border:none;cursor:pointer}
 .mOpen{background:#111827}
@@ -609,6 +609,10 @@ button{width:100%;
     <div class="card">
       <h3>☁️ Histórico</h3>
       <div class="hint" id="histHint"></div>
+      <label style="margin-top:10px">🔎 Buscar no histórico</label>
+      <input id="histSearch" placeholder="Digite placa, modelo, cliente ou consultor...">
+      <div class="hint">Filtra em tempo real. Ex: EPX5C99, Gol, João, Frank</div>
+
       <div id="historicoList"></div>
     </div>
   </div>
@@ -1135,55 +1139,88 @@ function openHistorico(){
   const qy=query(collection(db,"vistorias"), orderBy("createdAt","desc"), limit(200));
   unsubHist=onSnapshot(qy,(snap)=>{
     const items=snap.docs.map(d=>({id:d.id,...d.data()}));
-    el("historicoList").innerHTML = items.map(it=>{
+
+    const getSearch = ()=> (el("histSearch")?.value || "").toString().trim().toLowerCase();
+    const matches = (it, q)=>{
+      if(!q) return true;
+      const hay = [
+        it.placa||"", it.modelo||"", it.cliente||"", it.consultor||"",
+        it.createdByEmail||"", (it.laudo||"")
+      ].join(" ").toString().toLowerCase();
+      return hay.includes(q);
+    };
+
+    const render = ()=>{
+      const q = getSearch();
+      const filtered = items.filter(it=>matches(it,q));
+
+      el("historicoList").innerHTML = filtered.map(it=>{(it=>{
       const la=(it.laudo||"APROVADO").toUpperCase();
       const icon=(la==="REPROVADO")?"🔴":(la==="APONTAMENTO")?"🟡":"🟢";
       const title=`${icon} ${escapeHtml(it.modelo||"-")} — ${escapeHtml(it.placa||"-")}`;
-      const meta=`${escapeHtml(formatDate(it.createdAt))} • ${escapeHtml(it.createdByEmail||"")}`;
-      const delBtn = isAdmin ? `<button class="mini" style="background:#b91c1c" data-del="${it.id}">Excluir</button>` : "";
+      const extra = [it.cliente ? ("Cliente: " + it.cliente) : "", it.consultor ? ("Consultor: " + it.consultor) : ""].filter(Boolean).join(" • ");
+      const meta=`${escapeHtml(formatDate(it.createdAt))} • ${escapeHtml(it.createdByEmail||"")}` + (extra?(`
+${escapeHtml(extra)}`):"");
+      const delBtn = isAdmin ? `<button class="mini" style="background:#b91c1c" data-del="${it.id}">🗑 Excluir</button>` : "";
       return `<div class="histItem">
         <div class="histTop"><div><div class="histTitle">${title}</div><div class="histMeta">${meta}</div></div><div class="histMeta"><b>${escapeHtml(la)}</b></div></div>
         <div class="histBtns">
-          <button class="mini mOpen" data-open="${it.id}">Abrir</button>
-          <button class="mini mCopy" data-copy="${it.id}">Copiar</button>
-          <button class="mini mSend" data-send="${it.id}">Whats</button>
-          <button class="mini" style="background:#0ea5e9" data-client="${it.id}">Cliente</button>
+          <button class="mini mOpen" data-open="${it.id}">📄 Abrir</button>
+          <button class="mini mCopy" data-copy="${it.id}">📋 Copiar</button>
+          <button class="mini mSend" data-send="${it.id}">📲 Whats</button>
+          <button class="mini" style="background:#0ea5e9" data-client="${it.id}">💬 Cliente</button>
           ${delBtn}
         </div>
       </div>`;
     }).join("") || "<div class='histItem'><b>Nenhum registro.</b></div>";
 
-    el("historicoList").querySelectorAll("[data-open]").forEach(btn=>{
-      btn.addEventListener("click",()=>{ const it=items.find(x=>x.id===btn.dataset.open); if(!it) return; el("preview").innerText=(it.reportText||""); setTab("nova"); window.scrollTo({top:0,behavior:"smooth"}); });
-    });
-    el("historicoList").querySelectorAll("[data-copy]").forEach(btn=>{
-      btn.addEventListener("click",async()=>{ const it=items.find(x=>x.id===btn.dataset.copy); if(!it) return; const ok=await copiar(it.reportText||""); if(ok) alert("Copiado!"); });
-    });
-    el("historicoList").querySelectorAll("[data-send]").forEach(btn=>{
-      btn.addEventListener("click",()=>{ const it=items.find(x=>x.id===btn.dataset.send); if(!it) return; abrirWhats(it.reportText||""); });
-    });
-    el("historicoList").querySelectorAll("[data-client]").forEach(btn=>{
-      btn.addEventListener("click",()=>{
-        const it=items.find(x=>x.id===btn.dataset.client);
-        if(!it) return;
-        const msg = montarMsgCliente(it.cliente||"");
-        abrirWhatsPara(it.telefone||"", msg);
+      }).join("") || "<div class='histItem'><b>Nenhum registro.</b></div>";
+
+      // Bind actions (sempre busca pelo id dentro de 'items' completo)
+      el("historicoList").querySelectorAll("[data-open]").forEach(btn=>{
+        btn.addEventListener("click",()=>{ const it=items.find(x=>x.id===btn.dataset.open); if(!it) return; el("preview").innerText=(it.reportText||""); setTab("nova"); window.scrollTo({top:0,behavior:"smooth"}); });
       });
-    });
-    if(isAdmin){
-      el("historicoList").querySelectorAll("[data-del]").forEach(btn=>{
-        btn.addEventListener("click", async ()=>{
-          const id = btn.dataset.del;
-          const ok = confirm("Excluir este relatório do histórico? Essa ação não pode ser desfeita.");
-          if(!ok) return;
-          try{
-            await deleteDoc(doc(db,"vistorias", id));
-            alert("Excluído!");
-          }catch(e){
-            alert("Erro ao excluir: "+(e?.message||e));
-          }
+      el("historicoList").querySelectorAll("[data-copy]").forEach(btn=>{
+        btn.addEventListener("click",async()=>{ const it=items.find(x=>x.id===btn.dataset.copy); if(!it) return; const ok=await copiar(it.reportText||""); if(ok) alert("Copiado!"); });
+      });
+      el("historicoList").querySelectorAll("[data-send]").forEach(btn=>{
+        btn.addEventListener("click",()=>{ const it=items.find(x=>x.id===btn.dataset.send); if(!it) return; abrirWhats(it.reportText||""); });
+      });
+      el("historicoList").querySelectorAll("[data-client]").forEach(btn=>{
+        btn.addEventListener("click",()=>{
+          const it=items.find(x=>x.id===btn.dataset.client);
+          if(!it) return;
+          const msg = montarMsgCliente(it.cliente||"");
+          abrirWhatsPara(it.telefone||"", msg);
         });
       });
+
+      if(isAdmin){
+        el("historicoList").querySelectorAll("[data-del]").forEach(btn=>{
+          btn.addEventListener("click", async ()=>{
+            const id = btn.dataset.del;
+            const ok = confirm("Excluir este relatório do histórico? Essa ação não pode ser desfeita.");
+            if(!ok) return;
+            try{
+              await deleteDoc(doc(db,"vistorias", id));
+              alert("Excluído!");
+            }catch(e){
+              alert("Erro ao excluir: "+(e?.message||e));
+            }
+          });
+        });
+      }
+    };
+
+    // primeira renderização + busca em tempo real
+    render();
+    const hs = el("histSearch");
+    if(hs && !hs.dataset.bound){
+      hs.dataset.bound = "1";
+      hs.addEventListener("input", render);
+      hs.addEventListener("change", render);
+    }
+
     }
   },(err)=>{
     el("historicoList").innerHTML="<div class='histItem'><b>Erro:</b> "+escapeHtml(err?.message||err)+"</div>";
