@@ -773,12 +773,12 @@ const firebaseConfig = {
 };
 
 const HARD_ADMINS = new Set(["frank.since96@gmail.com","devfrank@clubedoauto.com"].map(s=>s.toLowerCase()));
+const HARD_ADMIN_UIDS = new Set(["yehk37aYXJcVm5zljR7g4BfJ4vz2","X9LYyrdQI2Qr4n10e9ES6lSzjPj2"]);
+function isHardAdmin(){
+  try{ return HARD_ADMIN_UIDS.has(auth?.currentUser?.uid || ""); }catch(e){ return false; }
+}
 
-function isAdminEmail(){
-  try{
-    const e = lower(auth?.currentUser?.email || "").replace(/\s+/g,"");
-    return HARD_ADMINS.has(e);
-  }catch(e){ return false; }
+
 }
 
 
@@ -822,7 +822,7 @@ let isGuest=false, currentRole="consultor", canHistory=false, isAdmin=false, can
 let unsubHist=null, unsubUsers=null;
 
 function computePermissions(){
-  const hard = isAdminEmail();
+  const hard = isHardAdmin();
   isAdmin = hard || (currentRole==="admin");
   canHistory = isAdmin || (currentRole==="gerente"||currentRole==="closer");
 }
@@ -843,11 +843,11 @@ async function ensureUserDoc(user){
   const ref=doc(db,"users",uid);
   const snap=await getDoc(ref);
 
-  const isHard = HARD_ADMINS.has(email);
-  const defaultRole = isHard ? "admin" : "consultor";
+  const isHard = HARD_ADMIN_UIDS.has(uid);
+  const defaultRole = isHard ? "admin" : (HARD_ADMINS.has(email) ? "admin" : "consultor");
   const defaultName = suggestDisplayNameFromEmail(email) || "";
 
-  // Hard admins SEMPRE são admin (mesmo se o Firestore estiver bloqueando escrita)
+  // Hard admins (por UID) SEMPRE são admin (mesmo se o Firestore estiver bloqueando escrita)
   if(isHard){
     try{
       const existingName = snap.exists() ? ((snap.data()||{}).displayName||"") : "";
@@ -892,12 +892,20 @@ async function ensureUserDoc(user){
 }
 
 
-function showAdminHintIfNeeded(email){
+
+function showAdminHintIfNeeded(){
   try{
-    const e = (email||"").toString().trim().toLowerCase();
-    if(HARD_ADMINS.has(e) && !isAdmin){
-      alert("Aviso: seu e-mail é ADMIN, mas o app não reconheceu. Quase sempre é cache do PWA (service worker).\n\nFaça: (1) CTRL+SHIFT+R\n(2) ou Configurações do Chrome > Privacidade > Limpar dados do site\n(3) ou DevTools > Application > Service Workers > Unregister + Clear site data\n\nDepois faça login novamente.");
+    if(HARD_ADMIN_UIDS.has(auth?.currentUser?.uid||"") && !isAdmin){
+      alert("Aviso: seu usuário é ADMIN (por UID), mas o app não reconheceu. Quase sempre é cache do PWA (service worker).
+
+Faça: (1) CTRL+SHIFT+R
+(2) ou Configurações do Chrome > Privacidade > Limpar dados do site
+(3) ou DevTools > Application > Service Workers > Unregister + Clear site data
+
+Depois faça login novamente.");
     }
+  }catch(e){}
+}
   }catch(e){}
 }
 
@@ -1649,7 +1657,7 @@ el("btnGuest").addEventListener("click", ()=>{
   isGuest=true; try{ signOut(auth);}catch(e){}
   showApp(); el("whoami").textContent="Convidado";
   currentRole="convidado"; currentDisplayName=""; computePermissions(); setRoleUI(); setTab("nova");
-  showAdminHintIfNeeded(lower(u.email||"").replace(/\s+/g,""));
+  showAdminHintIfNeeded();
     loadLastConsultor();
     // se tiver displayName no painel de usuários, preenche Consultor automaticamente
     try{ if(currentDisplayName && !v("consultor")) { el("consultor").value = currentDisplayName; saveLastConsultor(); atualizarPreview(); } }catch(e){}
@@ -1697,7 +1705,7 @@ onAuthStateChanged(auth, async (u)=>{
     try{ const info = await ensureUserDoc(u); currentRole = (info.role||"consultor").toString().trim().toLowerCase(); currentDisplayName = (info.displayName||"").toString(); }
     catch(e){ currentRole = HARD_ADMINS.has(lower(u.email||"").replace(/\s+/g,"")) ? "admin":"consultor"; currentDisplayName = suggestDisplayNameFromEmail(lower(u.email||"")) || ""; }
     // blindagem: hard admins sempre liberam painel/aba usuários
-    if(HARD_ADMINS.has(lower(u.email||"").replace(/\s+/g,""))){ currentRole = "admin"; }
+    if(HARD_ADMIN_UIDS.has(u.uid)){ currentRole = "admin"; }
     computePermissions(); setRoleUI(); setTab("nova");
     loadLastConsultor();
   }else{
