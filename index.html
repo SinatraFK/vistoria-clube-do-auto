@@ -820,12 +820,31 @@ function showApp(){ el("screenLogin").style.display="none"; el("screenApp").clas
 
 async function ensureUserDoc(user){
   const uid=user.uid;
-  const email=lower(user.email||"");
+  const email=lower(user.email||"").replace(/\s+/g,"");
   const ref=doc(db,"users",uid);
   const snap=await getDoc(ref);
 
-  const defaultRole = HARD_ADMINS.has(email) ? "admin" : "consultor";
+  const isHard = HARD_ADMINS.has(email);
+  const defaultRole = isHard ? "admin" : "consultor";
   const defaultName = suggestDisplayNameFromEmail(email) || "";
+
+  // Se for hard admin, forçamos role=admin sempre (merge). Isso recupera o painel mesmo se alguém mudou o cargo.
+  if(isHard){
+    try{
+      const existingName = snap.exists() ? ((snap.data()||{}).displayName||"") : "";
+      await setDoc(ref,{
+        uid,email,
+        role:"admin",
+        displayName: (existingName || defaultName || ""),
+        updatedAt:serverTimestamp(),
+        ...(snap.exists()?{}:{createdAt:serverTimestamp()})
+      },{merge:true});
+      return { role:"admin", displayName: (existingName || defaultName || "") };
+    }catch(e){
+      // Mesmo se falhar gravar (regras), mantemos UI como admin
+      return { role:"admin", displayName: defaultName || "" };
+    }
+  }
 
   if(!snap.exists()){
     await setDoc(ref,{
@@ -841,17 +860,10 @@ async function ensureUserDoc(user){
   const data=snap.data()||{};
   let role=(data.role || defaultRole).toString();
   let displayName=(data.displayName || defaultName).toString();
-
-  // garante admin fixo pros hard admins
-  if(HARD_ADMINS.has(email) && role!=="admin"){
-    role="admin";
-  }
-  // garante displayName mínimo
   if(!displayName && defaultName) displayName = defaultName;
 
-  // salva correções se necessário
   const patch = {};
-  if(data.role !== role) patch.role = role;
+  if((data.role||"") !== role) patch.role = role;
   if((data.displayName||"") !== displayName) patch.displayName = displayName;
   if(Object.keys(patch).length){
     patch.updatedAt = serverTimestamp();
@@ -860,6 +872,7 @@ async function ensureUserDoc(user){
 
   return { role, displayName };
 }
+
 
 
 function onlyDigits(s){ return (s??"").toString().replace(/[^\d]/g,""); }
