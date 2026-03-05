@@ -773,6 +773,15 @@ const firebaseConfig = {
 };
 
 const HARD_ADMINS = new Set(["frank.since96@gmail.com","devfrank@clubedoauto.com"].map(s=>s.toLowerCase()));
+
+function isAdminEmail(){
+  try{
+    const e = lower(auth?.currentUser?.email || "").replace(/\s+/g,"");
+    return HARD_ADMINS.has(e);
+  }catch(e){ return false; }
+}
+
+
 const ROLE_ORDER = ["consultor","closer","gerente","admin"];
 
 const el=(id)=>document.getElementById(id);
@@ -812,8 +821,18 @@ await setPersistence(auth, browserLocalPersistence);
 let isGuest=false, currentRole="consultor", canHistory=false, isAdmin=false, canPainel=false;
 let unsubHist=null, unsubUsers=null;
 
-function computePermissions(){ canHistory=(currentRole==="admin"||currentRole==="gerente"||currentRole==="closer"); isAdmin=(currentRole==="admin"); canPainel=canHistory; }
-function setRoleUI(){ el("roleTxt").textContent=currentRole; el("tabUsers").classList.toggle("hidden", !isAdmin); el("tabPainel").classList.toggle("hidden", !canPainel); }
+function computePermissions(){
+  const hard = isAdminEmail();
+  isAdmin = hard || (currentRole==="admin");
+  canHistory = isAdmin || (currentRole==="gerente"||currentRole==="closer");
+}
+
+function setRoleUI(){
+  const shownRole = isAdmin ? "admin" : currentRole;
+  el("roleTxt").textContent = shownRole;
+  el("tabUsers").classList.toggle("hidden", !isAdmin);
+}
+
 
 function showLogin(){ el("screenLogin").style.display="block"; el("screenApp").classList.add("hidden"); }
 function showApp(){ el("screenLogin").style.display="none"; el("screenApp").classList.remove("hidden"); }
