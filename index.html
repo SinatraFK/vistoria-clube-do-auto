@@ -1153,7 +1153,7 @@ async function carregarPainel(){
       {t:"Aprovados", v: aprov, s: badgeForLaudo("APROVADO")},
       {t:"Apontamento", v: apont, s: badgeForLaudo("APONTAMENTO")},
       {t:"Reprovados", v: repr, s: badgeForLaudo("REPROVADO")},
-      {t:"Valor pretendido (soma)", v: fmtMoney(somaValorPret), s: "Estimativa pelo campo Valor pretendido"},
+      
     ];
 
     el("painelKpis").innerHTML = kpis.map(k=>
@@ -1169,7 +1169,7 @@ async function carregarPainel(){
           <td>${u.aprov}</td>
           <td>${u.apont}</td>
           <td>${u.repr}</td>
-          <td>${escapeHtml(fmtMoney(u.valor))}</td>
+          
         </tr>`;
       }).join("");
 
@@ -1182,7 +1182,7 @@ async function carregarPainel(){
             <th>Aprov.</th>
             <th>Apont.</th>
             <th>Reprov.</th>
-            <th>Valor pretendido</th>
+            
           </tr>
         </thead>
         <tbody>
