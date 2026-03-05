@@ -609,26 +609,9 @@ button{width:100%;
     <div class="card">
       <h3>☁️ Histórico</h3>
       <div class="hint" id="histHint"></div>
-      <label style="margin-top:10px">🔎 Buscar</label>
-      <input id="histSearch" placeholder="Placa, modelo, cliente ou consultor...">
-      <div class="row2" style="margin-top:6px">
-        <div>
-          <label>Período</label>
-          <select id="histPeriodo">
-            <option value="tudo">Tudo</option>
-            <option value="hoje">Hoje</option>
-            <option value="7d">Últimos 7 dias</option>
-            <option value="30d">Últimos 30 dias</option>
-          </select>
-        </div>
-        <div>
-          <label>Consultor</label>
-          <select id="histConsultor">
-            <option value="">Todos</option>
-          </select>
-        </div>
-      </div>
-      <div class="hint">Dica: o filtro usa os dados salvos (cliente/consultor/placa/modelo).</div>
+      <label style="margin-top:10px">🔎 Buscar no histórico</label>
+      <input id="histSearch" placeholder="Digite placa, modelo, cliente ou consultor...">
+      <div class="hint">Filtra em tempo real. Ex: EPX5C99, Gol, João, Frank</div>
 
       <div id="historicoList"></div>
     </div>
@@ -779,14 +762,6 @@ const el=(id)=>document.getElementById(id);
 const v=(id)=>(el(id).value??"").toString().trim();
 const lower=(s)=>(s??"").toString().trim().toLowerCase();
 
-function suggestDisplayNameFromEmail(email){
-  const e = (email||"").toString().trim().toLowerCase();
-  const user = (e.split("@")[0]||"").replace(/[._-]+/g," ").trim();
-  if(!user) return "";
-  return user.split(" ").filter(Boolean).map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(" ");
-}
-
-
 function getAvaliadores(){
   return Array.from(document.querySelectorAll(".avChk:checked")).map(x=>x.value).filter(Boolean);
 }
@@ -819,61 +794,21 @@ function showLogin(){ el("screenLogin").style.display="block"; el("screenApp").c
 function showApp(){ el("screenLogin").style.display="none"; el("screenApp").classList.remove("hidden"); }
 
 async function ensureUserDoc(user){
-  const uid=user.uid;
-  const email=lower(user.email||"").replace(/\s+/g,"");
-  const ref=doc(db,"users",uid);
-  const snap=await getDoc(ref);
-
-  const isHard = HARD_ADMINS.has(email);
-  const defaultRole = isHard ? "admin" : "consultor";
-  const defaultName = suggestDisplayNameFromEmail(email) || "";
-
-  // Se for hard admin, forçamos role=admin sempre (merge). Isso recupera o painel mesmo se alguém mudou o cargo.
-  if(isHard){
-    try{
-      const existingName = snap.exists() ? ((snap.data()||{}).displayName||"") : "";
-      await setDoc(ref,{
-        uid,email,
-        role:"admin",
-        displayName: (existingName || defaultName || ""),
-        updatedAt:serverTimestamp(),
-        ...(snap.exists()?{}:{createdAt:serverTimestamp()})
-      },{merge:true});
-      return { role:"admin", displayName: (existingName || defaultName || "") };
-    }catch(e){
-      // Mesmo se falhar gravar (regras), mantemos UI como admin
-      return { role:"admin", displayName: defaultName || "" };
-    }
-  }
-
+  const uid=user.uid; const email=lower(user.email||"");
+  const ref=doc(db,"users",uid); const snap=await getDoc(ref);
   if(!snap.exists()){
-    await setDoc(ref,{
-      uid,email,
-      role: defaultRole,
-      displayName: defaultName,
-      createdAt:serverTimestamp(),
-      updatedAt:serverTimestamp()
-    },{merge:true});
-    return { role: defaultRole, displayName: defaultName };
+    const role=HARD_ADMINS.has(email)?"admin":"consultor";
+    await setDoc(ref,{uid,email,role,createdAt:serverTimestamp(),updatedAt:serverTimestamp()},{merge:true});
+    return role;
   }
-
   const data=snap.data()||{};
-  let role=(data.role || defaultRole).toString();
-  let displayName=(data.displayName || defaultName).toString();
-  if(!displayName && defaultName) displayName = defaultName;
-
-  const patch = {};
-  if((data.role||"") !== role) patch.role = role;
-  if((data.displayName||"") !== displayName) patch.displayName = displayName;
-  if(Object.keys(patch).length){
-    patch.updatedAt = serverTimestamp();
-    await setDoc(ref, patch, {merge:true});
+  let role=(data.role || (HARD_ADMINS.has(email)?"admin":"consultor")).toString();
+  if(HARD_ADMINS.has(email) && role!=="admin"){
+    await setDoc(ref,{role:"admin",updatedAt:serverTimestamp()},{merge:true});
+    role="admin";
   }
-
-  return { role, displayName };
+  return role;
 }
-
-
 
 function onlyDigits(s){ return (s??"").toString().replace(/[^\d]/g,""); }
 function fmtKM(raw){ const d=onlyDigits(raw); if(!d) return ""; return new Intl.NumberFormat("pt-BR").format(Number(d)); }
@@ -1101,98 +1036,23 @@ Se ainda tiver interesse, me avisa por aqui ou pode passar na loja que conversam
   ).trim();
 }
 
-function montarMsgRepique(tipo, nomeCliente, nomeConsultor){
-  const nome = (nomeCliente||"").toString().trim();
-  const cons = (nomeConsultor||"").toString().trim();
-  const nomeLinha = nome ? (" " + nome) : "";
-  const assinatura = cons ? (`\n\n— ${cons} | Clube do Auto`) : "";
-  if(tipo==="melhorar"){
-    return (
-`Olá${nomeLinha}, tudo bem?
-Aqui é da *Clube do Auto*.
-
-Revisamos algumas avaliações essa semana e pode ser que a gente consiga *melhorar sua proposta*.
-
-Se ainda tiver interesse, me avisa por aqui ou pode passar na loja que conversamos. 🚗` + assinatura
-    ).trim();
-  }
-  if(tipo==="troca"){
-    return (
-`Olá${nomeLinha}, tudo bem?
-Aqui é da *Clube do Auto*.
-
-Entraram alguns veículos que podem encaixar na *troca* do seu carro.
-Se quiser, me chama por aqui que te mostro as opções. 🚗` + assinatura
-    ).trim();
-  }
-  return (
-`Olá${nomeLinha}, tudo bem?
-Aqui é da *Clube do Auto*.
-
-Você veio até nossa loja fazer a *avaliação do seu veículo* e estamos revisando algumas negociações essa semana.
-
-Talvez consigamos *melhorar sua proposta* ou encontrar um veículo interessante para troca.
-
-Se ainda tiver interesse, me avisa por aqui ou pode passar na loja que conversamos. 🚗` + assinatura
-  ).trim();
-}
-function pickRepiqueTemplate(){
-  const opt = (prompt("Qual mensagem enviar?\n1) Repique negociação\n2) Melhorar proposta\n3) Oferta de troca\n\nDigite 1, 2 ou 3:", "1") || "1").trim();
-  if(opt==="2") return "melhorar";
-  if(opt==="3") return "troca";
-  return "repique";
-}
-
 
 // ===== Melhoria usabilidade (V5.1): lembrar último consultor =====
 const LAST_CONSULTOR_KEY = "clubeauto_last_consultor_v1";
-const LAST_LOCAL_KEY = "clubeauto_last_local_v1";
-const LAST_CAPTACAO_KEY = "clubeauto_last_captacao_v1";
-const LAST_AVALIADORES_KEY = "clubeauto_last_avaliadores_v1";
 function loadLastConsultor(){
   try{
     const last = localStorage.getItem(LAST_CONSULTOR_KEY) || "";
     if(last && !v("consultor")) el("consultor").value = last;
-
-    const lastLocal = localStorage.getItem(LAST_LOCAL_KEY) || "";
-    if(lastLocal && !v("local")) el("local").value = lastLocal;
-
-    const lastCap = localStorage.getItem(LAST_CAPTACAO_KEY) || "";
-    if(lastCap && !v("captacao")) el("captacao").value = lastCap;
-
-    const rawAv = localStorage.getItem(LAST_AVALIADORES_KEY) || "[]";
-    const av = JSON.parse(rawAv);
-    if(Array.isArray(av) && av.length){
-      const anyChecked = Array.from(document.querySelectorAll(".avChk")).some(x=>x.checked);
-      if(!anyChecked){
-        document.querySelectorAll(".avChk").forEach(c=>{ c.checked = av.includes(c.value); });
-      }
-    }
   }catch(e){}
 }
-
 function saveLastConsultor(){
   try{
     const val = v("consultor");
     if(val) localStorage.setItem(LAST_CONSULTOR_KEY, val);
-
-    const loc = v("local");
-    if(loc) localStorage.setItem(LAST_LOCAL_KEY, loc);
-
-    const cap = v("captacao");
-    if(cap) localStorage.setItem(LAST_CAPTACAO_KEY, cap);
-
-    const av = getAvaliadores();
-    if(av && av.length) localStorage.setItem(LAST_AVALIADORES_KEY, JSON.stringify(av));
   }catch(e){}
 }
-
 el("consultor").addEventListener("blur", ()=>{ saveLastConsultor(); atualizarPreview(); });
 el("consultor").addEventListener("change", ()=>{ saveLastConsultor(); atualizarPreview(); });
-el("local").addEventListener("blur", ()=>{ saveLastConsultor(); atualizarPreview(); });
-el("local").addEventListener("change", ()=>{ saveLastConsultor(); atualizarPreview(); });
-el("captacao").addEventListener("change", ()=>{ saveLastConsultor(); atualizarPreview(); });
-
 
 let lastSaveSig = "";
 let savingNow = false;
@@ -1276,72 +1136,14 @@ function openHistorico(){
   if(isGuest){ el("histHint").innerHTML="<span class='warn'>Convidado não tem histórico.</span>"; return; }
   if(!canHistory){ el("histHint").innerHTML="<span class='warn'>Seu cargo não tem acesso ao histórico.</span>"; return; }
   if(unsubHist) unsubHist();
-
   const qy=query(collection(db,"vistorias"), orderBy("createdAt","desc"), limit(200));
   unsubHist=onSnapshot(qy,(snap)=>{
     const items=snap.docs.map(d=>({id:d.id,...d.data()}));
+    window.__histItems = items;
+    window.__renderHist = function(){
+          window.__renderHist();
 
-    function fillConsultorOptions(){
-      const sel = el("histConsultor");
-      if(!sel) return;
-      const cur = (sel.value||"").toString();
-      const vals = Array.from(new Set(items.map(it=>(it.consultor||"").toString().trim()).filter(Boolean)))
-        .sort((a,b)=>a.localeCompare(b,"pt-BR",{sensitivity:"base"}));
-      const opts = ['<option value="">Todos</option>'].concat(vals.map(x=>`<option value="${escapeHtml(x)}">${escapeHtml(x)}</option>`));
-      sel.innerHTML = opts.join("");
-      if(cur) sel.value = cur;
-    }
-
-    function inPeriodo(it, periodo){
-      try{
-        const d = it.createdAt?.toDate ? it.createdAt.toDate() : null;
-        if(!d) return true;
-        const t = d.getTime();
-        const now = new Date();
-        const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-        if(periodo==="hoje") return t >= startToday;
-        if(periodo==="7d") return t >= (Date.now() - 7*24*60*60*1000);
-        if(periodo==="30d") return t >= (Date.now() - 30*24*60*60*1000);
-        return true;
-      }catch(e){ return true; }
-    }
-
-    function renderHistorico(){
-      const q = (el("histSearch")?.value || "").toString().trim().toLowerCase();
-      const periodo = (el("histPeriodo")?.value || "tudo").toString();
-      const cons = (el("histConsultor")?.value || "").toString().trim().toLowerCase();
-
-      const filtered = items.filter(it=>{
-        if(!inPeriodo(it, periodo)) return false;
-        if(cons){
-          const c = (it.consultor||"").toString().trim().toLowerCase();
-          if(c !== cons) return false;
-        }
-        if(!q) return true;
-        const hay = [it.placa||"", it.modelo||"", it.cliente||"", it.consultor||"", it.createdByEmail||"", (it.laudo||"")].join(" ").toLowerCase();
-        return hay.includes(q);
-      });
-
-      el("historicoList").innerHTML = filtered.map(it=>{
-        const la=(it.laudo||"APROVADO").toUpperCase();
-        const icon=(la==="REPROVADO")?"🔴":(la==="APONTAMENTO")?"🟡":"🟢";
-        const title=`${icon} ${escapeHtml(it.modelo||"-")} — ${escapeHtml(it.placa||"-")}`;
-        const extra = [it.cliente ? ("Cliente: " + it.cliente) : "", it.consultor ? ("Consultor: " + it.consultor) : ""].filter(Boolean).join(" • ");
-        const meta=`${escapeHtml(formatDate(it.createdAt))} • ${escapeHtml(it.createdByEmail||"")}` + (extra?(`\n${escapeHtml(extra)}`):"");
-        const delBtn = isAdmin ? `<button class="mini" style="background:#b91c1c" data-del="${it.id}">🗑 Excluir</button>` : "";
-        return `<div class="histItem">
-          <div class="histTop"><div><div class="histTitle">${title}</div><div class="histMeta">${meta}</div></div><div class="histMeta"><b>${escapeHtml(la)}</b></div></div>
-          <div class="histBtns">
-            <button class="mini mOpen" data-open="${it.id}">📄 Abrir</button>
-            <button class="mini mCopy" data-copy="${it.id}">📋 Copiar</button>
-            <button class="mini mSend" data-send="${it.id}">📲 Whats</button>
-            <button class="mini" style="background:#0ea5e9" data-client="${it.id}">💬 Cliente</button>
-            ${delBtn}
-          </div>
-        </div>`;
-      }).join("") || "<div class='histItem'><b>Nenhum registro.</b></div>";
-
-      el("historicoList").querySelectorAll("[data-open]").forEach(btn=>{
+el("historicoList").querySelectorAll("[data-open]").forEach(btn=>{
         btn.addEventListener("click",()=>{ const it=items.find(x=>x.id===btn.dataset.open); if(!it) return; el("preview").innerText=(it.reportText||""); setTab("nova"); window.scrollTo({top:0,behavior:"smooth"}); });
       });
       el("historicoList").querySelectorAll("[data-copy]").forEach(btn=>{
@@ -1354,12 +1156,10 @@ function openHistorico(){
         btn.addEventListener("click",()=>{
           const it=items.find(x=>x.id===btn.dataset.client);
           if(!it) return;
-          const tipo = pickRepiqueTemplate();
-          const msg = montarMsgRepique(tipo, it.cliente||"", it.consultor||"");
+          const msg = montarMsgCliente(it.cliente||"");
           abrirWhatsPara(it.telefone||"", msg);
         });
       });
-
       if(isAdmin){
         el("historicoList").querySelectorAll("[data-del]").forEach(btn=>{
           btn.addEventListener("click", async ()=>{
@@ -1371,22 +1171,81 @@ function openHistorico(){
           });
         });
       }
+    };
+
+    const hs = el("histSearch");
+    if(hs && !hs.dataset.bound){
+      hs.dataset.bound="1";
+      hs.addEventListener("input", ()=>{ if(window.__renderHist) window.__renderHist(); });
+      hs.addEventListener("change", ()=>{ if(window.__renderHist) window.__renderHist(); });
+}
+
+    
+    const q = (el("histSearch")?.value || "").toString().trim().toLowerCase();
+    const filtered = !q ? items : items.filter(it=>{
+      const hay = [
+        it.placa||"", it.modelo||"", it.cliente||"", it.consultor||"",
+        it.createdByEmail||"", (it.laudo||"")
+      ].join(" ").toLowerCase();
+      return hay.includes(q);
+    });
+
+    el("historicoList").innerHTML = filtered.map(it=>{
+      const la=(it.laudo||"APROVADO").toUpperCase();
+      const icon=(la==="REPROVADO")?"🔴":(la==="APONTAMENTO")?"🟡":"🟢";
+      const title=`${icon} ${escapeHtml(it.modelo||"-")} — ${escapeHtml(it.placa||"-")}`;
+      const extra = [it.cliente ? ("Cliente: " + it.cliente) : "", it.consultor ? ("Consultor: " + it.consultor) : ""].filter(Boolean).join(" • ");
+      const meta=`${escapeHtml(formatDate(it.createdAt))} • ${escapeHtml(it.createdByEmail||"")}` + (extra?(`\n${escapeHtml(extra)}`):"");
+      const delBtn = isAdmin ? `<button class="mini" style="background:#b91c1c" data-del="${it.id}">🗑 Excluir</button>` : "";
+      return `<div class="histItem">
+        <div class="histTop"><div><div class="histTitle">${title}</div><div class="histMeta">${meta}</div></div><div class="histMeta"><b>${escapeHtml(la)}</b></div></div>
+        <div class="histBtns">
+          <button class="mini mOpen" data-open="${it.id}">📄 Abrir</button>
+          <button class="mini mCopy" data-copy="${it.id}">📋 Copiar</button>
+          <button class="mini mSend" data-send="${it.id}">📲 Whats</button>
+          <button class="mini" style="background:#0ea5e9" data-client="${it.id}">💬 Cliente</button>
+          ${delBtn}
+        </div>
+      </div>`;
+    }).join("") || "<div class='histItem'><b>Nenhum registro.</b></div>";
+
+
+    el("historicoList").querySelectorAll("[data-open]").forEach(btn=>{
+      btn.addEventListener("click",()=>{ const it=items.find(x=>x.id===btn.dataset.open); if(!it) return; el("preview").innerText=(it.reportText||""); setTab("nova"); window.scrollTo({top:0,behavior:"smooth"}); });
+    });
+    el("historicoList").querySelectorAll("[data-copy]").forEach(btn=>{
+      btn.addEventListener("click",async()=>{ const it=items.find(x=>x.id===btn.dataset.copy); if(!it) return; const ok=await copiar(it.reportText||""); if(ok) alert("Copiado!"); });
+    });
+    el("historicoList").querySelectorAll("[data-send]").forEach(btn=>{
+      btn.addEventListener("click",()=>{ const it=items.find(x=>x.id===btn.dataset.send); if(!it) return; abrirWhats(it.reportText||""); });
+    });
+    el("historicoList").querySelectorAll("[data-client]").forEach(btn=>{
+      btn.addEventListener("click",()=>{
+        const it=items.find(x=>x.id===btn.dataset.client);
+        if(!it) return;
+        const msg = montarMsgCliente(it.cliente||"");
+        abrirWhatsPara(it.telefone||"", msg);
+      });
+    });
+    if(isAdmin){
+      el("historicoList").querySelectorAll("[data-del]").forEach(btn=>{
+        btn.addEventListener("click", async ()=>{
+          const id = btn.dataset.del;
+          const ok = confirm("Excluir este relatório do histórico? Essa ação não pode ser desfeita.");
+          if(!ok) return;
+          try{
+            await deleteDoc(doc(db,"vistorias", id));
+            alert("Excluído!");
+          }catch(e){
+            alert("Erro ao excluir: "+(e?.message||e));
+          }
+        });
+      });
     }
-
-    fillConsultorOptions();
-    renderHistorico();
-
-    // listeners (uma vez)
-    const hs = el("histSearch"), hp=el("histPeriodo"), hc=el("histConsultor");
-    if(hs && !hs.dataset.bound){ hs.dataset.bound="1"; hs.addEventListener("input", renderHistorico); hs.addEventListener("change", renderHistorico); }
-    if(hp && !hp.dataset.bound){ hp.dataset.bound="1"; hp.addEventListener("change", renderHistorico); }
-    if(hc && !hc.dataset.bound){ hc.dataset.bound="1"; hc.addEventListener("change", renderHistorico); }
-
   },(err)=>{
     el("historicoList").innerHTML="<div class='histItem'><b>Erro:</b> "+escapeHtml(err?.message||err)+"</div>";
   });
 }
-
 
 
 // ===== V8: Painel (Gestão) =====
@@ -1565,12 +1424,7 @@ function openUsers(){
           <div class="badgeRole">${escapeHtml(u.role||"consultor")}</div>
         </div>
         <div class="userActions">
-          <div>
-            <label>Nome do consultor (rótulo)</label>
-            <input data-name="${u.id}" value="${escapeHtml(u.displayName||"")}" placeholder="Ex: Bianca">
-            <label style="margin-top:8px">Alterar cargo</label>
-            <select data-role="${u.id}">${opts}</select>
-          </div>
+          <div><label>Alterar cargo</label><select data-role="${u.id}">${opts}</select></div>
           <div><button class="btnP" data-save="${u.id}">Salvar cargo</button></div>
         </div>
       </div>`;
@@ -1582,16 +1436,9 @@ function openUsers(){
         const sel=el("usersList").querySelector(`select[data-role="${id}"]`);
         const newRole=(sel?.value||"consultor").toString();
         try{
-          const nameInp = el("usersList").querySelector(`input[data-name="${id}"]`);
-          const newName = (nameInp?.value||"").toString().trim();
-          const payload = { role:newRole, updatedAt:serverTimestamp() };
-          if(newName) payload.displayName = newName;
-          await updateDoc(doc(db,"users",id), payload);
+          await updateDoc(doc(db,"users",id),{role:newRole,updatedAt:serverTimestamp()});
           alert("Cargo atualizado!");
-          if(auth.currentUser && id===auth.currentUser.uid){
-            currentRole=newRole; computePermissions(); setRoleUI();
-            if(newName){ currentDisplayName = newName; if(!v("consultor")) { el("consultor").value=newName; saveLastConsultor(); atualizarPreview(); } }
-          }
+          if(auth.currentUser && id===auth.currentUser.uid){ currentRole=newRole; computePermissions(); setRoleUI(); }
         }catch(e){ alert("Erro: "+(e?.message||e)); }
       });
     });
@@ -1617,10 +1464,8 @@ el("btnCreateUser").addEventListener("click", async ()=>{
 el("btnGuest").addEventListener("click", ()=>{
   isGuest=true; try{ signOut(auth);}catch(e){}
   showApp(); el("whoami").textContent="Convidado";
-  currentRole="convidado"; currentDisplayName=""; computePermissions(); setRoleUI(); setTab("nova");
+  currentRole="convidado"; computePermissions(); setRoleUI(); setTab("nova");
   loadLastConsultor();
-    // se tiver displayName no painel de usuários, preenche Consultor automaticamente
-    try{ if(currentDisplayName && !v("consultor")) { el("consultor").value = currentDisplayName; saveLastConsultor(); atualizarPreview(); } }catch(e){}
 });
 el("btnLogout").addEventListener("click", async ()=>{ isGuest=false; try{ await signOut(auth);}catch(e){} showLogin(); });
 el("btnSwitchUser").addEventListener("click", ()=>{ isGuest=false; showLogin(); });
@@ -1662,8 +1507,7 @@ onAuthStateChanged(auth, async (u)=>{
   if(u){
     showApp();
     el("whoami").textContent=lower(u.email||"");
-    try{ const info = await ensureUserDoc(u); currentRole = info.role; currentDisplayName = info.displayName || ""; }
-    catch(e){ currentRole = HARD_ADMINS.has(lower(u.email||"")) ? "admin":"consultor"; currentDisplayName = suggestDisplayNameFromEmail(lower(u.email||"")) || ""; }
+    try{ currentRole = await ensureUserDoc(u); }catch(e){ currentRole = HARD_ADMINS.has(lower(u.email||"")) ? "admin":"consultor"; }
     computePermissions(); setRoleUI(); setTab("nova");
     loadLastConsultor();
   }else{
@@ -1677,7 +1521,7 @@ el("debitosSel").addEventListener("change",()=>{ toggleDebitos(); atualizarPrevi
 el("finSel").addEventListener("change",()=>{ toggleFin(); atualizarPreview(); });
 
 // Avaliadores checkboxes
-document.querySelectorAll(".avChk").forEach(c=>c.addEventListener("change",()=>{ saveLastConsultor(); atualizarPreview(); }));
+document.querySelectorAll(".avChk").forEach(c=>c.addEventListener("change",()=>atualizarPreview()));
 
 toggleDebitos(); toggleFin();
 
