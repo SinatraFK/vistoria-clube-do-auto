@@ -828,7 +828,7 @@ async function ensureUserDoc(user){
   const defaultRole = isHard ? "admin" : "consultor";
   const defaultName = suggestDisplayNameFromEmail(email) || "";
 
-  // Se for hard admin, forçamos role=admin sempre (merge). Isso recupera o painel mesmo se alguém mudou o cargo.
+  // Hard admins SEMPRE são admin (mesmo se o Firestore estiver bloqueando escrita)
   if(isHard){
     try{
       const existingName = snap.exists() ? ((snap.data()||{}).displayName||"") : "";
@@ -841,7 +841,6 @@ async function ensureUserDoc(user){
       },{merge:true});
       return { role:"admin", displayName: (existingName || defaultName || "") };
     }catch(e){
-      // Mesmo se falhar gravar (regras), mantemos UI como admin
       return { role:"admin", displayName: defaultName || "" };
     }
   }
@@ -858,13 +857,13 @@ async function ensureUserDoc(user){
   }
 
   const data=snap.data()||{};
-  let role=(data.role || defaultRole).toString();
-  let displayName=(data.displayName || defaultName).toString();
+  let role=(data.role || defaultRole).toString().trim().toLowerCase();
+  let displayName=(data.displayName || defaultName).toString().trim();
   if(!displayName && defaultName) displayName = defaultName;
 
   const patch = {};
-  if((data.role||"") !== role) patch.role = role;
-  if((data.displayName||"") !== displayName) patch.displayName = displayName;
+  if(((data.role||"").toString().trim().toLowerCase()) !== role) patch.role = role;
+  if(((data.displayName||"").toString().trim()) !== displayName) patch.displayName = displayName;
   if(Object.keys(patch).length){
     patch.updatedAt = serverTimestamp();
     await setDoc(ref, patch, {merge:true});
@@ -872,6 +871,7 @@ async function ensureUserDoc(user){
 
   return { role, displayName };
 }
+
 
 
 
@@ -1662,8 +1662,10 @@ onAuthStateChanged(auth, async (u)=>{
   if(u){
     showApp();
     el("whoami").textContent=lower(u.email||"");
-    try{ const info = await ensureUserDoc(u); currentRole = info.role; currentDisplayName = info.displayName || ""; }
-    catch(e){ currentRole = HARD_ADMINS.has(lower(u.email||"")) ? "admin":"consultor"; currentDisplayName = suggestDisplayNameFromEmail(lower(u.email||"")) || ""; }
+    try{ const info = await ensureUserDoc(u); currentRole = (info.role||"consultor").toString().trim().toLowerCase(); currentDisplayName = (info.displayName||"").toString(); }
+    catch(e){ currentRole = HARD_ADMINS.has(lower(u.email||"").replace(/\s+/g,"")) ? "admin":"consultor"; currentDisplayName = suggestDisplayNameFromEmail(lower(u.email||"")) || ""; }
+    // blindagem: hard admins sempre liberam painel/aba usuários
+    if(HARD_ADMINS.has(lower(u.email||"").replace(/\s+/g,""))){ currentRole = "admin"; }
     computePermissions(); setRoleUI(); setTab("nova");
     loadLastConsultor();
   }else{
