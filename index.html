@@ -779,6 +779,14 @@ const el=(id)=>document.getElementById(id);
 const v=(id)=>(el(id).value??"").toString().trim();
 const lower=(s)=>(s??"").toString().trim().toLowerCase();
 
+function suggestDisplayNameFromEmail(email){
+  const e = (email||"").toString().trim().toLowerCase();
+  const user = (e.split("@")[0]||"").replace(/[._-]+/g," ").trim();
+  if(!user) return "";
+  return user.split(" ").filter(Boolean).map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(" ");
+}
+
+
 function getAvaliadores(){
   return Array.from(document.querySelectorAll(".avChk:checked")).map(x=>x.value).filter(Boolean);
 }
@@ -811,21 +819,48 @@ function showLogin(){ el("screenLogin").style.display="block"; el("screenApp").c
 function showApp(){ el("screenLogin").style.display="none"; el("screenApp").classList.remove("hidden"); }
 
 async function ensureUserDoc(user){
-  const uid=user.uid; const email=lower(user.email||"");
-  const ref=doc(db,"users",uid); const snap=await getDoc(ref);
+  const uid=user.uid;
+  const email=lower(user.email||"");
+  const ref=doc(db,"users",uid);
+  const snap=await getDoc(ref);
+
+  const defaultRole = HARD_ADMINS.has(email) ? "admin" : "consultor";
+  const defaultName = suggestDisplayNameFromEmail(email) || "";
+
   if(!snap.exists()){
-    const role=HARD_ADMINS.has(email)?"admin":"consultor";
-    await setDoc(ref,{uid,email,role,createdAt:serverTimestamp(),updatedAt:serverTimestamp()},{merge:true});
-    return role;
+    await setDoc(ref,{
+      uid,email,
+      role: defaultRole,
+      displayName: defaultName,
+      createdAt:serverTimestamp(),
+      updatedAt:serverTimestamp()
+    },{merge:true});
+    return { role: defaultRole, displayName: defaultName };
   }
+
   const data=snap.data()||{};
-  let role=(data.role || (HARD_ADMINS.has(email)?"admin":"consultor")).toString();
+  let role=(data.role || defaultRole).toString();
+  let displayName=(data.displayName || defaultName).toString();
+
+  // garante admin fixo pros hard admins
   if(HARD_ADMINS.has(email) && role!=="admin"){
-    await setDoc(ref,{role:"admin",updatedAt:serverTimestamp()},{merge:true});
     role="admin";
   }
-  return role;
+  // garante displayName mínimo
+  if(!displayName && defaultName) displayName = defaultName;
+
+  // salva correções se necessário
+  const patch = {};
+  if(data.role !== role) patch.role = role;
+  if((data.displayName||"") !== displayName) patch.displayName = displayName;
+  if(Object.keys(patch).length){
+    patch.updatedAt = serverTimestamp();
+    await setDoc(ref, patch, {merge:true});
+  }
+
+  return { role, displayName };
 }
+
 
 function onlyDigits(s){ return (s??"").toString().replace(/[^\d]/g,""); }
 function fmtKM(raw){ const d=onlyDigits(raw); if(!d) return ""; return new Intl.NumberFormat("pt-BR").format(Number(d)); }
@@ -1517,7 +1552,12 @@ function openUsers(){
           <div class="badgeRole">${escapeHtml(u.role||"consultor")}</div>
         </div>
         <div class="userActions">
-          <div><label>Alterar cargo</label><select data-role="${u.id}">${opts}</select></div>
+          <div>
+            <label>Nome do consultor (rótulo)</label>
+            <input data-name="${u.id}" value="${escapeHtml(u.displayName||"")}" placeholder="Ex: Bianca">
+            <label style="margin-top:8px">Alterar cargo</label>
+            <select data-role="${u.id}">${opts}</select>
+          </div>
           <div><button class="btnP" data-save="${u.id}">Salvar cargo</button></div>
         </div>
       </div>`;
@@ -1529,9 +1569,16 @@ function openUsers(){
         const sel=el("usersList").querySelector(`select[data-role="${id}"]`);
         const newRole=(sel?.value||"consultor").toString();
         try{
-          await updateDoc(doc(db,"users",id),{role:newRole,updatedAt:serverTimestamp()});
+          const nameInp = el("usersList").querySelector(`input[data-name="${id}"]`);
+          const newName = (nameInp?.value||"").toString().trim();
+          const payload = { role:newRole, updatedAt:serverTimestamp() };
+          if(newName) payload.displayName = newName;
+          await updateDoc(doc(db,"users",id), payload);
           alert("Cargo atualizado!");
-          if(auth.currentUser && id===auth.currentUser.uid){ currentRole=newRole; computePermissions(); setRoleUI(); }
+          if(auth.currentUser && id===auth.currentUser.uid){
+            currentRole=newRole; computePermissions(); setRoleUI();
+            if(newName){ currentDisplayName = newName; if(!v("consultor")) { el("consultor").value=newName; saveLastConsultor(); atualizarPreview(); } }
+          }
         }catch(e){ alert("Erro: "+(e?.message||e)); }
       });
     });
@@ -1557,8 +1604,10 @@ el("btnCreateUser").addEventListener("click", async ()=>{
 el("btnGuest").addEventListener("click", ()=>{
   isGuest=true; try{ signOut(auth);}catch(e){}
   showApp(); el("whoami").textContent="Convidado";
-  currentRole="convidado"; computePermissions(); setRoleUI(); setTab("nova");
+  currentRole="convidado"; currentDisplayName=""; computePermissions(); setRoleUI(); setTab("nova");
   loadLastConsultor();
+    // se tiver displayName no painel de usuários, preenche Consultor automaticamente
+    try{ if(currentDisplayName && !v("consultor")) { el("consultor").value = currentDisplayName; saveLastConsultor(); atualizarPreview(); } }catch(e){}
 });
 el("btnLogout").addEventListener("click", async ()=>{ isGuest=false; try{ await signOut(auth);}catch(e){} showLogin(); });
 el("btnSwitchUser").addEventListener("click", ()=>{ isGuest=false; showLogin(); });
@@ -1600,7 +1649,8 @@ onAuthStateChanged(auth, async (u)=>{
   if(u){
     showApp();
     el("whoami").textContent=lower(u.email||"");
-    try{ currentRole = await ensureUserDoc(u); }catch(e){ currentRole = HARD_ADMINS.has(lower(u.email||"")) ? "admin":"consultor"; }
+    try{ const info = await ensureUserDoc(u); currentRole = info.role; currentDisplayName = info.displayName || ""; }
+    catch(e){ currentRole = HARD_ADMINS.has(lower(u.email||"")) ? "admin":"consultor"; currentDisplayName = suggestDisplayNameFromEmail(lower(u.email||"")) || ""; }
     computePermissions(); setRoleUI(); setTab("nova");
     loadLastConsultor();
   }else{
