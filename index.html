@@ -129,16 +129,6 @@ button{width:100%;
 .btnDanger{background:#b91c1c;color:#fff}
 .btnDanger:hover{opacity:.92}
 
-
-/* Painel (V9) */
-.panelKpi{border:1px solid #e5e7eb;border-radius:14px;padding:12px;background:#fafafa}
-.kpiLabel{font-size:12px;color:#6b7280;font-weight:900;text-transform:uppercase;letter-spacing:.4px}
-.kpiValue{font-size:26px;font-weight:900;color:#111827;margin-top:6px}
-.panelTable{width:100%;border-collapse:separate;border-spacing:0;min-width:620px}
-.panelTable th,.panelTable td{border-bottom:1px solid #e5e7eb;padding:10px;text-align:left;font-size:13px}
-.panelTable th{font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:.35px}
-.panelTable tr:hover td{background:#f9fafb}
-
 /* V5.1 layout tweaks */
 .fipeHero{border:1px solid #dbeafe;background:#eff6ff}
 .fipeHero .modalTitle{font-size:17px}
@@ -290,7 +280,6 @@ button{width:100%;
   <div class="tabs">
     <button class="tabbtn active" id="tabNova">Nova avaliação</button>
     <button class="tabbtn" id="tabHist">Histórico</button>
-    <button class="tabbtn hidden" id="tabPainel">📊 Painel</button>
     <button class="tabbtn hidden" id="tabPainel">Painel</button>
     <button class="tabbtn hidden" id="tabUsers">Usuários</button>
   </div>
@@ -672,83 +661,6 @@ button{width:100%;
   </div>
 
 
-  
-  <div id="viewPainel" class="hidden">
-    <div class="card">
-      <h3>📊 Painel (Gestão)</h3>
-      <div class="hint" id="painelHint"></div>
-
-      <div class="row2" style="margin-top:10px">
-        <div>
-          <label>Período</label>
-          <select id="painelPeriodo">
-            <option value="hoje">Hoje</option>
-            <option value="7d">Últimos 7 dias</option>
-            <option value="30d" selected>Últimos 30 dias</option>
-          </select>
-          <div class="hint">Mostra apenas contagens e desempenho (sem valores).</div>
-        </div>
-        <div>
-          <label>Filtrar por consultor</label>
-          <select id="painelConsultor">
-            <option value="">Todos</option>
-          </select>
-          <div class="hint">Baseado no login (e-mail/UID) + rótulo no Painel de Usuários.</div>
-        </div>
-      </div>
-
-      <div class="row3" style="margin-top:10px">
-        <div class="panelKpi">
-          <div class="kpiLabel">Total avaliados</div>
-          <div class="kpiValue" id="kpiTotal">0</div>
-        </div>
-        <div class="panelKpi">
-          <div class="kpiLabel">Aprovados</div>
-          <div class="kpiValue" id="kpiAprov">0</div>
-        </div>
-        <div class="panelKpi">
-          <div class="kpiLabel">Apontamento</div>
-          <div class="kpiValue" id="kpiApont">0</div>
-        </div>
-      </div>
-
-      <div class="row3" style="margin-top:10px">
-        <div class="panelKpi">
-          <div class="kpiLabel">Reprovados</div>
-          <div class="kpiValue" id="kpiReprov">0</div>
-        </div>
-        <div class="panelKpi">
-          <div class="kpiLabel">Consultores ativos</div>
-          <div class="kpiValue" id="kpiConsultores">0</div>
-        </div>
-        <div class="panelKpi">
-          <div class="kpiLabel">Última atualização</div>
-          <div class="kpiValue" id="kpiAtualizado" style="font-size:14px">—</div>
-        </div>
-      </div>
-
-      <div style="margin-top:14px">
-        <h3 style="margin:0 0 8px 0">🏁 Performance por consultor</h3>
-        <div class="hint">Ordenado por quantidade no período.</div>
-        <div style="overflow:auto">
-          <table class="panelTable">
-            <thead>
-              <tr>
-                <th>Consultor</th>
-                <th>Total</th>
-                <th>Aprov.</th>
-                <th>Apont.</th>
-                <th>Reprov.</th>
-              </tr>
-            </thead>
-            <tbody id="painelTabela"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-
-
   <div id="viewUsers" class="hidden">
     <div class="card">
       <h3>👥 Usuários (Admin)</h3>
@@ -860,16 +772,7 @@ const firebaseConfig = {
   appId: "1:647571720442:web:4257dd525b59bd89b62143"
 };
 
-const HARD_ADMINS = new Set(["frank.since96@gmail.com","devfrank@clubedoauto.com"].map(s=>s.toLowerCase()));
-const HARD_ADMIN_UIDS = new Set(["yehk37aYXJcVm5zljR7g4BfJ4vz2","X9LYyrdQI2Qr4n10e9ES6lSzjPj2"]);
-function isHardAdmin(){
-  try{ return HARD_ADMIN_UIDS.has(auth?.currentUser?.uid || ""); }catch(e){ return false; }
-}
-
-
-}
-
-
+const HARD_ADMINS = new Set(["admin@clubedoauto.com","frank.since96@gmail.com"].map(s=>s.toLowerCase()));
 const ROLE_ORDER = ["consultor","closer","gerente","admin"];
 
 const el=(id)=>document.getElementById(id);
@@ -907,21 +810,11 @@ const db = getFirestore(app);
 await setPersistence(auth, browserLocalPersistence);
 
 let isGuest=false, currentRole="consultor", canHistory=false, isAdmin=false, canPainel=false;
-let unsubHist=null, unsubUsers=null, unsubPainel=null;
+let unsubHist=null, unsubUsers=null;
 
-function computePermissions(){
-  const hard = isHardAdmin();
-  isAdmin = hard || (currentRole==="admin");
-  canHistory = isAdmin || (currentRole==="gerente"||currentRole==="closer");
-}
+function computePermissions(){ canHistory=(currentRole==="admin"||currentRole==="gerente"||currentRole==="closer"); isAdmin=(currentRole==="admin"); canPainel=canHistory; }
+function setRoleUI(){ el("roleTxt").textContent=currentRole; el("tabUsers").classList.toggle("hidden", !isAdmin); el("tabPainel").classList.toggle("hidden", !canPainel); }
 
-function setRoleUI(){
-  const shownRole = isAdmin ? "admin" : currentRole;
-  if(el("roleTxt")) el("roleTxt").textContent = shownRole;
-  if(el("tabUsers")) el("tabUsers").classList.toggle("hidden", !isAdmin);
-  const canPainel = isAdmin || (currentRole==="gerente");
-  if(el("tabPainel")) el("tabPainel").classList.toggle("hidden", !canPainel);
-}
 function showLogin(){ el("screenLogin").style.display="block"; el("screenApp").classList.add("hidden"); }
 function showApp(){ el("screenLogin").style.display="none"; el("screenApp").classList.remove("hidden"); }
 
@@ -931,11 +824,11 @@ async function ensureUserDoc(user){
   const ref=doc(db,"users",uid);
   const snap=await getDoc(ref);
 
-  const isHard = HARD_ADMIN_UIDS.has(uid);
-  const defaultRole = isHard ? "admin" : (HARD_ADMINS.has(email) ? "admin" : "consultor");
+  const isHard = HARD_ADMINS.has(email);
+  const defaultRole = isHard ? "admin" : "consultor";
   const defaultName = suggestDisplayNameFromEmail(email) || "";
 
-  // Hard admins (por UID) SEMPRE são admin (mesmo se o Firestore estiver bloqueando escrita)
+  // Se for hard admin, forçamos role=admin sempre (merge). Isso recupera o painel mesmo se alguém mudou o cargo.
   if(isHard){
     try{
       const existingName = snap.exists() ? ((snap.data()||{}).displayName||"") : "";
@@ -948,6 +841,7 @@ async function ensureUserDoc(user){
       },{merge:true});
       return { role:"admin", displayName: (existingName || defaultName || "") };
     }catch(e){
+      // Mesmo se falhar gravar (regras), mantemos UI como admin
       return { role:"admin", displayName: defaultName || "" };
     }
   }
@@ -964,13 +858,13 @@ async function ensureUserDoc(user){
   }
 
   const data=snap.data()||{};
-  let role=(data.role || defaultRole).toString().trim().toLowerCase();
-  let displayName=(data.displayName || defaultName).toString().trim();
+  let role=(data.role || defaultRole).toString();
+  let displayName=(data.displayName || defaultName).toString();
   if(!displayName && defaultName) displayName = defaultName;
 
   const patch = {};
-  if(((data.role||"").toString().trim().toLowerCase()) !== role) patch.role = role;
-  if(((data.displayName||"").toString().trim()) !== displayName) patch.displayName = displayName;
+  if((data.role||"") !== role) patch.role = role;
+  if((data.displayName||"") !== displayName) patch.displayName = displayName;
   if(Object.keys(patch).length){
     patch.updatedAt = serverTimestamp();
     await setDoc(ref, patch, {merge:true});
@@ -978,27 +872,6 @@ async function ensureUserDoc(user){
 
   return { role, displayName };
 }
-
-
-
-function showAdminHintIfNeeded(){
-  try{
-    if(HARD_ADMIN_UIDS.has(auth?.currentUser?.uid||"") && !isAdmin){
-      alert("Aviso: seu usuário é ADMIN (por UID), mas o app não reconheceu. Quase sempre é cache do PWA (service worker).
-
-Faça: (1) CTRL+SHIFT+R
-(2) ou Configurações do Chrome > Privacidade > Limpar dados do site
-(3) ou DevTools > Application > Service Workers > Unregister + Clear site data
-
-Depois faça login novamente.");
-    }
-  }catch(e){}
-}
-  }catch(e){}
-}
-
-
-
 
 
 
@@ -1384,23 +1257,19 @@ function setTab(tab){
   const nova=tab==="nova", hist=tab==="hist", painel=tab==="painel", users=tab==="users";
   el("tabNova").classList.toggle("active", nova);
   el("tabHist").classList.toggle("active", hist);
-  el("tabPainel").classList.toggle("active", painel);
   el("tabUsers").classList.toggle("active", users);
   el("viewNova").classList.toggle("hidden", !nova);
   el("viewHistorico").classList.toggle("hidden", !hist);
   el("viewPainel").classList.toggle("hidden", !painel);
-  el("viewPainel").classList.toggle("hidden", !painel);
   el("viewUsers").classList.toggle("hidden", !users);
   if(hist) openHistorico();
   if(painel) openPainel();
-  if(painel) openPainel();
   if(users) openUsers();
 }
-el("tabNova")?.addEventListener("click",()=>setTab("nova"));
-el("tabHist")?.addEventListener("click",()=>setTab("hist"));
-el("tabPainel")?.addEventListener("click",()=>setTab("painel"));
-el("tabUsers")?.addEventListener("click",()=>setTab("users"));
-
+el("tabNova").addEventListener("click",()=>setTab("nova"));
+el("tabHist").addEventListener("click",()=>setTab("hist"));
+el("tabPainel").addEventListener("click",()=>setTab("painel"));
+el("tabUsers").addEventListener("click",()=>setTab("users"));
 
 function openHistorico(){
   el("historicoList").innerHTML=""; el("histHint").innerHTML="";
@@ -1680,132 +1549,6 @@ el("btnPainelAtualizar").addEventListener("click", carregarPainel);
 el("painelMes").addEventListener("change", carregarPainel);
 
 
-
-async function loadUserLabels(){
-  const map = {};
-  try{
-    const qy = query(collection(db,"users"), orderBy("email","asc"), limit(800));
-    const snap = await getDocs(qy);
-    snap.forEach(d=>{
-      const u = d.data()||{};
-      const uid = (u.uid || d.id || "").toString();
-      if(!uid) return;
-      map[uid] = {
-        displayName: (u.displayName||"").toString().trim(),
-        email: (u.email||"").toString().trim()
-      };
-    });
-  }catch(e){}
-  return map;
-}
-
-function startDateForPeriod(period){
-  const now = new Date();
-  const d = new Date(now);
-  d.setHours(0,0,0,0);
-  if(period==="hoje") return d;
-  if(period==="7d"){ d.setDate(d.getDate()-6); return d; }
-  d.setDate(d.getDate()-29);
-  return d;
-}
-
-function fmtShort(dt){
-  try{
-    return new Intl.DateTimeFormat("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}).format(dt);
-  }catch(e){ return "—"; }
-}
-
-async function openPainel(){
-  el("painelTabela").innerHTML = "";
-  el("painelHint").innerHTML = "";
-
-  const canPainel = isAdmin || (currentRole==="gerente");
-  if(isGuest){ el("painelHint").innerHTML="<span class='warn'>Convidado não tem acesso.</span>"; return; }
-  if(!canPainel){ el("painelHint").innerHTML="<span class='warn'>Sem acesso ao Painel.</span>"; return; }
-
-  if(unsubPainel) unsubPainel();
-
-  const labelMap = await loadUserLabels();
-  const sel = el("painelConsultor");
-  const opts = ['<option value="">Todos</option>'];
-  Object.entries(labelMap).forEach(([uid,info])=>{
-    const name = (info.displayName || info.email || uid).toString();
-    opts.push(`<option value="${escapeHtml(uid)}">${escapeHtml(name)}</option>`);
-  });
-  sel.innerHTML = opts.join("");
-
-  async function refresh(){
-    const period = el("painelPeriodo").value || "30d";
-    const uidFilter = el("painelConsultor").value || "";
-    const start = startDateForPeriod(period);
-    const startTs = Timestamp.fromDate(start);
-
-    el("painelHint").innerHTML = "Carregando dados...";
-
-    let qy = query(collection(db,"vistorias"), where("createdAt", ">=", startTs), orderBy("createdAt","desc"), limit(2000));
-    if(uidFilter){
-      qy = query(collection(db,"vistorias"), where("createdAt", ">=", startTs), where("createdByUid","==", uidFilter), orderBy("createdAt","desc"), limit(2000));
-    }
-
-    if(unsubPainel) unsubPainel();
-    unsubPainel = onSnapshot(qy,(snap)=>{
-      const items = snap.docs.map(d=>d.data()||{});
-
-      let total=0, aprov=0, apont=0, reprov=0;
-      const byUid = {};
-
-      items.forEach(it=>{
-        total++;
-        const la = (it.laudo||"APROVADO").toString().toUpperCase();
-        if(la==="APROVADO") aprov++;
-        else if(la==="APONTAMENTO") apont++;
-        else if(la==="REPROVADO") reprov++;
-
-        const uid = (it.createdByUid||"").toString();
-        if(!byUid[uid]) byUid[uid] = { total:0, aprov:0, apont:0, reprov:0 };
-        byUid[uid].total++;
-        if(la==="APROVADO") byUid[uid].aprov++;
-        else if(la==="APONTAMENTO") byUid[uid].apont++;
-        else if(la==="REPROVADO") byUid[uid].reprov++;
-      });
-
-      el("kpiTotal").textContent = String(total);
-      el("kpiAprov").textContent = String(aprov);
-      el("kpiApont").textContent = String(apont);
-      el("kpiReprov").textContent = String(reprov);
-      el("kpiConsultores").textContent = String(Object.keys(byUid).filter(x=>x).length);
-      el("kpiAtualizado").textContent = fmtShort(new Date());
-
-      const rows = Object.entries(byUid).map(([uid,c])=>({uid,...c})).sort((a,b)=>b.total-a.total);
-
-      el("painelTabela").innerHTML = rows.map(r=>{
-        const info = labelMap[r.uid] || {};
-        const name = (info.displayName || info.email || r.uid || "—").toString();
-        return `<tr>
-          <td>${escapeHtml(name)}</td>
-          <td><b>${r.total}</b></td>
-          <td>${r.aprov}</td>
-          <td>${r.apont}</td>
-          <td>${r.reprov}</td>
-        </tr>`;
-      }).join("") || `<tr><td colspan="5"><b>Nenhum registro no período.</b></td></tr>`;
-
-      el("painelHint").innerHTML = "<span class='ok'>Painel atualizado.</span>";
-    },(err)=>{
-      el("painelHint").innerHTML = "<span class='warn'>Erro no painel:</span> "+escapeHtml(err?.message||err);
-    });
-  }
-
-  if(!el("painelPeriodo").dataset.bound){
-    el("painelPeriodo").addEventListener("change", refresh);
-    el("painelConsultor").addEventListener("change", refresh);
-    el("painelPeriodo").dataset.bound = "1";
-  }
-
-  await refresh();
-}
-
-
 function openUsers(){
   el("usersList").innerHTML=""; el("usersHint").innerHTML="";
   if(isGuest){ el("usersHint").innerHTML="<span class='warn'>Convidado não tem acesso.</span>"; return; }
@@ -1875,8 +1618,7 @@ el("btnGuest").addEventListener("click", ()=>{
   isGuest=true; try{ signOut(auth);}catch(e){}
   showApp(); el("whoami").textContent="Convidado";
   currentRole="convidado"; currentDisplayName=""; computePermissions(); setRoleUI(); setTab("nova");
-  showAdminHintIfNeeded();
-    loadLastConsultor();
+  loadLastConsultor();
     // se tiver displayName no painel de usuários, preenche Consultor automaticamente
     try{ if(currentDisplayName && !v("consultor")) { el("consultor").value = currentDisplayName; saveLastConsultor(); atualizarPreview(); } }catch(e){}
 });
@@ -1920,10 +1662,8 @@ onAuthStateChanged(auth, async (u)=>{
   if(u){
     showApp();
     el("whoami").textContent=lower(u.email||"");
-    try{ const info = await ensureUserDoc(u); currentRole = (info.role||"consultor").toString().trim().toLowerCase(); currentDisplayName = (info.displayName||"").toString(); }
-    catch(e){ currentRole = HARD_ADMINS.has(lower(u.email||"").replace(/\s+/g,"")) ? "admin":"consultor"; currentDisplayName = suggestDisplayNameFromEmail(lower(u.email||"")) || ""; }
-    // blindagem: hard admins sempre liberam painel/aba usuários
-    if(HARD_ADMIN_UIDS.has(u.uid)){ currentRole = "admin"; }
+    try{ const info = await ensureUserDoc(u); currentRole = info.role; currentDisplayName = info.displayName || ""; }
+    catch(e){ currentRole = HARD_ADMINS.has(lower(u.email||"")) ? "admin":"consultor"; currentDisplayName = suggestDisplayNameFromEmail(lower(u.email||"")) || ""; }
     computePermissions(); setRoleUI(); setTab("nova");
     loadLastConsultor();
   }else{
