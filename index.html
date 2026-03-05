@@ -216,6 +216,16 @@ button{width:100%;
   .topbarTitle{align-items:center;text-align:center}
   .userline{justify-content:center}
 }
+
+/* --- Alinhamento de checkboxes (mobile friendly) --- */
+.chkLabel{display:flex;align-items:center;gap:8px;font-weight:800;font-size:13px;line-height:1.2}
+.chkLabel input[type="checkbox"]{width:18px;height:18px;margin:0;flex:0 0 auto}
+.chkLabelRight{display:flex;align-items:center;justify-content:space-between;gap:10px;font-weight:800;font-size:13px;line-height:1.2}
+.chkLabelRight input[type="checkbox"]{width:18px;height:18px;margin:0;flex:0 0 auto}
+.chkRow{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center;margin-bottom:8px}
+.chkRow select{margin:0}
+@media (max-width:760px){.chkRow{grid-template-columns:1fr}}
+
 </style>
 </head>
 
@@ -305,9 +315,17 @@ button{width:100%;
       <div class="row3">
         <div><label>Placa <span class="hint">(obrigatório)</span></label><input id="placa" placeholder="Ex: EPX5C99"></div>
         <div><label>Km <span class="hint">(obrigatório)</span></label><input id="km" inputmode="numeric" placeholder="Ex: 21000"></div>
-        <div><label>Comprou (Km) <span class="hint">(obrigatório)</span></label><input id="kmComprou" inputmode="numeric" placeholder="Ex: 10000"></div>
+        <div>
+          <label>Comprou (Km) <span class="hint">(obrigatório)</span></label>
+          <div id="kmComprouWrap">
+            <input id="kmComprou" type="text" placeholder="Ex: 10.000 ou aprox. 80.000">
+          </div>
+          <label class="chkLabelRight" style="margin-top:6px">
+            Cliente não sabe <input type="checkbox" id="kmComprouNaoSabe">
+          </label>
+        </div>
       </div>
-      <div class="hint">Digite só números. O app formata (ex: 21000 → 21.000).</div>
+      <div class="hint">Km pode ser número (o app formata). Em "Comprou (Km)", marque "Cliente não sabe" quando necessário.</div>
     </div>
 
     <div class="card">
@@ -428,13 +446,13 @@ button{width:100%;
       <label>Forro de porta (selecione)</label>
       <div style="border:1px dashed #e5e7eb;border-radius:14px;padding:12px;background:#fafafa;margin-bottom:10px">
         <div class="row3">
-          <label style="font-weight:700"><input type="checkbox" id="forro_motorista"> Motorista</label>
-          <label style="font-weight:700"><input type="checkbox" id="forro_passageiro"> Passageiro</label>
-          <label style="font-weight:700"><input type="checkbox" id="forro_traseiro_d"> Traseiro D</label>
-          <label style="font-weight:700"><input type="checkbox" id="forro_traseiro_e"> Traseiro E</label>
-          <label style="font-weight:700"><input type="checkbox" id="forro_dianteiros"> Dianteiros</label>
-          <label style="font-weight:700"><input type="checkbox" id="forro_traseiros"> Traseiros</label>
-          <label style="font-weight:700"><input type="checkbox" id="forro_todos"> Todos</label>
+          <label class="chkLabelRight">Motorista <input type="checkbox" id="forro_motorista"></label>
+          <label class="chkLabelRight">Passageiro <input type="checkbox" id="forro_passageiro"></label>
+          <label class="chkLabelRight">Traseiro D <input type="checkbox" id="forro_traseiro_d"></label>
+          <label class="chkLabelRight">Traseiro E <input type="checkbox" id="forro_traseiro_e"></label>
+          <label class="chkLabelRight">Dianteiros <input type="checkbox" id="forro_dianteiros"></label>
+          <label class="chkLabelRight">Traseiros <input type="checkbox" id="forro_traseiros"></label>
+          <label class="chkLabelRight">Todos <input type="checkbox" id="forro_todos"></label>
         </div>
 
         <div style="margin-top:10px">
@@ -465,8 +483,8 @@ button{width:100%;
       </div>
 
       <div class="row2 granizoRow">
-        <label style="font-weight:700"><input type="checkbox" id="pinturaCompleta"> Pintura completa</label>
-        <label style="font-weight:700"><input type="checkbox" id="chuvaGranizo"> Chuva de granizo</label>
+        <label class="chkLabelRight">Pintura completa <input type="checkbox" id="pinturaCompleta"></label>
+        <label class="chkLabelRight">Chuva de granizo <input type="checkbox" id="chuvaGranizo"></label>
       </div>
 
       <div class="row2">
@@ -509,24 +527,24 @@ button{width:100%;
       <div style="border:1px dashed #e5e7eb;border-radius:14px;padding:12px;background:#fafafa;margin-bottom:10px">
         <div class="hint">Demais vidros (marque e selecione a ação).</div>
 
-        <div class="row2">
-          <label style="font-weight:700"><input type="checkbox" id="vidro_dd_chk"> Dianteiro (D)</label>
+        <div class="chkRow">
+          <label class="chkLabelRight">Dianteiro (D) <input type="checkbox" id="vidro_dd_chk"></label>
           <select id="vidro_dd_act"><option>Reparo</option><option>Troca</option></select>
         </div>
-        <div class="row2">
-          <label style="font-weight:700"><input type="checkbox" id="vidro_de_chk"> Dianteiro (E)</label>
+        <div class="chkRow">
+          <label class="chkLabelRight">Dianteiro (E) <input type="checkbox" id="vidro_de_chk"></label>
           <select id="vidro_de_act"><option>Reparo</option><option>Troca</option></select>
         </div>
-        <div class="row2">
-          <label style="font-weight:700"><input type="checkbox" id="vidro_td_chk"> Traseiro (D)</label>
+        <div class="chkRow">
+          <label class="chkLabelRight">Traseiro (D) <input type="checkbox" id="vidro_td_chk"></label>
           <select id="vidro_td_act"><option>Reparo</option><option>Troca</option></select>
         </div>
-        <div class="row2">
-          <label style="font-weight:700"><input type="checkbox" id="vidro_te_chk"> Traseiro (E)</label>
+        <div class="chkRow">
+          <label class="chkLabelRight">Traseiro (E) <input type="checkbox" id="vidro_te_chk"></label>
           <select id="vidro_te_act"><option>Reparo</option><option>Troca</option></select>
         </div>
-        <div class="row2">
-          <label style="font-weight:700"><input type="checkbox" id="vidro_vg_chk"> Vigia</label>
+        <div class="chkRow">
+          <label class="chkLabelRight">Vigia <input type="checkbox" id="vidro_vg_chk"></label>
           <select id="vidro_vg_act"><option>Reparo</option><option>Troca</option></select>
         </div>
       </div>
@@ -791,7 +809,17 @@ async function ensureUserDoc(user){
 function onlyDigits(s){ return (s??"").toString().replace(/[^\d]/g,""); }
 function fmtKM(raw){ const d=onlyDigits(raw); if(!d) return ""; return new Intl.NumberFormat("pt-BR").format(Number(d)); }
 function fmtBRL(raw){ const d=onlyDigits(raw); if(!d) return ""; return new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(Number(d)).replace(/ /g," "); }
-["km","kmComprou"].forEach(id=>el(id).addEventListener("blur",()=>{ if(v(id)) el(id).value=fmtKM(v(id)); atualizarPreview(); }));
+["km"].forEach(id=>el(id).addEventListener("blur",()=>{ if(v(id)) el(id).value=fmtKM(v(id)); atualizarPreview(); }));
+// kmComprou aceita texto (ex: "Não sabe"). Só formata quando for número.
+el("kmComprou").addEventListener("blur",()=>{
+  const val = v("kmComprou");
+  const digs = onlyDigits(val);
+  // se contém letras, não formata
+  if(val && digs && digs.length === val.replace(/\s|\./g,"").length){
+    el("kmComprou").value = fmtKM(val);
+  }
+  atualizarPreview();
+});
 ["fipe","valorPretendido","debitosValor","finValor"].forEach(id=>{ const e=el(id); if(!e) return; e.addEventListener("blur",()=>{ if(v(id)) el(id).value=fmtBRL(v(id)); atualizarPreview(); }); });
 
 function setStatusBadge(){
@@ -1394,6 +1422,28 @@ el("finSel").addEventListener("change",()=>{ toggleFin(); atualizarPreview(); })
 document.querySelectorAll(".avChk").forEach(c=>c.addEventListener("change",()=>atualizarPreview()));
 
 toggleDebitos(); toggleFin();
+
+// Comprou (Km): opção "Cliente não sabe" (esconde input e preenche no relatório)
+(function(){
+  const chk = el("kmComprouNaoSabe");
+  const wrap = el("kmComprouWrap");
+  const inp = el("kmComprou");
+  if(!chk || !wrap || !inp) return;
+  const apply = ()=>{
+    if(chk.checked){
+      inp.value = "Não sabe";
+      inp.disabled = true;
+      wrap.classList.add("hidden");
+    }else{
+      inp.disabled = false;
+      wrap.classList.remove("hidden");
+      if((inp.value||"").trim() === "Não sabe") inp.value = "";
+    }
+    atualizarPreview();
+  };
+  chk.addEventListener("change", apply);
+  apply();
+})();
 
 // ===== FIPE inteligente (carros) - API gratuita (parallelum) =====
 const FIPE_BASE = "https://parallelum.com.br/fipe/api/v1/carros";
