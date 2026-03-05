@@ -11,6 +11,8 @@
 
 <!-- GitHub Pages base -->
 <script>
+  // Em produção (GitHub Pages) o app roda em /vistoria-clube-do-auto/
+  // Em dev/local, usamos "/"
   window.BASE_HREF = location.hostname.includes("github.io") ? "/vistoria-clube-do-auto/" : "/";
 </script>
 
@@ -18,6 +20,7 @@
 <link rel="apple-touch-icon" id="appleIconLink" href="">
 
 <script>
+  // aplica paths corretos o quanto antes
   (function () {
     const base = window.BASE_HREF || "/";
     const ml = document.getElementById("manifestLink");
@@ -64,7 +67,6 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
 .ok{color:#065f46;font-weight:900}
 .warn{color:#b91c1c;font-weight:900}
 .preview{white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;background:#fcfcfc;border:1px dashed #cfd4dc;padding:12px;border-radius:14px}
-
 /* Login */
 #screenLogin{display:block}
 .loginWrap{max-width:440px;margin:10vh auto 0 auto;background:#fff;padding:18px;border-radius:18px;box-shadow:0 12px 30px rgba(0,0,0,.18)}
@@ -74,20 +76,17 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
 .loginBtns{display:grid;grid-template-columns:1fr;gap:10px;margin-top:6px}
 .loginRow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media (max-width:520px){.loginRow{grid-template-columns:1fr}}
-
 /* Histórico */
 .histItem{border:1px solid #e5e7eb;border-radius:14px;padding:12px;margin-bottom:10px;background:#fafafa}
 .histTop{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .histTitle{font-weight:900}
 .histMeta{font-size:12px;color:#666;margin-top:4px}
-.histBtns{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.histBtns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
 @media (max-width:760px){.histBtns{grid-template-columns:1fr 1fr}}
 .mini{padding:10px;border-radius:12px;font-size:13px;font-weight:900;color:#fff;border:none;cursor:pointer}
 .mOpen{background:#111827}
 .mCopy{background:#1976d2}
 .mSend{background:#25D366}
-.mClient{background:#6b7280}
-
 /* Usuários */
 .userItem{border:1px solid #e5e7eb;border-radius:14px;padding:12px;margin-bottom:10px;background:#fafafa}
 .userTop{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
@@ -110,32 +109,46 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
 .btnX{width:auto;padding:10px 12px;border-radius:12px;background:#111827;color:#fff;font-weight:900}
 .btnX:hover{opacity:.9}
 .modalHint{font-size:12px;color:#6b7280;margin-top:6px}
+.smallRow{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+.smallRow > div{flex:1;min-width:220px}
 .btnLine{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
 .btnLine button{width:auto}
 .btnSecondary{background:#6b7280;color:#fff}
 .btnSecondary:hover{opacity:.92}
 
+/* Draft banner */
+.draftBar{display:none;align-items:center;justify-content:space-between;gap:10px;padding:12px;border-radius:14px;background:#fff7ed;border:1px solid #fed7aa;margin:10px 0;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+.draftBar .msg{font-size:13px;color:#7c2d12;font-weight:900}
+.draftBar .actions{display:flex;gap:10px;flex-wrap:wrap}
+.draftBar .actions button{width:auto;margin-top:0;padding:10px 12px;border-radius:12px;font-size:13px}
+.btnDanger{background:#b91c1c;color:#fff}
+.btnDanger:hover{opacity:.92}
+
 /* V5.1 layout tweaks */
 .fipeHero{border:1px solid #dbeafe;background:#eff6ff}
 .fipeHero .modalTitle{font-size:17px}
+.granizoRow{margin-bottom:10px}
 
-/* V7 - atalhos */
-.quickBar{display:flex;gap:8px;flex-wrap:wrap;margin-top:-2px;margin-bottom:10px}
-.quickBtn{width:auto;padding:8px 10px;border-radius:999px;border:1px solid #e5e7eb;background:#fff;font-size:12px;font-weight:900;cursor:pointer}
-.quickBtn:hover{background:#f9fafb}
 
-/* ===== Ajustes V7.2 (operação) ===== */
-.topbarActions{display:flex;flex-direction:column;gap:8px}
-.topbarActions .btnSmall{width:auto;white-space:nowrap}
+/* ===== V8: Painel (gestão) ===== */
+.painelGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media (max-width:900px){.painelGrid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:520px){.painelGrid{grid-template-columns:1fr}}
+.kpi{border:1px solid #e5e7eb;border-radius:14px;padding:12px;background:#fafafa}
+.kpi .t{font-size:12px;color:#6b7280;font-weight:900}
+.kpi .v{font-size:22px;font-weight:900;color:#111827;margin-top:6px}
+.kpi .s{font-size:12px;color:#6b7280;margin-top:4px}
+.table{width:100%;border-collapse:separate;border-spacing:0;margin-top:10px;overflow:hidden;border:1px solid #e5e7eb;border-radius:14px}
+.table th,.table td{padding:10px;border-bottom:1px solid #eef2f7;text-align:left;font-size:13px}
+.table th{background:#f9fafb;font-weight:900;color:#111827}
+.table tr:last-child td{border-bottom:none}
+.painelTop{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.painelTop > div{flex:1;min-width:220px}
+.badge{display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:900}
+.badgeOk{background:#dcfce7;color:#065f46}
+.badgeWarn{background:#fef9c3;color:#854d0e}
+.badgeBad{background:#fee2e2;color:#991b1b}
 
-/* Checkboxes alinhados no celular */
-.chkLine{display:flex;align-items:center;gap:10px;font-weight:800;font-size:13px;line-height:1.2}
-.chkLine input[type="checkbox"]{width:18px;height:18px;margin:0;flex:0 0 auto}
-.chkCard{border:1px dashed #e5e7eb;border-radius:14px;padding:12px;background:#fafafa;margin-bottom:10px}
-.chkGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-@media (max-width:760px){.chkGrid{grid-template-columns:1fr}}
-.row2Inline{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center}
-@media (max-width:760px){.row2Inline{grid-template-columns:1fr}}
 </style>
 </head>
 
@@ -170,21 +183,27 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
         <span class="chip"><span id="roleTxt">consultor</span></span>
       </div>
     </div>
+    <button class="btnSmall btnGhost" id="btnSwitchUser">Trocar usuário</button>
+    <button class="btnSmall btnExit" id="btnLogout">Sair</button>
+  </div>
 
-    <!-- V7.2: botões empilhados -->
-    <div class="topbarActions">
-      <button class="btnSmall btnGhost" id="btnSwitchUser">Trocar usuário</button>
-      <button class="btnSmall btnExit" id="btnLogout">Sair</button>
+  <div class="draftBar" id="draftBar">
+    <div class="msg" id="draftMsg">Rascunho encontrado.</div>
+    <div class="actions">
+      <button class="btnP" type="button" id="btnDraftContinue">Continuar</button>
+      <button class="btnDanger" type="button" id="btnDraftDiscard">Descartar</button>
     </div>
   </div>
 
   <div class="tabs">
     <button class="tabbtn active" id="tabNova">Nova avaliação</button>
     <button class="tabbtn" id="tabHist">Histórico</button>
+    <button class="tabbtn hidden" id="tabPainel">Painel</button>
     <button class="tabbtn hidden" id="tabUsers">Usuários</button>
   </div>
 
   <div id="viewNova">
+    <!-- V5.1: Destaque FIPE no início -->
     <div class="card fipeHero">
       <div class="modalTitle">🔎 Consulta FIPE</div>
       <div class="modalHint">Use a busca para preencher automaticamente <b>Modelo</b>, <b>Ano</b> e <b>Fipe</b>. (Carros)</div>
@@ -197,11 +216,10 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
 
     <div class="card">
       <h3>🚗 Veículo</h3>
-      <datalist id="modeloDatalist"></datalist>
-
-      <label>Modelo <span class="hint">(obrigatório)</span></label>
-      <input id="modelo" placeholder="Ex: Fox Trend" list="modeloDatalist">
-
+      <label>Modelo <span class="hint">(obrigatório)</span></label><input id="modelo" placeholder="Ex: Fox Trend">
+      <div class="btnLine" style="margin-top:-2px">
+        <button class="btnSecondary" type="button" id="btnFavOpen">⭐ Modelos rápidos</button>
+      </div>
       <div class="row2">
         <div><label>Ano <span class="hint">(obrigatório)</span></label><input id="ano" placeholder="Ex: 2012/2013"></div>
         <div><label>Versão <span class="hint">(obrigatório)</span></label>
@@ -212,16 +230,12 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
           </select>
         </div>
       </div>
-
       <div class="row3">
         <div><label>Placa <span class="hint">(obrigatório)</span></label><input id="placa" placeholder="Ex: EPX5C99"></div>
         <div><label>Km <span class="hint">(obrigatório)</span></label><input id="km" inputmode="numeric" placeholder="Ex: 21000"></div>
-
-        <!-- V7.2: Comprou (Km) agora é texto livre -->
-        <div><label>Comprou (Km) <span class="hint">(obrigatório)</span></label><input id="kmComprou" placeholder="Ex: 10000 ou Cliente não soube informar"></div>
+        <div><label>Comprou (Km) <span class="hint">(obrigatório)</span></label><input id="kmComprou" inputmode="numeric" placeholder="Ex: 10000"></div>
       </div>
-
-      <div class="hint">Km: digite só números (o app formata). Comprou (Km): pode ser texto livre.</div>
+      <div class="hint">Digite só números. O app formata (ex: 21000 → 21.000).</div>
     </div>
 
     <div class="card">
@@ -288,23 +302,11 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
 
       <label>Motor / mecânica (texto livre)</label>
       <textarea id="motor" placeholder="Ex: Rajando / Caixa de direção / Vazamento..."></textarea>
-      <div class="quickBar" id="motorQuickBar"></div>
 
       <label>Luzes do painel (texto livre)</label>
       <textarea id="luzes" placeholder="Ex: ABS / Injeção / Óleo..."></textarea>
-      <div class="quickBar" id="luzesQuickBar"></div>
 
       <h3 style="margin-top:14px">🪑 Gastos internos</h3>
-
-      <!-- V7.2: Ar condicionado -->
-      <label>Ar condicionado</label>
-      <select id="arCond">
-        <option>Bom</option>
-        <option>Não gela</option>
-        <option>Não funciona</option>
-        <option>Não possui</option>
-      </select>
-      <div class="hint">No relatório só aparece se não for “Bom”.</div>
 
       <label>Tablier</label>
       <select id="tablier">
@@ -352,15 +354,15 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
       </div>
 
       <label>Forro de porta (selecione)</label>
-      <div class="chkCard">
-        <div class="chkGrid">
-          <label class="chkLine"><input type="checkbox" id="forro_motorista"> Motorista</label>
-          <label class="chkLine"><input type="checkbox" id="forro_passageiro"> Passageiro</label>
-          <label class="chkLine"><input type="checkbox" id="forro_traseiro_d"> Traseiro D</label>
-          <label class="chkLine"><input type="checkbox" id="forro_traseiro_e"> Traseiro E</label>
-          <label class="chkLine"><input type="checkbox" id="forro_dianteiros"> Dianteiros</label>
-          <label class="chkLine"><input type="checkbox" id="forro_traseiros"> Traseiros</label>
-          <label class="chkLine"><input type="checkbox" id="forro_todos"> Todos</label>
+      <div style="border:1px dashed #e5e7eb;border-radius:14px;padding:12px;background:#fafafa;margin-bottom:10px">
+        <div class="row3">
+          <label style="font-weight:700"><input type="checkbox" id="forro_motorista"> Motorista</label>
+          <label style="font-weight:700"><input type="checkbox" id="forro_passageiro"> Passageiro</label>
+          <label style="font-weight:700"><input type="checkbox" id="forro_traseiro_d"> Traseiro D</label>
+          <label style="font-weight:700"><input type="checkbox" id="forro_traseiro_e"> Traseiro E</label>
+          <label style="font-weight:700"><input type="checkbox" id="forro_dianteiros"> Dianteiros</label>
+          <label style="font-weight:700"><input type="checkbox" id="forro_traseiros"> Traseiros</label>
+          <label style="font-weight:700"><input type="checkbox" id="forro_todos"> Todos</label>
         </div>
 
         <div style="margin-top:10px">
@@ -390,9 +392,9 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
         </div>
       </div>
 
-      <div class="row2" style="margin-bottom:10px">
-        <label class="chkLine"><input type="checkbox" id="pinturaCompleta"> Pintura completa</label>
-        <label class="chkLine"><input type="checkbox" id="chuvaGranizo"> Chuva de granizo</label>
+      <div class="row2 granizoRow">
+        <label style="font-weight:700"><input type="checkbox" id="pinturaCompleta"> Pintura completa</label>
+        <label style="font-weight:700"><input type="checkbox" id="chuvaGranizo"> Chuva de granizo</label>
       </div>
 
       <div class="row2">
@@ -432,35 +434,30 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
         <option>Troca</option>
       </select>
 
-      <div class="chkCard">
+      <div style="border:1px dashed #e5e7eb;border-radius:14px;padding:12px;background:#fafafa;margin-bottom:10px">
         <div class="hint">Demais vidros (marque e selecione a ação).</div>
 
-        <div class="row2Inline">
-          <label class="chkLine"><input type="checkbox" id="vidro_dd_chk"> Dianteiro (D)</label>
+        <div class="row2">
+          <label style="font-weight:700"><input type="checkbox" id="vidro_dd_chk"> Dianteiro (D)</label>
           <select id="vidro_dd_act"><option>Reparo</option><option>Troca</option></select>
         </div>
-
-        <div class="row2Inline">
-          <label class="chkLine"><input type="checkbox" id="vidro_de_chk"> Dianteiro (E)</label>
+        <div class="row2">
+          <label style="font-weight:700"><input type="checkbox" id="vidro_de_chk"> Dianteiro (E)</label>
           <select id="vidro_de_act"><option>Reparo</option><option>Troca</option></select>
         </div>
-
-        <div class="row2Inline">
-          <label class="chkLine"><input type="checkbox" id="vidro_td_chk"> Traseiro (D)</label>
+        <div class="row2">
+          <label style="font-weight:700"><input type="checkbox" id="vidro_td_chk"> Traseiro (D)</label>
           <select id="vidro_td_act"><option>Reparo</option><option>Troca</option></select>
         </div>
-
-        <div class="row2Inline">
-          <label class="chkLine"><input type="checkbox" id="vidro_te_chk"> Traseiro (E)</label>
+        <div class="row2">
+          <label style="font-weight:700"><input type="checkbox" id="vidro_te_chk"> Traseiro (E)</label>
           <select id="vidro_te_act"><option>Reparo</option><option>Troca</option></select>
         </div>
-
-        <div class="row2Inline">
-          <label class="chkLine"><input type="checkbox" id="vidro_vg_chk"> Vigia</label>
+        <div class="row2">
+          <label style="font-weight:700"><input type="checkbox" id="vidro_vg_chk"> Vigia</label>
           <select id="vidro_vg_act"><option>Reparo</option><option>Troca</option></select>
         </div>
       </div>
-
       <div class="hint">No relatório aparecem apenas itens que geram custo. “Bom/OK/0” não aparece.</div>
     </div>
 
@@ -526,6 +523,33 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
     </div>
   </div>
 
+  
+  <div id="viewPainel" class="hidden">
+    <div class="card">
+      <h3>📊 Painel (Gestão)</h3>
+      <div class="hint">Resumo do mês selecionado (somente Gerente/Admin/Closer).</div>
+
+      <div class="painelTop">
+        <div>
+          <label>Mês</label>
+          <input id="painelMes" type="month">
+          <div class="hint">Ex: 2026-03</div>
+        </div>
+        <div>
+          <button class="btnP" type="button" id="btnPainelAtualizar">Atualizar</button>
+          <div class="hint" id="painelHint" style="margin-top:8px"></div>
+        </div>
+      </div>
+
+      <div class="painelGrid" id="painelKpis"></div>
+
+      <h3 style="margin-top:14px">Performance por consultor</h3>
+      <div class="hint">Usa o campo <b>Consultor</b> salvo no relatório. Registros antigos podem aparecer em “(não informado)”.</div>
+      <div id="painelTabela"></div>
+    </div>
+  </div>
+
+
   <div id="viewUsers" class="hidden">
     <div class="card">
       <h3>👥 Usuários (Admin)</h3>
@@ -590,9 +614,30 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
   </div>
 </div>
 
+<div class="modalOverlay" id="favModal">
+  <div class="modalBox">
+    <div class="modalTop">
+      <div>
+        <div class="modalTitle">⭐ Modelos rápidos</div>
+        <div class="modalHint">Selecione um modelo favorito para abrir a busca FIPE já filtrada.</div>
+      </div>
+      <button class="btnX" type="button" id="btnFavClose">Fechar</button>
+    </div>
+
+    <div class="card" style="box-shadow:none;border:1px solid #e5e7eb;margin-top:12px">
+      <div class="hint">Dica: adicione favoritos dentro da busca FIPE (botão “⭐ Favoritar este modelo”).</div>
+      <div id="favList"></div>
+      <div class="btnLine">
+        <button class="btnDanger" type="button" id="btnFavClear">Limpar favoritos</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <textarea id="copyFallback" style="position:fixed;left:-9999px;top:-9999px;"></textarea>
 
 <script>
+  // Paths corretos para assets (logo)
   document.addEventListener("DOMContentLoaded", () => {
     const base = window.BASE_HREF || "/";
     const a = document.getElementById("logoLogin");
@@ -605,7 +650,7 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-import { getFirestore, collection, addDoc, deleteDoc, serverTimestamp, query, orderBy, limit, onSnapshot, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+import { getFirestore, collection, addDoc, deleteDoc, serverTimestamp, query, orderBy, limit, onSnapshot, doc, getDoc, setDoc, updateDoc, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCvn2_z1FN2XMN_pgR9IiExRkRNMgZfhIY",
@@ -623,20 +668,33 @@ const el=(id)=>document.getElementById(id);
 const v=(id)=>(el(id).value??"").toString().trim();
 const lower=(s)=>(s??"").toString().trim().toLowerCase();
 
+function getAvaliadores(){
+  return Array.from(document.querySelectorAll(".avChk:checked")).map(x=>x.value).filter(Boolean);
+}
+function getAvaliadoresText(){
+  return getAvaliadores().join("/");
+}
+function toggleDebitos(){
+  const sim = (v("debitosSel")||"Não") === "Sim";
+  el("debitosValorWrap").classList.toggle("hidden", !sim);
+  if(!sim) el("debitosValor").value="";
+}
+function toggleFin(){
+  const sim = (v("finSel")||"Não") === "Sim";
+  el("finValorWrap").classList.toggle("hidden", !sim);
+  if(!sim) el("finValor").value="";
+}
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 await setPersistence(auth, browserLocalPersistence);
 
-let isGuest=false, currentRole="consultor", canHistory=false, isAdmin=false;
+let isGuest=false, currentRole="consultor", canHistory=false, isAdmin=false, canPainel=false;
 let unsubHist=null, unsubUsers=null;
 
-/* ===== util ===== */
-function safeJsonParse(raw, fallback){ try{ return JSON.parse(raw); }catch(e){ return fallback; } }
-function escapeHtml(s){ return (s??"").toString().replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;"); }
-
-function computePermissions(){ canHistory=(currentRole==="admin"||currentRole==="gerente"||currentRole==="closer"); isAdmin=(currentRole==="admin"); }
-function setRoleUI(){ el("roleTxt").textContent=currentRole; el("tabUsers").classList.toggle("hidden", !isAdmin); }
+function computePermissions(){ canHistory=(currentRole==="admin"||currentRole==="gerente"||currentRole==="closer"); isAdmin=(currentRole==="admin"); canPainel=canHistory; }
+function setRoleUI(){ el("roleTxt").textContent=currentRole; el("tabUsers").classList.toggle("hidden", !isAdmin); el("tabPainel").classList.toggle("hidden", !canPainel); }
 
 function showLogin(){ el("screenLogin").style.display="block"; el("screenApp").classList.add("hidden"); }
 function showApp(){ el("screenLogin").style.display="none"; el("screenApp").classList.remove("hidden"); }
@@ -658,121 +716,11 @@ async function ensureUserDoc(user){
   return role;
 }
 
-function getSelectedAvaliadores(){
-  return Array.from(document.querySelectorAll(".avChk:checked")).map(x=>x.value).filter(Boolean);
-}
-function getAvaliadoresText(){ return getSelectedAvaliadores().join("/"); }
-
-/* ===== memória V7 ===== */
-const V7_MEM_KEY = "clubeauto_mem_v7";
-const V7_MODELOS_KEY = "clubeauto_modelos_v7";
-const V7_AVSTAT_KEY = "clubeauto_avaliadores_stat_v7";
-
-function getMem(){
-  const obj = safeJsonParse(localStorage.getItem(V7_MEM_KEY) || "null", null);
-  return (obj && typeof obj === "object") ? obj : {};
-}
-function setMem(partial){
-  const cur = getMem();
-  const next = { ...cur, ...partial, _ts: Date.now() };
-  try{ localStorage.setItem(V7_MEM_KEY, JSON.stringify(next)); }catch(e){}
-}
-function setSelectedAvaliadores(list){
-  const want = new Set((list||[]).map(x=>String(x)));
-  document.querySelectorAll(".avChk").forEach(chk=>{ chk.checked = want.has(chk.value); });
-}
-function restoreMemToUI(){
-  const mem = getMem();
-  if(mem.consultor && !v("consultor")) el("consultor").value = mem.consultor;
-  if(mem.local && !v("local")) el("local").value = mem.local;
-  if(mem.captacao && !v("captacao")) el("captacao").value = mem.captacao;
-
-  if(Array.isArray(mem.avaliadores) && mem.avaliadores.length){
-    setSelectedAvaliadores(mem.avaliadores);
-  }else{
-    const stat = safeJsonParse(localStorage.getItem(V7_AVSTAT_KEY) || "{}", {});
-    const top = Object.entries(stat).sort((a,b)=>(Number(b[1]||0)-Number(a[1]||0))).slice(0,2).map(([name])=>name);
-    if(top.length) setSelectedAvaliadores(top);
-  }
-}
-let memSaveTimer=null;
-function scheduleMemSave(){
-  if(memSaveTimer) clearTimeout(memSaveTimer);
-  memSaveTimer = setTimeout(()=>{
-    setMem({
-      consultor: v("consultor"),
-      local: v("local"),
-      captacao: v("captacao"),
-      avaliadores: getSelectedAvaliadores()
-    });
-  }, 350);
-}
-
-/* ===== autocomplete modelos ===== */
-function getModelos(){
-  const arr = safeJsonParse(localStorage.getItem(V7_MODELOS_KEY) || "[]", []);
-  return Array.isArray(arr) ? arr.map(x=>String(x)).filter(Boolean) : [];
-}
-function setModelos(arr){
-  const uniq = Array.from(new Set((arr||[]).map(s=>String(s).trim()).filter(Boolean)));
-  try{ localStorage.setItem(V7_MODELOS_KEY, JSON.stringify(uniq.slice(0, 250))); }catch(e){}
-}
-function addModeloToList(name){
-  const n = String(name||"").trim();
-  if(!n) return;
-  const arr = getModelos();
-  if(arr.some(x=>x.toLowerCase()===n.toLowerCase())) return;
-  arr.unshift(n);
-  setModelos(arr);
-  refreshModeloDatalist();
-}
-function refreshModeloDatalist(filterText=""){
-  const dl = el("modeloDatalist");
-  if(!dl) return;
-  const q = String(filterText||"").trim().toLowerCase();
-  const arr = getModelos();
-  const filtered = (!q || q.length<2) ? arr.slice(0, 20) : arr.filter(x=>x.toLowerCase().includes(q)).slice(0, 20);
-  dl.innerHTML = filtered.map(x=>`<option value="${escapeHtml(x)}"></option>`).join("");
-}
-
-/* ===== atalhos ===== */
-function ensureToken(text, token){
-  const t = String(text||"").trim();
-  const tk = String(token||"").trim();
-  if(!tk) return t;
-  const has = t.toLowerCase().split(/[\n\/,;]+/).map(s=>s.trim()).filter(Boolean).includes(tk.toLowerCase());
-  if(has) return t;
-  if(!t) return tk;
-  if(t.endsWith("/") || t.endsWith("/ ")) return t + " " + tk;
-  return t + " / " + tk;
-}
-function renderQuickBar(containerId, targetTextareaId, tokens){
-  const wrap = el(containerId);
-  const ta = el(targetTextareaId);
-  if(!wrap || !ta) return;
-  wrap.innerHTML = tokens.map(tok=>`<button type="button" class="quickBtn" data-tok="${escapeHtml(tok)}">${escapeHtml(tok)}</button>`).join("");
-  wrap.querySelectorAll("button[data-tok]").forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      ta.value = ensureToken(ta.value, btn.dataset.tok);
-      scheduleMemSave();
-      atualizarPreview();
-      ta.focus();
-    });
-  });
-}
-
-/* ===== formatação ===== */
 function onlyDigits(s){ return (s??"").toString().replace(/[^\d]/g,""); }
 function fmtKM(raw){ const d=onlyDigits(raw); if(!d) return ""; return new Intl.NumberFormat("pt-BR").format(Number(d)); }
 function fmtBRL(raw){ const d=onlyDigits(raw); if(!d) return ""; return new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(Number(d)).replace(/ /g," "); }
-
-/* V7.2: apenas KM formata, kmComprou é texto livre */
-el("km").addEventListener("blur",()=>{ if(v("km")) el("km").value=fmtKM(v("km")); atualizarPreview(); });
-
-["fipe","valorPretendido","debitosValor","finValor"].forEach(id=>{
-  const e=el(id); if(!e) return;
-  e.addEventListener("blur",()=>{ if(v(id)) el(id).value=fmtBRL(v(id)); atualizarPreview(); });
-});
+["km","kmComprou"].forEach(id=>el(id).addEventListener("blur",()=>{ if(v(id)) el(id).value=fmtKM(v(id)); atualizarPreview(); }));
+["fipe","valorPretendido","debitosValor","finValor"].forEach(id=>{ const e=el(id); if(!e) return; e.addEventListener("blur",()=>{ if(v(id)) el(id).value=fmtBRL(v(id)); atualizarPreview(); }); });
 
 function setStatusBadge(){
   const s=(v("laudo")||"APROVADO").toUpperCase();
@@ -784,16 +732,6 @@ function toggleLaudoDescricao(){
   if(s==="APROVADO"){ el("laudoObsWrap").style.display="none"; el("laudoObs").value=""; }
   else el("laudoObsWrap").style.display="block";
 }
-function toggleDebitos(){
-  const sim = (v("debitosSel")||"Não") === "Sim";
-  el("debitosValorWrap").classList.toggle("hidden", !sim);
-  if(!sim) el("debitosValor").value="";
-}
-function toggleFin(){
-  const sim = (v("finSel")||"Não") === "Sim";
-  el("finValorWrap").classList.toggle("hidden", !sim);
-  if(!sim) el("finValor").value="";
-}
 
 function focusWarn(id,msg){ alert(msg); el(id).focus(); el(id).scrollIntoView({behavior:"smooth",block:"center"}); return false; }
 function validar(){
@@ -802,12 +740,12 @@ function validar(){
   if(!v("versao")) return focusWarn("versao","Obrigatório: Versão");
   if(!v("placa")) return focusWarn("placa","Obrigatório: Placa");
   if(!v("km")) return focusWarn("km","Obrigatório: Km");
-  if(!v("kmComprou")) return focusWarn("kmComprou","Obrigatório: Comprou (Km)");
+  if(!v("kmComprou")) return focusWarn("kmComprou","Obrigatório: Comprou");
   if(!v("fipe")) return focusWarn("fipe","Obrigatório: Fipe");
   const s=(v("laudo")||"APROVADO").toUpperCase();
   if(s!=="APROVADO" && !v("laudoObs")) return focusWarn("laudoObs","Descreva o laudo.");
   if(!v("consultor")) return focusWarn("consultor","Obrigatório: Consultor");
-  if(getSelectedAvaliadores().length===0) { alert("Obrigatório: Selecione ao menos 1 avaliador."); el("avaliadoresWrap").scrollIntoView({behavior:"smooth",block:"center"}); return false; }
+  if(getAvaliadores().length===0) { alert("Obrigatório: Selecione ao menos 1 avaliador."); const w=el("avaliadoresWrap"); w.scrollIntoView({behavior:"smooth",block:"center"}); return false; }
   if((v("debitosSel")==="Sim") && !v("debitosValor")) return focusWarn("debitosValor","Informe o valor dos débitos.");
   if((v("finSel")==="Sim") && !v("finValor")) return focusWarn("finValor","Informe o valor da quitação.");
   if(!v("cliente")) return focusWarn("cliente","Obrigatório: Cliente");
@@ -816,6 +754,7 @@ function validar(){
 
 function montar(){
   const lines = [];
+
   lines.push("🚗 *Veículo*");
   lines.push(`*Modelo:* ${v("modelo")}`);
   lines.push(`*Ano:* ${v("ano")}`);
@@ -828,8 +767,14 @@ function montar(){
   lines.push("💰 *Negócio*");
   lines.push(`*Fipe:* ${v("fipe")}`);
   if(v("valorPretendido")) lines.push(`*Valor pretendido:* ${v("valorPretendido")}`);
-  if(v("debitosSel")==="Sim") lines.push(`*Débitos do veículo:* ${v("debitosValor") || "—"}`);
-  if(v("finSel")==="Sim") lines.push(`*Financiamento (quitação):* ${v("finValor") || "—"}`);
+  if(v("debitosSel")==="Sim"){
+    const val=v("debitosValor");
+    lines.push(`*Débitos do veículo:* ${val || "—"}`);
+  }
+  if(v("finSel")==="Sim"){
+    const val=v("finValor");
+    lines.push(`*Financiamento (quitação):* ${val || "—"}`);
+  }
 
   lines.push("");
   lines.push("📋 *Laudo*");
@@ -847,10 +792,6 @@ function montar(){
   const gastos=[];
   if(v("motor")) gastos.push(v("motor"));
   if(v("luzes")) gastos.push(v("luzes"));
-
-  /* V7.2: Ar condicionado só aparece se não for Bom */
-  const ac = v("arCond") || "Bom";
-  if(ac !== "Bom") gastos.push(`Ar condicionado: ${ac}`);
 
   if(v("tablier")==="Avariado") gastos.push("Tablier: Avariado");
 
@@ -959,47 +900,23 @@ function abrirWhats(texto){
   document.body.appendChild(a); a.click(); a.remove();
 }
 
-/* ===== Whats do CLIENTE ===== */
-function normalizePhoneBR(raw){
-  let d = (raw||"").toString().replace(/[^\d]/g,"");
-  if(!d) return "";
-  if(d.startsWith("00")) d = d.slice(2);
-  if(d.startsWith("55")) d = d.slice(2);
-  if(d.length === 10 || d.length === 11) return "55" + d;
-  if(d.length >= 12) return d;
-  return "";
+// ===== Melhoria usabilidade (V5.1): lembrar último consultor =====
+const LAST_CONSULTOR_KEY = "clubeauto_last_consultor_v1";
+function loadLastConsultor(){
+  try{
+    const last = localStorage.getItem(LAST_CONSULTOR_KEY) || "";
+    if(last && !v("consultor")) el("consultor").value = last;
+  }catch(e){}
 }
-function firstName(nome){
-  const n = (nome||"").toString().trim();
-  if(!n) return "";
-  return n.split(/\s+/)[0];
+function saveLastConsultor(){
+  try{
+    const val = v("consultor");
+    if(val) localStorage.setItem(LAST_CONSULTOR_KEY, val);
+  }catch(e){}
 }
-function clienteMensagemPadrao(clienteNome){
-  const nome = firstName(clienteNome);
-  const saud = nome ? `Olá, ${nome}! Tudo bem?\n` : "Olá, tudo bem?\n";
-  return (
-`${saud}Aqui é da *Clube do Auto*.
+el("consultor").addEventListener("blur", ()=>{ saveLastConsultor(); atualizarPreview(); });
+el("consultor").addEventListener("change", ()=>{ saveLastConsultor(); atualizarPreview(); });
 
-Você veio até nossa loja fazer a *avaliação do seu veículo* e estamos revisando algumas negociações essa semana.
-
-Talvez consigamos *melhorar sua proposta* ou encontrar um veículo interessante para troca.
-
-Se ainda tiver interesse, me avisa por aqui ou pode passar na loja que conversamos. 🚗`
-  );
-}
-function abrirWhatsCliente(telefoneRaw, clienteNome){
-  const phone = normalizePhoneBR(telefoneRaw);
-  if(!phone){
-    alert("Este registro não tem telefone válido salvo no histórico.");
-    return;
-  }
-  const msg = clienteMensagemPadrao(clienteNome);
-  const url = "https://wa.me/" + phone + "?text=" + encodeURIComponent(msg);
-  const a=document.createElement("a"); a.href=url; a.target="_blank"; a.rel="noopener";
-  document.body.appendChild(a); a.click(); a.remove();
-}
-
-/* ===== save ===== */
 let lastSaveSig = "";
 let savingNow = false;
 let lastSaveAt = 0;
@@ -1008,18 +925,6 @@ function makeSaveSig(texto){
   const u = auth.currentUser;
   const uid = u?.uid || "";
   return uid + "||" + texto;
-}
-
-function bumpAvaliadoresStats(avList){
-  try{
-    const stat = safeJsonParse(localStorage.getItem(V7_AVSTAT_KEY) || "{}", {});
-    (avList||[]).forEach(name=>{
-      const k = String(name||"");
-      if(!k) return;
-      stat[k] = Number(stat[k]||0) + 1;
-    });
-    localStorage.setItem(V7_AVSTAT_KEY, JSON.stringify(stat));
-  }catch(e){}
 }
 
 async function salvarUmaVez(texto){
@@ -1044,18 +949,14 @@ async function salvarUmaVez(texto){
       modelo:v("modelo"),
       placa:v("placa"),
       laudo:(v("laudo")||"APROVADO").toUpperCase(),
-      reportText:texto,
-      clienteNome: v("cliente"),
-      telefone: v("telefone")
+      consultorName:v("consultor"),
+      captacao:v("captacao"),
+      valorPretendidoRaw:v("valorPretendido"),
+      reportText:texto
     });
-
     lastSaveSig = sig;
     lastSaveAt = now;
     el("saveHint").innerHTML="<span class='ok'>Salvo na nuvem.</span>";
-
-    bumpAvaliadoresStats(getSelectedAvaliadores());
-    scheduleMemSave();
-
     return { saved:true };
   }catch(e){
     el("saveHint").innerHTML="<span class='warn'>Falha ao salvar:</span> "+(e?.message||e);
@@ -1065,26 +966,29 @@ async function salvarUmaVez(texto){
   }
 }
 
+function escapeHtml(s){ return (s??"").toString().replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;"); }
 function formatDate(ts){
-  try{
-    const d=ts?.toDate?ts.toDate():null; if(!d) return "";
+  try{ const d=ts?.toDate?ts.toDate():null; if(!d) return "";
     return new Intl.DateTimeFormat("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}).format(d);
   }catch(e){ return ""; }
 }
 
 function setTab(tab){
-  const nova=tab==="nova", hist=tab==="hist", users=tab==="users";
+  const nova=tab==="nova", hist=tab==="hist", painel=tab==="painel", users=tab==="users";
   el("tabNova").classList.toggle("active", nova);
   el("tabHist").classList.toggle("active", hist);
   el("tabUsers").classList.toggle("active", users);
   el("viewNova").classList.toggle("hidden", !nova);
   el("viewHistorico").classList.toggle("hidden", !hist);
+  el("viewPainel").classList.toggle("hidden", !painel);
   el("viewUsers").classList.toggle("hidden", !users);
   if(hist) openHistorico();
+  if(painel) openPainel();
   if(users) openUsers();
 }
 el("tabNova").addEventListener("click",()=>setTab("nova"));
 el("tabHist").addEventListener("click",()=>setTab("hist"));
+el("tabPainel").addEventListener("click",()=>setTab("painel"));
 el("tabUsers").addEventListener("click",()=>setTab("users"));
 
 function openHistorico(){
@@ -1092,69 +996,35 @@ function openHistorico(){
   if(isGuest){ el("histHint").innerHTML="<span class='warn'>Convidado não tem histórico.</span>"; return; }
   if(!canHistory){ el("histHint").innerHTML="<span class='warn'>Seu cargo não tem acesso ao histórico.</span>"; return; }
   if(unsubHist) unsubHist();
-
   const qy=query(collection(db,"vistorias"), orderBy("createdAt","desc"), limit(200));
   unsubHist=onSnapshot(qy,(snap)=>{
     const items=snap.docs.map(d=>({id:d.id,...d.data()}));
-
     el("historicoList").innerHTML = items.map(it=>{
       const la=(it.laudo||"APROVADO").toUpperCase();
       const icon=(la==="REPROVADO")?"🔴":(la==="APONTAMENTO")?"🟡":"🟢";
       const title=`${icon} ${escapeHtml(it.modelo||"-")} — ${escapeHtml(it.placa||"-")}`;
       const meta=`${escapeHtml(formatDate(it.createdAt))} • ${escapeHtml(it.createdByEmail||"")}`;
-
-      const clienteBtn = `<button class="mini mClient" data-client="${it.id}">Cliente</button>`;
       const delBtn = isAdmin ? `<button class="mini" style="background:#b91c1c" data-del="${it.id}">Excluir</button>` : "";
-
       return `<div class="histItem">
-        <div class="histTop">
-          <div>
-            <div class="histTitle">${title}</div>
-            <div class="histMeta">${meta}</div>
-          </div>
-          <div class="histMeta"><b>${escapeHtml(la)}</b></div>
-        </div>
+        <div class="histTop"><div><div class="histTitle">${title}</div><div class="histMeta">${meta}</div></div><div class="histMeta"><b>${escapeHtml(la)}</b></div></div>
         <div class="histBtns">
           <button class="mini mOpen" data-open="${it.id}">Abrir</button>
           <button class="mini mCopy" data-copy="${it.id}">Copiar</button>
           <button class="mini mSend" data-send="${it.id}">Whats</button>
-          ${clienteBtn}
           ${delBtn}
         </div>
       </div>`;
     }).join("") || "<div class='histItem'><b>Nenhum registro.</b></div>";
 
     el("historicoList").querySelectorAll("[data-open]").forEach(btn=>{
-      btn.addEventListener("click",()=>{
-        const it=items.find(x=>x.id===btn.dataset.open); if(!it) return;
-        el("preview").innerText=(it.reportText||"");
-        setTab("nova");
-        window.scrollTo({top:0,behavior:"smooth"});
-      });
+      btn.addEventListener("click",()=>{ const it=items.find(x=>x.id===btn.dataset.open); if(!it) return; el("preview").innerText=(it.reportText||""); setTab("nova"); window.scrollTo({top:0,behavior:"smooth"}); });
     });
-
     el("historicoList").querySelectorAll("[data-copy]").forEach(btn=>{
-      btn.addEventListener("click",async()=>{
-        const it=items.find(x=>x.id===btn.dataset.copy); if(!it) return;
-        const ok=await copiar(it.reportText||"");
-        if(ok) alert("Copiado!");
-      });
+      btn.addEventListener("click",async()=>{ const it=items.find(x=>x.id===btn.dataset.copy); if(!it) return; const ok=await copiar(it.reportText||""); if(ok) alert("Copiado!"); });
     });
-
     el("historicoList").querySelectorAll("[data-send]").forEach(btn=>{
-      btn.addEventListener("click",()=>{
-        const it=items.find(x=>x.id===btn.dataset.send); if(!it) return;
-        abrirWhats(it.reportText||"");
-      });
+      btn.addEventListener("click",()=>{ const it=items.find(x=>x.id===btn.dataset.send); if(!it) return; abrirWhats(it.reportText||""); });
     });
-
-    el("historicoList").querySelectorAll("[data-client]").forEach(btn=>{
-      btn.addEventListener("click",()=>{
-        const it=items.find(x=>x.id===btn.dataset.client); if(!it) return;
-        abrirWhatsCliente(it.telefone || "", it.clienteNome || "");
-      });
-    });
-
     if(isAdmin){
       el("historicoList").querySelectorAll("[data-del]").forEach(btn=>{
         btn.addEventListener("click", async ()=>{
@@ -1175,12 +1045,172 @@ function openHistorico(){
   });
 }
 
+
+// ===== V8: Painel (Gestão) =====
+function brlToNumber(txt){
+  const s = (txt||"").toString().replace(/\s/g,"");
+  const only = s.replace(/[^0-9,.-]/g,"");
+  if(!only) return 0;
+  if(only.includes(",")){
+    const norm = only.replace(/\./g,"").replace(",", ".");
+    const n = Number(norm);
+    return Number.isFinite(n) ? n : 0;
+  }
+  const n = Number(only.replace(/\./g,""));
+  return Number.isFinite(n) ? n : 0;
+}
+function monthRangeFromInput(value){
+  const parts = (value||"").split("-");
+  const yy = Number(parts[0]||"0");
+  const mm = Number(parts[1]||"0");
+  if(!yy || !mm) return null;
+  const start = new Date(yy, mm-1, 1, 0, 0, 0);
+  const end   = new Date(yy, mm,   1, 0, 0, 0);
+  return { start, end };
+}
+function badgeForLaudo(la){
+  const s=(la||"APROVADO").toString().toUpperCase();
+  if(s==="APROVADO") return "<span class='badge badgeOk'>APROVADO</span>";
+  if(s==="APONTAMENTO") return "<span class='badge badgeWarn'>APONTAMENTO</span>";
+  return "<span class='badge badgeBad'>REPROVADO</span>";
+}
+function getFirstLineValue(reportText, label){
+  const t = (reportText||"").toString();
+  const re1 = new RegExp("\\\\*"+label+"\\\\*:\\\\s*(.+)$","mi");
+  const m1 = t.match(re1);
+  if(m1 && m1[1]) return m1[1].trim();
+  const re2 = new RegExp(label+":\\\\s*(.+)$","mi");
+  const m2 = t.match(re2);
+  if(m2 && m2[1]) return m2[1].trim();
+  return "";
+}
+function setPainelHint(html){ el("painelHint").innerHTML = html || ""; }
+
+async function openPainel(){
+  el("painelKpis").innerHTML="";
+  el("painelTabela").innerHTML="";
+  setPainelHint("");
+
+  if(isGuest){ setPainelHint("<span class='warn'>Convidado não tem acesso.</span>"); return; }
+  if(!canPainel){ setPainelHint("<span class='warn'>Seu cargo não tem acesso ao Painel.</span>"); return; }
+
+  try{
+    const now = new Date();
+    const ym = now.toISOString().slice(0,7);
+    if(!el("painelMes").value) el("painelMes").value = ym;
+  }catch(e){}
+
+  await carregarPainel();
+}
+
+async function carregarPainel(){
+  const ym = el("painelMes").value || "";
+  const range = monthRangeFromInput(ym);
+  if(!range){ setPainelHint("<span class='warn'>Selecione um mês válido.</span>"); return; }
+
+  setPainelHint("Carregando dados do mês...");
+  el("painelKpis").innerHTML="";
+  el("painelTabela").innerHTML="";
+
+  try{
+    const qy = query(
+      collection(db,"vistorias"),
+      where("createdAt", ">=", range.start),
+      where("createdAt", "<", range.end),
+      orderBy("createdAt","desc"),
+      limit(2000)
+    );
+    const snap = await getDocs(qy);
+    const items = snap.docs.map(d=>({id:d.id, ...d.data()}));
+
+    const total = items.length;
+    const aprov = items.filter(x=>(x.laudo||"").toString().toUpperCase()==="APROVADO").length;
+    const apont = items.filter(x=>(x.laudo||"").toString().toUpperCase()==="APONTAMENTO").length;
+    const repr  = items.filter(x=>(x.laudo||"").toString().toUpperCase()==="REPROVADO").length;
+
+    const by = {};
+    let somaValorPret = 0;
+
+    items.forEach(it=>{
+      const la = (it.laudo||"APROVADO").toString().toUpperCase();
+      const cons = (it.consultorName || getFirstLineValue(it.reportText, "Consultor") || "(não informado)").toString().trim() || "(não informado)";
+      const valTxt = (it.valorPretendidoRaw || getFirstLineValue(it.reportText, "Valor pretendido") || "").toString();
+      const valNum = brlToNumber(valTxt);
+      somaValorPret += valNum;
+
+      if(!by[cons]) by[cons] = { name: cons, total:0, aprov:0, apont:0, repr:0, valor:0 };
+      by[cons].total += 1;
+      if(la==="APROVADO") by[cons].aprov += 1;
+      else if(la==="APONTAMENTO") by[cons].apont += 1;
+      else if(la==="REPROVADO") by[cons].repr += 1;
+      by[cons].valor += valNum;
+    });
+
+    const fmtMoney = (n)=> new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(n||0).replace(/ /g," ");
+
+    const kpis = [
+      {t:"Avaliações no mês", v: total, s: "Registros de vistoria no período"},
+      {t:"Aprovados", v: aprov, s: badgeForLaudo("APROVADO")},
+      {t:"Apontamento", v: apont, s: badgeForLaudo("APONTAMENTO")},
+      {t:"Reprovados", v: repr, s: badgeForLaudo("REPROVADO")},
+      {t:"Valor pretendido (soma)", v: fmtMoney(somaValorPret), s: "Estimativa pelo campo Valor pretendido"},
+    ];
+
+    el("painelKpis").innerHTML = kpis.map(k=>
+      `<div class="kpi"><div class="t">${escapeHtml(k.t)}</div><div class="v">${escapeHtml(String(k.v))}</div><div class="s">${k.s}</div></div>`
+    ).join("");
+
+    const rows = Object.values(by)
+      .sort((a,b)=> b.total - a.total || b.valor - a.valor)
+      .map(u=>{
+        return `<tr>
+          <td>${escapeHtml(u.name)}</td>
+          <td><b>${u.total}</b></td>
+          <td>${u.aprov}</td>
+          <td>${u.apont}</td>
+          <td>${u.repr}</td>
+          <td>${escapeHtml(fmtMoney(u.valor))}</td>
+        </tr>`;
+      }).join("");
+
+    el("painelTabela").innerHTML = `
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Consultor</th>
+            <th>Total</th>
+            <th>Aprov.</th>
+            <th>Apont.</th>
+            <th>Reprov.</th>
+            <th>Valor pretendido</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows || `<tr><td colspan="6"><b>Nenhum dado no período.</b></td></tr>`}
+        </tbody>
+      </table>
+    `;
+
+    setPainelHint(`<span class='ok'>Painel carregado.</span> (${total} registros)`);
+  }catch(e){
+    const msg = (e?.message||e||"").toString();
+    let extra = "";
+    if(msg.toLowerCase().includes("index")){
+      extra = "<br><span class='warn'>Dica:</span> pode precisar criar índice no Firestore (o próprio erro costuma trazer o link).";
+    }
+    setPainelHint("<span class='warn'>Erro ao carregar painel:</span> "+escapeHtml(msg)+extra);
+  }
+}
+
+el("btnPainelAtualizar").addEventListener("click", carregarPainel);
+el("painelMes").addEventListener("change", carregarPainel);
+
+
 function openUsers(){
   el("usersList").innerHTML=""; el("usersHint").innerHTML="";
   if(isGuest){ el("usersHint").innerHTML="<span class='warn'>Convidado não tem acesso.</span>"; return; }
   if(!isAdmin){ el("usersHint").innerHTML="<span class='warn'>Apenas Admin.</span>"; return; }
   if(unsubUsers) unsubUsers();
-
   const qy=query(collection(db,"users"), orderBy("email","asc"), limit(500));
   unsubUsers=onSnapshot(qy,(snap)=>{
     const users=snap.docs.map(d=>({id:d.id,...d.data()}));
@@ -1206,9 +1236,7 @@ function openUsers(){
         try{
           await updateDoc(doc(db,"users",id),{role:newRole,updatedAt:serverTimestamp()});
           alert("Cargo atualizado!");
-          if(auth.currentUser && id===auth.currentUser.uid){
-            currentRole=newRole; computePermissions(); setRoleUI();
-          }
+          if(auth.currentUser && id===auth.currentUser.uid){ currentRole=newRole; computePermissions(); setRoleUI(); }
         }catch(e){ alert("Erro: "+(e?.message||e)); }
       });
     });
@@ -1217,7 +1245,7 @@ function openUsers(){
   });
 }
 
-/* ===== Login ===== */
+// Login buttons
 el("btnDoLogin").addEventListener("click", async ()=>{
   const email=v("loginEmail"), pass=v("loginPass");
   if(!email||!pass) return el("loginHint").innerHTML="<span class='warn'>Preencha e-mail e senha.</span>";
@@ -1235,122 +1263,42 @@ el("btnGuest").addEventListener("click", ()=>{
   isGuest=true; try{ signOut(auth);}catch(e){}
   showApp(); el("whoami").textContent="Convidado";
   currentRole="convidado"; computePermissions(); setRoleUI(); setTab("nova");
-
-  restoreMemToUI();
-  refreshModeloDatalist();
-
-  /* V7.2: removido "Pneu" do motor */
-  renderQuickBar("motorQuickBar","motor",["Caixa direção","Embreagem","Suspensão","Vazamento","Correia"]);
-  renderQuickBar("luzesQuickBar","luzes",["ABS","Injeção","Óleo","Airbag","Bateria"]);
+  loadLastConsultor();
 });
 el("btnLogout").addEventListener("click", async ()=>{ isGuest=false; try{ await signOut(auth);}catch(e){} showLogin(); });
 el("btnSwitchUser").addEventListener("click", ()=>{ isGuest=false; showLogin(); });
 
-/* ===== botões final ===== */
+// Action buttons
 function setButtonsDisabled(disabled){
   el("btnWhats").disabled = disabled;
   el("btnCopy").disabled = disabled;
   el("btnWhats").style.opacity = disabled ? "0.6" : "1";
   el("btnCopy").style.opacity = disabled ? "0.6" : "1";
 }
+
 el("btnWhats").addEventListener("click", async ()=>{
   if(!validar()) return;
   const texto=montar();
   setButtonsDisabled(true);
   await salvarUmaVez(texto);
-  addModeloToList(v("modelo"));
   abrirWhats(texto);
   setButtonsDisabled(false);
 });
+
 el("btnCopy").addEventListener("click", async ()=>{
   if(!validar()) return;
   const texto=montar();
   setButtonsDisabled(true);
   await salvarUmaVez(texto);
-  addModeloToList(v("modelo"));
   const ok=await copiar(texto);
   if(ok) alert("Copiado!");
   setButtonsDisabled(false);
 });
 
-/* ===== limpar ===== */
-function clearForm(keepMem=true){
-  const idsToClear = [
-    "modelo","ano","placa","km","kmComprou","fipe","valorPretendido",
-    "debitosValor","finValor","laudoObs","motor","luzes","testeRodagem",
-    "cliente","telefone","local"
-  ];
-  idsToClear.forEach(id=>{ const e = el(id); if(e) e.value=""; });
-
-  el("versao").value="";
-  el("debitosSel").value="Não";
-  el("finSel").value="Não";
-  el("laudo").value="APROVADO";
-  el("leilao").value="Não";
-  el("arCond").value="Bom";
-  el("tablier").value="Bom";
-  el("bancosOnde").value="";
-  el("bancosServico").value="Bom";
-  el("volante").value="Bom";
-  el("manopla").value="Bom";
-  el("funilariaPecas").value="0";
-  el("pneusQtd").value="0";
-  el("paraChoqueD").value="Bom";
-  el("paraChoqueT").value="Bom";
-  el("farolD").value="Bom";
-  el("farolE").value="Bom";
-  el("lanternaD").value="Bom";
-  el("lanternaE").value="Bom";
-  el("vidroParabrisa").value="OK";
-  el("forroEstado").value="Bom";
-  el("captacao").value="";
-
-  ["pinturaCompleta","chuvaGranizo","forro_motorista","forro_passageiro","forro_traseiro_d","forro_traseiro_e","forro_dianteiros","forro_traseiros","forro_todos",
-   "vidro_dd_chk","vidro_de_chk","vidro_td_chk","vidro_te_chk","vidro_vg_chk"].forEach(id=>{ const c=el(id); if(c) c.checked=false; });
-  ["vidro_dd_act","vidro_de_act","vidro_td_act","vidro_te_act","vidro_vg_act"].forEach(id=>{ const s=el(id); if(s) s.value="Reparo"; });
-
-  document.querySelectorAll(".avChk").forEach(chk=>chk.checked=false);
-
-  toggleDebitos(); toggleFin();
-  setStatusBadge(); toggleLaudoDescricao();
-
-  if(keepMem) restoreMemToUI();
-
-  el("saveHint").innerHTML="";
-  atualizarPreview();
-  window.scrollTo({top:0,behavior:"smooth"});
-}
-el("btnClearForm").addEventListener("click", ()=>{
-  const ok = confirm("Limpar o formulário atual? (Consultor/Local/Captação/Avaliadores ficam salvos para agilizar.)");
-  if(!ok) return;
-  clearForm(true);
-});
-
-/* ===== preview + memória ===== */
-[
- "modelo","ano","versao","placa","km","kmComprou","debitosSel","debitosValor","finSel","finValor","fipe","valorPretendido",
- "laudo","laudoObs","leilao","motor","luzes","testeRodagem","consultor","cliente","local","telefone","captacao",
- "arCond","tablier","bancosOnde","bancosServico","volante","manopla",
- "forro_motorista","forro_passageiro","forro_traseiro_d","forro_traseiro_e","forro_dianteiros","forro_traseiros","forro_todos","forroEstado",
- "funilariaPecas","pneusQtd","pinturaCompleta","chuvaGranizo","paraChoqueD","paraChoqueT",
- "farolD","farolE","lanternaD","lanternaE",
- "vidroParabrisa","vidro_dd_chk","vidro_dd_act","vidro_de_chk","vidro_de_act","vidro_td_chk","vidro_td_act","vidro_te_chk","vidro_te_act","vidro_vg_chk","vidro_vg_act"
-].forEach(id=>{
-  el(id).addEventListener("input",()=>{
-    if(id==="laudo"){setStatusBadge();toggleLaudoDescricao();}
-    if(id==="modelo"){ refreshModeloDatalist(v("modelo")); }
-    scheduleMemSave();
-    atualizarPreview();
-  });
-  el(id).addEventListener("change",()=>{
-    if(id==="laudo"){setStatusBadge();toggleLaudoDescricao();}
-    if(id==="modelo"){ refreshModeloDatalist(v("modelo")); }
-    scheduleMemSave();
-    atualizarPreview();
-  });
-});
-document.querySelectorAll(".avChk").forEach(c=>c.addEventListener("change",()=>{ scheduleMemSave(); atualizarPreview(); }));
-el("modelo").addEventListener("blur", ()=>{ if(v("modelo")) addModeloToList(v("modelo")); });
+// Bind preview
+["modelo","ano","versao","placa","km","kmComprou","debitosSel","debitosValor","finSel","finValor","fipe","valorPretendido","laudo","laudoObs","leilao","motor","luzes","testeRodagem","consultor","cliente","local","captacao","tablier","bancosOnde","bancosServico","volante","manopla","forro_motorista","forro_passageiro","forro_traseiro_d","forro_traseiro_e","forro_dianteiros","forro_traseiros","forro_todos","forroEstado","funilariaPecas","pneusQtd","pinturaCompleta","chuvaGranizo","paraChoqueD","paraChoqueT","farolD","farolE","lanternaD","lanternaE","vidroParabrisa","vidro_dd_chk","vidro_dd_act","vidro_de_chk","vidro_de_act","vidro_td_chk","vidro_td_act","vidro_te_chk","vidro_te_act","vidro_vg_chk","vidro_vg_act"]
+.forEach(id=>{ el(id).addEventListener("input",()=>{ if(id==="laudo"){setStatusBadge();toggleLaudoDescricao();} atualizarPreview(); });
+              el(id).addEventListener("change",()=>{ if(id==="laudo"){setStatusBadge();toggleLaudoDescricao();} atualizarPreview(); }); });
 
 onAuthStateChanged(auth, async (u)=>{
   if(isGuest) return;
@@ -1359,27 +1307,25 @@ onAuthStateChanged(auth, async (u)=>{
     el("whoami").textContent=lower(u.email||"");
     try{ currentRole = await ensureUserDoc(u); }catch(e){ currentRole = HARD_ADMINS.has(lower(u.email||"")) ? "admin":"consultor"; }
     computePermissions(); setRoleUI(); setTab("nova");
-
-    restoreMemToUI();
-    refreshModeloDatalist();
-
-    /* V7.2: removido "Pneu" do motor */
-    renderQuickBar("motorQuickBar","motor",["Caixa direção","Embreagem","Suspensão","Vazamento","Correia"]);
-    renderQuickBar("luzesQuickBar","luzes",["ABS","Injeção","Óleo","Airbag","Bateria"]);
+    loadLastConsultor();
   }else{
     showLogin();
     currentRole="consultor"; computePermissions(); setRoleUI();
   }
 });
 
+// Debitos/Financiamento toggles
 el("debitosSel").addEventListener("change",()=>{ toggleDebitos(); atualizarPreview(); });
 el("finSel").addEventListener("change",()=>{ toggleFin(); atualizarPreview(); });
 
-toggleDebitos(); toggleFin();
-setStatusBadge(); toggleLaudoDescricao(); atualizarPreview();
+// Avaliadores checkboxes
+document.querySelectorAll(".avChk").forEach(c=>c.addEventListener("change",()=>atualizarPreview()));
 
-/* ===== FIPE ===== */
+toggleDebitos(); toggleFin();
+
+// ===== FIPE inteligente (carros) - API gratuita (parallelum) =====
 const FIPE_BASE = "https://parallelum.com.br/fipe/api/v1/carros";
+
 let fipeCache = { brands: null, modelsByBrand: {}, yearsByModel: {} };
 
 function loadCache(){
@@ -1393,7 +1339,9 @@ function loadCache(){
     }
   }catch(e){}
 }
-function saveCache(){ try{ localStorage.setItem("fipeCache_v1", JSON.stringify(fipeCache)); }catch(e){} }
+function saveCache(){
+  try{ localStorage.setItem("fipeCache_v1", JSON.stringify(fipeCache)); }catch(e){}
+}
 loadCache();
 
 function showFipeModal(show){
@@ -1408,12 +1356,15 @@ async function fipeFetchJson(url){
   return await r.json();
 }
 
-function setFipeStatus(html){ el("fipeStatus").innerHTML = html || ""; }
+function setFipeStatus(html){
+  el("fipeStatus").innerHTML = html || "";
+}
 
 function fillSelect(selectId, items, placeholder){
   const sel = el(selectId);
   if(!sel) return;
-  const opts = [`<option value="">${placeholder}</option>`];
+  const opts = [];
+  opts.push(`<option value="">${placeholder}</option>`);
   items.forEach(it=>{
     const code = (it.codigo ?? it.code ?? it.id ?? "").toString();
     const name = (it.nome ?? it.name ?? "").toString();
@@ -1429,6 +1380,7 @@ async function ensureBrands(){
   saveCache();
   return brands;
 }
+
 async function ensureModels(brandCode){
   if(!brandCode) return [];
   if(fipeCache.modelsByBrand[brandCode]) return fipeCache.modelsByBrand[brandCode];
@@ -1438,6 +1390,7 @@ async function ensureModels(brandCode){
   saveCache();
   return models;
 }
+
 async function ensureYears(brandCode, modelCode){
   if(!brandCode || !modelCode) return [];
   const key = `${brandCode}-${modelCode}`;
@@ -1569,13 +1522,11 @@ el("btnFipeApply").addEventListener("click", ()=>{
   if(lastFipeResult.Modelo) el("modelo").value = lastFipeResult.Modelo;
   if(lastFipeResult.AnoModelo!=null) el("ano").value = String(lastFipeResult.AnoModelo);
   if(lastFipeResult.Valor) el("fipe").value = lastFipeResult.Valor;
-
-  if(lastFipeResult.Modelo) addModeloToList(lastFipeResult.Modelo);
-
-  scheduleMemSave();
   atualizarPreview();
   showFipeModal(false);
 });
+
+setStatusBadge(); toggleLaudoDescricao(); atualizarPreview();
 </script>
 
 <script>
