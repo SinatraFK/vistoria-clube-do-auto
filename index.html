@@ -230,6 +230,7 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
       <div class="modalHint">Use a busca para preencher automaticamente <b>Modelo</b>, <b>Ano</b> e <b>Fipe</b>. (Carros)</div>
       <div class="btnLine" style="margin-top:10px">
         <button class="btnB" type="button" id="btnFipe">🔎 Buscar FIPE</button>
+        <button class="btnDark" type="button" id="btnPlaca">🪪 Buscar por Placa</button>
         <button class="btnSecondary" type="button" id="btnFipeClear">Limpar FIPE</button>
       </div>
       <div class="hint" style="margin-top:8px">Dica: depois de aplicar, revise a versão do veículo (mantemos manual).</div>
@@ -700,6 +701,66 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
 </div>
 
 
+
+<div class="modalOverlay" id="placaModal">
+  <div class="modalBox">
+    <div class="modalTop">
+      <div>
+        <div class="modalTitle">🪪 Consulta por PLACA (preenche veículo)</div>
+        <div class="modalHint">Preenche <b>Modelo</b> e <b>Ano</b>. Versão fica manual. Usa API com token (salvo só no navegador).</div>
+      </div>
+      <button class="btnX" type="button" id="btnPlacaClose">Fechar</button>
+    </div>
+
+    <div class="card" style="box-shadow:none;border:1px solid #e5e7eb;margin-top:12px">
+      <div class="row2">
+        <div>
+          <label>Placa</label>
+          <input id="placaBusca" placeholder="Ex: EPX5C99">
+          <div class="hint">Aceita Mercosul e antiga (sem hífen). Vamos limpar automaticamente.</div>
+        </div>
+        <div>
+          <label>Ação</label>
+          <button class="btnP" type="button" id="btnPlacaBuscar">Buscar</button>
+          <div class="hint" id="placaStatus" style="margin-top:8px"></div>
+        </div>
+      </div>
+
+      <div class="row2">
+        <div>
+          <label>Resultado</label>
+          <div class="preview" id="placaResult">—</div>
+        </div>
+        <div>
+          <label>Aplicar</label>
+          <button class="btnDark" type="button" id="btnPlacaApply">Aplicar no formulário</button>
+          <div class="hint">Se não tiver token ainda, configure abaixo.</div>
+        </div>
+      </div>
+
+      <div class="card" style="box-shadow:none;border:1px dashed #e5e7eb;margin-top:12px">
+        <div class="modalHint"><b>Configuração (1ª vez)</b> — Tokens da APIBrasil (não ficam no GitHub, só no seu navegador).</div>
+        <div class="row2">
+          <div>
+            <label>DeviceToken</label>
+            <input id="placaDeviceToken" placeholder="Cole aqui">
+          </div>
+          <div>
+            <label>BearerToken</label>
+            <input id="placaBearerToken" placeholder="Cole aqui">
+          </div>
+        </div>
+        <div class="btnLine">
+          <button class="btnSecondary" type="button" id="btnPlacaSalvarTokens">Salvar tokens</button>
+          <button class="btnDanger" type="button" id="btnPlacaLimparTokens">Limpar tokens</button>
+        </div>
+        <div class="hint">Fonte: gateway.apibrasil.io /api/v2/vehicles/dados (plano free costuma existir, depende da conta).</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <textarea id="copyFallback" style="position:fixed;left:-9999px;top:-9999px;"></textarea>
 
 <script>
@@ -1050,6 +1111,162 @@ function abrirWhats(texto){
   const a=document.createElement("a"); a.href=url; a.target="_blank"; a.rel="noopener";
   document.body.appendChild(a); a.click(); a.remove();
 }
+
+// ===== V10.2: PDF (client-side, sem custo fixo) =====
+function safeFileName(s){
+  return (s||"").toString().trim().replace(/[^\w\-]+/g,"_").replace(/_+/g,"_").slice(0,80) || "relatorio";
+}
+async function loadLogoDataUrl(){
+  try{
+    const base = window.BASE_HREF || "/";
+    const r = await fetch(base + "logo.png", { cache: "force-cache" });
+    if(!r.ok) throw new Error("logo fetch failed");
+    const blob = await r.blob();
+    return await new Promise((resolve,reject)=>{
+      const fr = new FileReader();
+      fr.onload = ()=>resolve(fr.result);
+      fr.onerror = ()=>reject(fr.error);
+      fr.readAsDataURL(blob);
+    });
+  }catch(e){
+    return null;
+  }
+}
+function splitLinesForPdf(doc, text, maxWidth){
+  const lines = (text||"").toString().split("\n");
+  const out = [];
+  lines.forEach(l=>{
+    if(!l){ out.push(""); return; }
+    const wrapped = doc.splitTextToSize(l, maxWidth);
+    wrapped.forEach(w=>out.push(w));
+  });
+  return out;
+}
+async function gerarPdf(reportText, meta={}){
+  try{
+    const jspdf = window.jspdf;
+    if(!jspdf || !jspdf.jsPDF){
+      alert("PDF indisponível: a biblioteca não carregou. Confirme se há internet e tente novamente.");
+      return;
+    }
+    const doc = new jspdf.jsPDF({ unit:"pt", format:"a4" });
+    const pageW = doc.internal.pageSize.getWidth();
+    const pageH = doc.internal.pageSize.getHeight();
+    const margin = 40;
+
+    let y = 40;
+    const logo = await loadLogoDataUrl();
+    if(logo){
+      try{ doc.addImage(logo, "PNG", margin, y-10, 110, 40); }catch(e){}
+    }
+    doc.setFont("helvetica","bold");
+    doc.setFontSize(14);
+    doc.text("Clube do Auto — Avaliação Comercial", margin + 130, y+15);
+    doc.setFont("helvetica","normal");
+    doc.setFontSize(10);
+    const dt = new Intl.DateTimeFormat("pt-BR",{dateStyle:"short",timeStyle:"short"}).format(new Date());
+    doc.text("Gerado em: " + dt, margin + 130, y+32);
+
+    y += 60;
+    doc.setDrawColor(220);
+    doc.line(margin, y, pageW - margin, y);
+    y += 18;
+
+    doc.setFont("courier","normal");
+    doc.setFontSize(10);
+    const maxWidth = pageW - margin*2;
+    const lines = splitLinesForPdf(doc, reportText||"", maxWidth);
+    const lineH = 14;
+
+    lines.forEach((line)=>{
+      if(y > pageH - margin){
+        doc.addPage();
+        y = margin;
+      }
+      doc.text(String(line), margin, y);
+      y += lineH;
+    });
+
+    const placa = (meta.placa||"").toString();
+    const modelo = (meta.modelo||"").toString();
+    const name = safeFileName(`Avaliacao_${placa||modelo||"cliente"}`) + ".pdf";
+    doc.save(name);
+  }catch(err){
+    alert("Erro ao gerar PDF: " + (err?.message||err));
+  }
+}
+
+// ===== V10.2: Consulta por PLACA (com tokens no navegador) =====
+const PLACA_DEVICE_KEY = "clubeauto_placa_deviceToken_v1";
+const PLACA_BEARER_KEY = "clubeauto_placa_bearerToken_v1";
+
+function cleanPlaca(p){
+  return (p||"").toString().toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,7);
+}
+function setPlacaStatus(html){ el("placaStatus").innerHTML = html || ""; }
+function showPlacaModal(show){ el("placaModal").style.display = show ? "flex" : "none"; }
+
+function loadPlacaTokensIntoUI(){
+  try{
+    el("placaDeviceToken").value = localStorage.getItem(PLACA_DEVICE_KEY) || "";
+    el("placaBearerToken").value = localStorage.getItem(PLACA_BEARER_KEY) || "";
+  }catch(e){}
+}
+function savePlacaTokensFromUI(){
+  try{
+    const d = (el("placaDeviceToken").value||"").trim();
+    const b = (el("placaBearerToken").value||"").trim();
+    if(d) localStorage.setItem(PLACA_DEVICE_KEY, d);
+    if(b) localStorage.setItem(PLACA_BEARER_KEY, b);
+  }catch(e){}
+}
+function clearPlacaTokens(){
+  try{
+    localStorage.removeItem(PLACA_DEVICE_KEY);
+    localStorage.removeItem(PLACA_BEARER_KEY);
+    el("placaDeviceToken").value = "";
+    el("placaBearerToken").value = "";
+  }catch(e){}
+}
+
+let lastPlacaResult = null;
+
+function renderPlacaResult(obj){
+  if(!obj){ el("placaResult").innerText="—"; return; }
+  const lines = [];
+  // tentativas comuns de campos
+  const marca = obj.marca || obj.Marca || obj.brand || "";
+  const modelo = obj.modelo || obj.Modelo || obj.model || "";
+  const ano = obj.ano || obj.ano_modelo || obj.anoModelo || obj.year || "";
+  const cor = obj.cor || obj.color || "";
+  if(marca) lines.push("Marca: " + marca);
+  if(modelo) lines.push("Modelo: " + modelo);
+  if(ano) lines.push("Ano: " + ano);
+  if(cor) lines.push("Cor: " + cor);
+  el("placaResult").innerText = lines.join("\n") || JSON.stringify(obj, null, 2);
+}
+
+async function placaFetch(placa){
+  const device = (localStorage.getItem(PLACA_DEVICE_KEY) || "").trim();
+  const bearer = (localStorage.getItem(PLACA_BEARER_KEY) || "").trim();
+  if(!device || !bearer) throw new Error("Tokens não configurados. Cole DeviceToken e BearerToken e clique em Salvar tokens.");
+  const url = "https://gateway.apibrasil.io/api/v2/vehicles/dados";
+  const r = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type":"application/json",
+      "DeviceToken": device,
+      "Authorization": "Bearer " + bearer
+    },
+    body: JSON.stringify({ placa })
+  });
+  if(!r.ok){
+    const t = await r.text().catch(()=> "");
+    throw new Error("HTTP " + r.status + (t ? (" — " + t.slice(0,120)) : ""));
+  }
+  return await r.json();
+}
+
 
 // ===== Melhoria usabilidade (V5.1): lembrar último consultor =====
 const LAST_CONSULTOR_KEY = "clubeauto_last_consultor_v1";
@@ -1490,7 +1707,6 @@ el("btnWhats").addEventListener("click", async ()=>{
 el("btnPdf").addEventListener("click", async ()=>{
   if(!validar()) return;
   const texto=montar();
-  // PDF não precisa salvar, mas salva 1x se estiver logado para manter histórico
   setButtonsDisabled(true);
   await salvarUmaVez(texto);
   await gerarPdf(texto, { placa: v("placa"), modelo: v("modelo") });
@@ -1677,6 +1893,68 @@ async function openFipe(){
 }
 
 el("btnFipe").addEventListener("click", openFipe);
+
+// ===== V10.2: Placa UI handlers =====
+el("btnPlaca").addEventListener("click", ()=>{
+  loadPlacaTokensIntoUI();
+  el("placaBusca").value = v("placa") ? cleanPlaca(v("placa")) : "";
+  lastPlacaResult = null;
+  renderPlacaResult(null);
+  setPlacaStatus("");
+  showPlacaModal(true);
+});
+el("btnPlacaClose").addEventListener("click", ()=>showPlacaModal(false));
+el("placaModal").addEventListener("click",(ev)=>{ if(ev.target && ev.target.id==="placaModal") showPlacaModal(false); });
+
+el("btnPlacaSalvarTokens").addEventListener("click", ()=>{
+  savePlacaTokensFromUI();
+  setPlacaStatus("<span class='ok'>Tokens salvos neste navegador.</span>");
+});
+el("btnPlacaLimparTokens").addEventListener("click", ()=>{
+  clearPlacaTokens();
+  setPlacaStatus("<span class='warn'>Tokens removidos.</span>");
+});
+
+el("btnPlacaBuscar").addEventListener("click", async ()=>{
+  const placa = cleanPlaca(el("placaBusca").value);
+  el("placaBusca").value = placa;
+  if(!placa || placa.length<7){ setPlacaStatus("<span class='warn'>Digite uma placa válida.</span>"); return; }
+  setPlacaStatus("Consultando placa...");
+  lastPlacaResult = null;
+  renderPlacaResult(null);
+  try{
+    const obj = await placaFetch(placa);
+    lastPlacaResult = obj;
+    renderPlacaResult(obj);
+    setPlacaStatus("<span class='ok'>Consulta pronta.</span>");
+  }catch(e){
+    setPlacaStatus("<span class='warn'>Falha na consulta:</span> " + escapeHtml(e?.message||e));
+  }
+});
+
+el("btnPlacaApply").addEventListener("click", ()=>{
+  if(!lastPlacaResult){
+    alert("Faça a consulta primeiro.");
+    return;
+  }
+  // tenta extrair campos comuns
+  const marca = (lastPlacaResult.marca || lastPlacaResult.Marca || lastPlacaResult.brand || "").toString().trim();
+  const modelo = (lastPlacaResult.modelo || lastPlacaResult.Modelo || lastPlacaResult.model || "").toString().trim();
+  const ano = (lastPlacaResult.ano || lastPlacaResult.ano_modelo || lastPlacaResult.anoModelo || lastPlacaResult.year || "").toString().trim();
+
+  if(marca && modelo) el("modelo").value = `${marca} ${modelo}`;
+  else if(modelo) el("modelo").value = modelo;
+
+  if(ano) el("ano").value = ano;
+
+  // placa no formulário
+  const placa = cleanPlaca(el("placaBusca").value);
+  if(placa) el("placa").value = placa;
+
+  atualizarPreview();
+  showPlacaModal(false);
+});
+
 el("btnFipeClose").addEventListener("click", ()=>showFipeModal(false));
 el("fipeModal").addEventListener("click",(ev)=>{ if(ev.target && ev.target.id==="fipeModal") showFipeModal(false); });
 
