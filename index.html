@@ -772,16 +772,7 @@ const firebaseConfig = {
   appId: "1:647571720442:web:4257dd525b59bd89b62143"
 };
 
-const HARD_ADMINS = new Set(["frank.since96@gmail.com","devfrank@clubedoauto.com"].map(s=>s.toLowerCase()));
-const HARD_ADMIN_UIDS = new Set(["yehk37aYXJcVm5zljR7g4BfJ4vz2","X9LYyrdQI2Qr4n10e9ES6lSzjPj2"]);
-function isHardAdmin(){
-  try{ return HARD_ADMIN_UIDS.has(auth?.currentUser?.uid || ""); }catch(e){ return false; }
-}
-
-
-}
-
-
+const HARD_ADMINS = new Set(["admin@clubedoauto.com","frank.since96@gmail.com"].map(s=>s.toLowerCase()));
 const ROLE_ORDER = ["consultor","closer","gerente","admin"];
 
 const el=(id)=>document.getElementById(id);
@@ -821,18 +812,8 @@ await setPersistence(auth, browserLocalPersistence);
 let isGuest=false, currentRole="consultor", canHistory=false, isAdmin=false, canPainel=false;
 let unsubHist=null, unsubUsers=null;
 
-function computePermissions(){
-  const hard = isHardAdmin();
-  isAdmin = hard || (currentRole==="admin");
-  canHistory = isAdmin || (currentRole==="gerente"||currentRole==="closer");
-}
-
-function setRoleUI(){
-  const shownRole = isAdmin ? "admin" : currentRole;
-  el("roleTxt").textContent = shownRole;
-  el("tabUsers").classList.toggle("hidden", !isAdmin);
-}
-
+function computePermissions(){ canHistory=(currentRole==="admin"||currentRole==="gerente"||currentRole==="closer"); isAdmin=(currentRole==="admin"); canPainel=canHistory; }
+function setRoleUI(){ el("roleTxt").textContent=currentRole; el("tabUsers").classList.toggle("hidden", !isAdmin); el("tabPainel").classList.toggle("hidden", !canPainel); }
 
 function showLogin(){ el("screenLogin").style.display="block"; el("screenApp").classList.add("hidden"); }
 function showApp(){ el("screenLogin").style.display="none"; el("screenApp").classList.remove("hidden"); }
@@ -843,11 +824,11 @@ async function ensureUserDoc(user){
   const ref=doc(db,"users",uid);
   const snap=await getDoc(ref);
 
-  const isHard = HARD_ADMIN_UIDS.has(uid);
-  const defaultRole = isHard ? "admin" : (HARD_ADMINS.has(email) ? "admin" : "consultor");
+  const isHard = HARD_ADMINS.has(email);
+  const defaultRole = isHard ? "admin" : "consultor";
   const defaultName = suggestDisplayNameFromEmail(email) || "";
 
-  // Hard admins (por UID) SEMPRE são admin (mesmo se o Firestore estiver bloqueando escrita)
+  // Se for hard admin, forçamos role=admin sempre (merge). Isso recupera o painel mesmo se alguém mudou o cargo.
   if(isHard){
     try{
       const existingName = snap.exists() ? ((snap.data()||{}).displayName||"") : "";
@@ -860,6 +841,7 @@ async function ensureUserDoc(user){
       },{merge:true});
       return { role:"admin", displayName: (existingName || defaultName || "") };
     }catch(e){
+      // Mesmo se falhar gravar (regras), mantemos UI como admin
       return { role:"admin", displayName: defaultName || "" };
     }
   }
@@ -876,13 +858,13 @@ async function ensureUserDoc(user){
   }
 
   const data=snap.data()||{};
-  let role=(data.role || defaultRole).toString().trim().toLowerCase();
-  let displayName=(data.displayName || defaultName).toString().trim();
+  let role=(data.role || defaultRole).toString();
+  let displayName=(data.displayName || defaultName).toString();
   if(!displayName && defaultName) displayName = defaultName;
 
   const patch = {};
-  if(((data.role||"").toString().trim().toLowerCase()) !== role) patch.role = role;
-  if(((data.displayName||"").toString().trim()) !== displayName) patch.displayName = displayName;
+  if((data.role||"") !== role) patch.role = role;
+  if((data.displayName||"") !== displayName) patch.displayName = displayName;
   if(Object.keys(patch).length){
     patch.updatedAt = serverTimestamp();
     await setDoc(ref, patch, {merge:true});
@@ -890,27 +872,6 @@ async function ensureUserDoc(user){
 
   return { role, displayName };
 }
-
-
-
-function showAdminHintIfNeeded(){
-  try{
-    if(HARD_ADMIN_UIDS.has(auth?.currentUser?.uid||"") && !isAdmin){
-      alert("Aviso: seu usuário é ADMIN (por UID), mas o app não reconheceu. Quase sempre é cache do PWA (service worker).
-
-Faça: (1) CTRL+SHIFT+R
-(2) ou Configurações do Chrome > Privacidade > Limpar dados do site
-(3) ou DevTools > Application > Service Workers > Unregister + Clear site data
-
-Depois faça login novamente.");
-    }
-  }catch(e){}
-}
-  }catch(e){}
-}
-
-
-
 
 
 
@@ -1657,8 +1618,7 @@ el("btnGuest").addEventListener("click", ()=>{
   isGuest=true; try{ signOut(auth);}catch(e){}
   showApp(); el("whoami").textContent="Convidado";
   currentRole="convidado"; currentDisplayName=""; computePermissions(); setRoleUI(); setTab("nova");
-  showAdminHintIfNeeded();
-    loadLastConsultor();
+  loadLastConsultor();
     // se tiver displayName no painel de usuários, preenche Consultor automaticamente
     try{ if(currentDisplayName && !v("consultor")) { el("consultor").value = currentDisplayName; saveLastConsultor(); atualizarPreview(); } }catch(e){}
 });
@@ -1702,10 +1662,8 @@ onAuthStateChanged(auth, async (u)=>{
   if(u){
     showApp();
     el("whoami").textContent=lower(u.email||"");
-    try{ const info = await ensureUserDoc(u); currentRole = (info.role||"consultor").toString().trim().toLowerCase(); currentDisplayName = (info.displayName||"").toString(); }
-    catch(e){ currentRole = HARD_ADMINS.has(lower(u.email||"").replace(/\s+/g,"")) ? "admin":"consultor"; currentDisplayName = suggestDisplayNameFromEmail(lower(u.email||"")) || ""; }
-    // blindagem: hard admins sempre liberam painel/aba usuários
-    if(HARD_ADMIN_UIDS.has(u.uid)){ currentRole = "admin"; }
+    try{ const info = await ensureUserDoc(u); currentRole = info.role; currentDisplayName = info.displayName || ""; }
+    catch(e){ currentRole = HARD_ADMINS.has(lower(u.email||"")) ? "admin":"consultor"; currentDisplayName = suggestDisplayNameFromEmail(lower(u.email||"")) || ""; }
     computePermissions(); setRoleUI(); setTab("nova");
     loadLastConsultor();
   }else{
