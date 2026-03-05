@@ -1000,6 +1000,39 @@ function abrirWhats(texto){
   document.body.appendChild(a); a.click(); a.remove();
 }
 
+function normalizePhoneBR(raw){
+  const d = onlyDigits(raw);
+  if(!d) return "";
+  // Se já veio com DDI 55 (13 dígitos típicos: 55 + DDD + número)
+  if(d.startsWith("55") && d.length >= 12) return d;
+  // Se veio só DDD+numero (10/11)
+  if(d.length === 10 || d.length === 11) return "55" + d;
+  // fallback: retorna como está
+  return d;
+}
+function abrirWhatsPara(numero, mensagem){
+  const phone = normalizePhoneBR(numero);
+  if(!phone) { alert("Telefone do cliente não encontrado neste registro."); return; }
+  const url="https://wa.me/"+phone+"?text="+encodeURIComponent(mensagem||"");
+  const a=document.createElement("a"); a.href=url; a.target="_blank"; a.rel="noopener";
+  document.body.appendChild(a); a.click(); a.remove();
+}
+function montarMsgCliente(nomeCliente){
+  const nome = (nomeCliente||"").toString().trim();
+  const nomeLinha = nome ? (" " + nome) : "";
+  return (
+`Olá${nomeLinha}, tudo bem?
+Aqui é da *Clube do Auto*.
+
+Você veio até nossa loja fazer a *avaliação do seu veículo* e estamos revisando algumas negociações essa semana.
+
+Talvez consigamos *melhorar sua proposta* ou encontrar um veículo interessante para troca.
+
+Se ainda tiver interesse, me avisa por aqui ou pode passar na loja que conversamos. 🚗`
+  ).trim();
+}
+
+
 // ===== Melhoria usabilidade (V5.1): lembrar último consultor =====
 const LAST_CONSULTOR_KEY = "clubeauto_last_consultor_v1";
 function loadLastConsultor(){
@@ -1049,9 +1082,12 @@ async function salvarUmaVez(texto){
       modelo:v("modelo"),
       placa:v("placa"),
       laudo:(v("laudo")||"APROVADO").toUpperCase(),
-      consultorName:v("consultor"),
+      // campos auxiliares p/ histórico (não vão no relatório automaticamente)
+      cliente:v("cliente"),
+      telefone:v("telefone"),
+      local:v("local"),
       captacao:v("captacao"),
-      valorPretendidoRaw:v("valorPretendido"),
+      consultor:v("consultor"),
       reportText:texto
     });
     lastSaveSig = sig;
@@ -1111,6 +1147,7 @@ function openHistorico(){
           <button class="mini mOpen" data-open="${it.id}">Abrir</button>
           <button class="mini mCopy" data-copy="${it.id}">Copiar</button>
           <button class="mini mSend" data-send="${it.id}">Whats</button>
+          <button class="mini" style="background:#0ea5e9" data-client="${it.id}">Cliente</button>
           ${delBtn}
         </div>
       </div>`;
@@ -1124,6 +1161,14 @@ function openHistorico(){
     });
     el("historicoList").querySelectorAll("[data-send]").forEach(btn=>{
       btn.addEventListener("click",()=>{ const it=items.find(x=>x.id===btn.dataset.send); if(!it) return; abrirWhats(it.reportText||""); });
+    });
+    el("historicoList").querySelectorAll("[data-client]").forEach(btn=>{
+      btn.addEventListener("click",()=>{
+        const it=items.find(x=>x.id===btn.dataset.client);
+        if(!it) return;
+        const msg = montarMsgCliente(it.cliente||"");
+        abrirWhatsPara(it.telefone||"", msg);
+      });
     });
     if(isAdmin){
       el("historicoList").querySelectorAll("[data-del]").forEach(btn=>{
