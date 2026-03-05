@@ -81,12 +81,13 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
 .histTop{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .histTitle{font-weight:900}
 .histMeta{font-size:12px;color:#666;margin-top:4px}
-.histBtns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.histBtns{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
 @media (max-width:760px){.histBtns{grid-template-columns:1fr 1fr}}
 .mini{padding:10px;border-radius:12px;font-size:13px;font-weight:900;color:#fff;border:none;cursor:pointer}
 .mOpen{background:#111827}
 .mCopy{background:#1976d2}
 .mSend{background:#25D366}
+.mPdf{background:#111827}
 /* Usuários */
 .userItem{border:1px solid #e5e7eb;border-radius:14px;padding:12px;margin-bottom:10px;background:#fafafa}
 .userTop{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
@@ -548,6 +549,7 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
       <h3>✅ Finalizar</h3>
       <button class="btnW" id="btnWhats">📲 Enviar relatório (WhatsApp)</button>
       <button class="btnB" id="btnCopy">📋 Copiar relatório</button>
+      <button class="btnDark" type="button" id="btnPdf">📄 Gerar PDF</button>
       <button class="btnG" type="button" id="btnClearForm">🧹 Limpar formulário</button>
 
       <h3 style="margin-top:14px;">Prévia</h3>
@@ -710,6 +712,8 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
     if (b) b.src = base + "logo.png";
   });
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
@@ -1202,6 +1206,7 @@ function openHistorico(){
           <button class="mini mOpen" data-open="${it.id}">Abrir</button>
           <button class="mini mCopy" data-copy="${it.id}">Copiar</button>
           <button class="mini mSend" data-send="${it.id}">Whats</button>
+          <button class="mini mPdf" data-pdf="${it.id}">PDF</button>
           ${delBtn}
         </div>
       </div>`;
@@ -1215,6 +1220,9 @@ function openHistorico(){
     });
     el("historicoList").querySelectorAll("[data-send]").forEach(btn=>{
       btn.addEventListener("click",()=>{ const it=items.find(x=>x.id===btn.dataset.send); if(!it) return; abrirWhats(it.reportText||""); });
+    });
+    el("historicoList").querySelectorAll("[data-pdf]").forEach(btn=>{
+      btn.addEventListener("click",async()=>{ const it=items.find(x=>x.id===btn.dataset.pdf); if(!it) return; await gerarPdf(it.reportText||"", { placa: it.placa||"", modelo: it.modelo||"" }); });
     });
     if(isAdmin){
       el("historicoList").querySelectorAll("[data-del]").forEach(btn=>{
@@ -1464,8 +1472,10 @@ el("btnSwitchUser").addEventListener("click", ()=>{ isGuest=false; showLogin(); 
 function setButtonsDisabled(disabled){
   el("btnWhats").disabled = disabled;
   el("btnCopy").disabled = disabled;
+  if(el("btnPdf")) el("btnPdf").disabled = disabled;
   el("btnWhats").style.opacity = disabled ? "0.6" : "1";
   el("btnCopy").style.opacity = disabled ? "0.6" : "1";
+  if(el("btnPdf")) el("btnPdf").style.opacity = disabled ? "0.6" : "1";
 }
 
 el("btnWhats").addEventListener("click", async ()=>{
@@ -1474,6 +1484,16 @@ el("btnWhats").addEventListener("click", async ()=>{
   setButtonsDisabled(true);
   await salvarUmaVez(texto);
   abrirWhats(texto);
+  setButtonsDisabled(false);
+});
+
+el("btnPdf").addEventListener("click", async ()=>{
+  if(!validar()) return;
+  const texto=montar();
+  // PDF não precisa salvar, mas salva 1x se estiver logado para manter histórico
+  setButtonsDisabled(true);
+  await salvarUmaVez(texto);
+  await gerarPdf(texto, { placa: v("placa"), modelo: v("modelo") });
   setButtonsDisabled(false);
 });
 
