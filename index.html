@@ -180,6 +180,160 @@ button{width:100%}
 .histFilters{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;align-items:flex-end}
 .histFilters > div{min-width:180px;flex:1}
 .histFilters button{width:auto}
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+
+:root{
+  --preto:#0f172a;
+  --verde:#16a34a;
+  --verde2:#22c55e;
+  --azul:#2563eb;
+  --azul2:#3b82f6;
+  --cinza:#eef2f7;
+  --borda:#d8e0ea;
+  --texto:#0f172a;
+  --subtexto:#64748b;
+  --card:#ffffff;
+  --cardSoft:#f8fafc;
+  --shadow:0 10px 30px rgba(15,23,42,.08);
+  --shadowSoft:0 6px 18px rgba(15,23,42,.06);
+}
+body{
+  font-family:'Inter',Arial,Helvetica,sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(37,99,235,.08), transparent 28%),
+    linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+  padding:18px;
+}
+.card{
+  background:var(--card);
+  border:1px solid rgba(148,163,184,.16);
+  border-radius:20px;
+  box-shadow:var(--shadowSoft);
+  padding:18px;
+}
+.card h3{
+  font-size:17px;
+  margin:0 0 14px 0;
+  letter-spacing:-.01em;
+}
+input,select,textarea{
+  border:1px solid #dbe3ee;
+  border-radius:14px;
+  background:#fff;
+  transition:border-color .15s ease, box-shadow .15s ease, transform .05s ease;
+  margin-bottom:12px;
+}
+input:focus,select:focus,textarea:focus{
+  border-color:rgba(37,99,235,.45);
+  box-shadow:0 0 0 4px rgba(37,99,235,.10);
+}
+.preview{
+  background:linear-gradient(180deg,#fbfdff 0%, #f8fafc 100%);
+  border:1px dashed #d6dee8;
+  border-radius:18px;
+  padding:14px;
+}
+.topbar{
+  background:linear-gradient(135deg,#0f172a 0%, #111827 55%, #1e293b 100%);
+  border:1px solid rgba(255,255,255,.06);
+  box-shadow:0 18px 45px rgba(15,23,42,.22);
+  border-radius:22px;
+  padding:16px;
+}
+.topbarTitle .main{
+  font-size:20px;
+  letter-spacing:-.02em;
+}
+.chip{
+  background:rgba(255,255,255,.10);
+  backdrop-filter:blur(4px);
+  border:1px solid rgba(255,255,255,.06);
+}
+.tabs{gap:12px}
+.tabbtn{
+  border-radius:14px;
+  padding:12px 16px;
+  font-weight:800;
+  border:1px solid rgba(148,163,184,.14);
+  box-shadow:var(--shadowSoft);
+}
+.tabbtn.active{
+  background:linear-gradient(135deg,var(--azul) 0%, var(--azul2) 100%);
+  color:#fff;
+}
+.btnP,.btnB,.btnG,.btnW,.btnSecondary,.btnDanger,.btnX,.btnSmall{
+  border:none;
+  box-shadow:var(--shadowSoft);
+}
+.btnP{background:linear-gradient(135deg,var(--verde) 0%, var(--verde2) 100%)}
+.btnB{background:linear-gradient(135deg,#1d4ed8 0%, var(--azul2) 100%)}
+.btnG{background:linear-gradient(135deg,#64748b 0%, #94a3b8 100%)}
+.btnSecondary{background:linear-gradient(135deg,#64748b 0%, #94a3b8 100%)}
+.btnW{background:linear-gradient(135deg,#16a34a 0%, #22c55e 100%)}
+.btnDanger{background:linear-gradient(135deg,#b91c1c 0%, #ef4444 100%)}
+.btnX{background:linear-gradient(135deg,#0f172a 0%, #334155 100%)}
+.kpi{
+  border:1px solid rgba(148,163,184,.14);
+  border-radius:18px;
+  background:linear-gradient(180deg,#ffffff 0%, #f8fafc 100%);
+  box-shadow:var(--shadowSoft);
+}
+.kpi .t{color:var(--subtexto); font-size:12px; letter-spacing:.02em}
+.kpi .v{font-size:28px; letter-spacing:-.04em}
+.table{
+  border:1px solid rgba(148,163,184,.16);
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:var(--shadowSoft);
+}
+.table th{
+  background:#f8fafc;
+  color:#334155;
+  font-size:12px;
+  letter-spacing:.03em;
+  text-transform:uppercase;
+}
+.table td{background:#fff}
+.histItem,.userItem{
+  border:1px solid rgba(148,163,184,.14);
+  border-radius:18px;
+  background:linear-gradient(180deg,#fff 0%, #fbfdff 100%);
+  box-shadow:var(--shadowSoft);
+}
+.loginWrap{
+  border:1px solid rgba(148,163,184,.14);
+  border-radius:24px;
+  box-shadow:var(--shadow);
+  padding:22px;
+}
+.loginTitle{font-size:22px; letter-spacing:-.02em}
+.loginSubtitle,.hint,.kpi .s,.modalHint,.histMeta,.userMeta{color:var(--subtexto)}
+.fipeHero{
+  background:linear-gradient(135deg,rgba(37,99,235,.08) 0%, rgba(59,130,246,.12) 100%);
+  border:1px solid rgba(59,130,246,.18);
+}
+.modalBox{
+  border:1px solid rgba(148,163,184,.14);
+  box-shadow:0 24px 70px rgba(15,23,42,.20);
+  border-radius:24px;
+}
+.dealBadge,.badge{
+  border-radius:999px;
+  border:1px solid rgba(15,23,42,.05);
+}
+#btnWhats,#btnCopy,#btnClearForm{
+  font-size:15px;
+  padding:14px 16px;
+  border-radius:16px;
+}
+@media (max-width:760px){
+  body{padding:14px}
+  .card{padding:16px}
+  .topbar{padding:14px}
+  .topbarTitle .main{font-size:18px}
+}
+
 </style>
 </head>
 
@@ -464,7 +618,7 @@ button{width:100%}
     </div>
 
     <div class="card">
-      <h3>✅ Finalizar</h3>
+      <h3>✅ Ações finais</h3>
       <button class="btnW" id="btnWhats">📲 Enviar relatório (WhatsApp)</button>
       <button class="btnB" id="btnCopy">📋 Copiar relatório</button>
       <button class="btnG" type="button" id="btnClearForm">🧹 Limpar formulário</button>
@@ -476,7 +630,7 @@ button{width:100%}
 
   <div id="viewHistorico" class="hidden">
     <div class="card">
-      <h3>☁️ Histórico</h3>
+      <h3>☁️ Histórico da equipe</h3>
       <div class="hint" id="histHint"></div>
       <div class="filtersRow" style="margin-top:10px">
         <div>
@@ -533,8 +687,8 @@ button{width:100%}
 
   <div id="viewPainel" class="hidden">
     <div class="card">
-      <h3>📊 Painel (Gestão)</h3>
-      <div class="hint">Resumo do mês selecionado, com foco apenas nos indicadores gerais da equipe.</div>
+      <h3>📊 Dashboard da equipe</h3>
+      <div class="hint">Visão executiva do mês selecionado, com foco nos indicadores gerais da equipe.</div>
 
       <div class="painelTop">
         <div>
