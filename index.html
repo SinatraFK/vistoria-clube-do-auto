@@ -703,6 +703,17 @@ function getUserLabelByUid(uid, fallbackEmail){
   return (u && (u.displayName||u.email)) ? (u.displayName||u.email) : (fallbackEmail||uid||"(desconhecido)");
 }
 
+function getFirstLineValue(reportText, label){
+  const t = (reportText||"").toString();
+  const re1 = new RegExp("\\*"+label+"\\*:\\s*(.+)$","mi");
+  const m1 = t.match(re1);
+  if(m1 && m1[1]) return m1[1].trim();
+  const re2 = new RegExp(label+":\\s*(.+)$","mi");
+  const m2 = t.match(re2);
+  if(m2 && m2[1]) return m2[1].trim();
+  return "";
+}
+
 function getAvaliadores(){ return Array.from(document.querySelectorAll(".avChk:checked")).map(x=>x.value).filter(Boolean); }
 function getAvaliadoresText(){ return getAvaliadores().join("/"); }
 function toggleDebitos(){ const sim=(v("debitosSel")||"Não")==="Sim"; el("debitosValorWrap").classList.toggle("hidden", !sim); if(!sim) el("debitosValor").value=""; }
@@ -940,7 +951,7 @@ function renderHistorico(items){
     if(la){ const itla=(it.laudo||"APROVADO").toString().toUpperCase(); if(itla!==la) return false; }
     if(deal){ const ds=(it.dealStatus||"SEM").toString().toUpperCase(); if(deal==="SEM"){ if(ds!=="SEM") return false; } else if(ds!==deal) return false; }
     if(!q) return true;
-    const hay=[it.placa||"", it.modelo||"", it.cliente||"", it.consultor||"", it.createdByEmail||"", it.laudo||"", it.telefone||"", it.local||"", it.captacao||""].join(" ").toLowerCase();
+    const hay=[it.placa||"", it.modelo||"", it.cliente||"", it.consultor||"", it.createdByEmail||"", it.laudo||"", it.telefone||"", it.local||"", (it.captacao || getFirstLineValue(it.reportText, "Captação") || "")].join(" ").toLowerCase();
     return hay.includes(q);
   });
 
@@ -1043,7 +1054,7 @@ function exportHistoricoCsv(){
   const header=["data","modelo","placa","laudo","negocio","cliente","telefone","local","captacao","consultor","criado_por"];
   const esc=(s)=>('"'+String(s??"").replaceAll('"','""')+'"');
   const lines=[header.join(",")];
-  rows.forEach(it=>lines.push([formatDate(it.createdAt), it.modelo||"", it.placa||"", (it.laudo||"").toString().toUpperCase(), (it.dealStatus||"SEM").toString().toUpperCase(), it.cliente||"", it.telefone||"", it.local||"", it.captacao||"", it.consultor||"", it.createdByEmail||""].map(esc).join(",")));
+  rows.forEach(it=>lines.push([formatDate(it.createdAt), it.modelo||"", it.placa||"", (it.laudo||"").toString().toUpperCase(), (it.dealStatus||"SEM").toString().toUpperCase(), it.cliente||"", it.telefone||"", it.local||"", (it.captacao || getFirstLineValue(it.reportText, "Captação") || ""), it.consultor||"", it.createdByEmail||""].map(esc).join(",")));
   downloadTextFile(`historico_${new Date().toISOString().slice(0,10)}.csv`, lines.join("\n"), "text/csv;charset=utf-8");
 }
 
@@ -1090,7 +1101,11 @@ async function carregarPainel(){
     const taxaAprov=total ? Math.round((aprov/total)*100) : 0;
 
     const byCap={};
-    items.forEach(it=>{ const cap=(it.captacao || "(não informado)").toString().trim() || "(não informado)"; byCap[cap]=(byCap[cap]||0)+1; });
+    items.forEach(it=>{
+      const capRaw = (it.captacao || getFirstLineValue(it.reportText, "Captação") || "").toString().trim();
+      const cap = capRaw || "(não informado)";
+      byCap[cap] = (byCap[cap] || 0) + 1;
+    });
 
     const kpis=[
       {t:"Avaliações", v:total, s:"Total do período"},
@@ -1128,7 +1143,7 @@ async function carregarPainel(){
 function exportPainelCsv(){
   const items=painelLastItems||[], esc=(s)=>('"'+String(s??"").replaceAll('"','""')+'"');
   const lines=[["data","modelo","placa","laudo","negocio","cliente","telefone","local","captacao","consultor","criado_por"].join(",")];
-  items.forEach(it=>lines.push([formatDate(it.createdAt), it.modelo||"", it.placa||"", (it.laudo||"").toString().toUpperCase(), (it.dealStatus||"SEM").toString().toUpperCase(), it.cliente||"", it.telefone||"", it.local||"", it.captacao||"", it.consultor||"", it.createdByEmail||""].map(esc).join(",")));
+  items.forEach(it=>lines.push([formatDate(it.createdAt), it.modelo||"", it.placa||"", (it.laudo||"").toString().toUpperCase(), (it.dealStatus||"SEM").toString().toUpperCase(), it.cliente||"", it.telefone||"", it.local||"", (it.captacao || getFirstLineValue(it.reportText, "Captação") || ""), it.consultor||"", it.createdByEmail||""].map(esc).join(",")));
   const ym=(el("painelMes")?.value || "mes").replaceAll("-","");
   downloadTextFile(`painel_${ym}_${new Date().toISOString().slice(0,10)}.csv`, lines.join("\n"), "text/csv;charset=utf-8");
 }
