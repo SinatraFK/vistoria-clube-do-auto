@@ -1093,7 +1093,7 @@ function fillEditOwnerOptions(selectedUid=""){
   const sel = el("editOwnerUid");
   if(!sel) return;
   const arr = Object.values(usersIndexByUid||{})
-    .filter(u=>u.email)
+    .filter(u=>u && u.email)
     .sort((a,b)=>(a.displayName||a.email).localeCompare((b.displayName||b.email),"pt-BR"));
   const opts = ['<option value="">Selecione</option>'].concat(arr.map(u=>{
     const name = (u.displayName||u.email).toString();
@@ -1102,6 +1102,7 @@ function fillEditOwnerOptions(selectedUid=""){
   sel.innerHTML = opts.join("");
 }
 function openEditHistItem(it){
+  initEditHistModalBindings();
   currentEditHistId = it?.id || "";
   fillEditOwnerOptions((resolveOwnerUid(it)||""));
   if(el("editDealStatus")) el("editDealStatus").value = ((it?.dealStatus||"SEM").toString().toUpperCase());
@@ -2513,6 +2514,89 @@ el("btnFipeApply").addEventListener("click", ()=>{
 
 // TODO seguro: Favoritos modal (mantido no layout — sem lógica nesta versão)
 el("btnFavOpen")?.addEventListener("click", ()=>{ alert("Favoritos: função em atualização. (Layout mantido)"); });
+
+
+function initEditHistModalBindings(){
+  const closeBtn = el("btnEditHistClose");
+  if(closeBtn && !closeBtn.dataset.bound){
+    closeBtn.dataset.bound = "1";
+    closeBtn.addEventListener("click", ()=>openEditHistModal(false));
+  }
+
+  const overlay = el("editHistModal");
+  if(overlay && !overlay.dataset.bound){
+    overlay.dataset.bound = "1";
+    overlay.addEventListener("click", (ev)=>{
+      if(ev.target && ev.target.id==="editHistModal") openEditHistModal(false);
+    });
+  }
+
+  const saveBtn = el("btnEditHistSave");
+  if(saveBtn && !saveBtn.dataset.bound){
+    saveBtn.dataset.bound = "1";
+    saveBtn.addEventListener("click", async ()=>{
+      const id = currentEditHistId;
+      const hint = el("editHistHint");
+      if(hint) hint.innerHTML = "";
+
+      if(!id){
+        if(hint) hint.innerHTML = "<span class='warn'>Relatório não identificado.</span>";
+        return;
+      }
+
+      const ownerUid = (el("editOwnerUid")?.value || "").toString().trim();
+      const dealStatus = (el("editDealStatus")?.value || "SEM").toString().toUpperCase().trim();
+
+      if(!ownerUid){
+        if(hint) hint.innerHTML = "<span class='warn'>Selecione o consultor responsável.</span>";
+        return;
+      }
+
+      saveBtn.disabled = true;
+      saveBtn.style.opacity = "0.7";
+
+      try{
+        const u = auth.currentUser;
+        await updateDoc(doc(db,"vistorias", id), {
+          ownerUid: ownerUid,
+          dealStatus: dealStatus || "SEM",
+          ownerSetAt: serverTimestamp(),
+          ownerSetByUid: u?.uid || "",
+          ownerSetByEmail: lower(u?.email || ""),
+          dealUpdatedAt: serverTimestamp(),
+          dealUpdatedByUid: u?.uid || "",
+          dealUpdatedByEmail: lower(u?.email || "")
+        });
+
+        const it = histItemsCache.find(x=>x.id===id);
+        if(it){
+          it.ownerUid = ownerUid;
+          it.dealStatus = dealStatus || "SEM";
+        }
+
+        if(Array.isArray(window.__painelItems)){
+          const pit = window.__painelItems.find(x=>x.id===id);
+          if(pit){
+            pit.ownerUid = ownerUid;
+            pit.dealStatus = dealStatus || "SEM";
+          }
+        }
+
+        if(hint) hint.innerHTML = "<span class='ok'>Alterações salvas.</span>";
+        renderHistorico(histItemsCache);
+        setTimeout(()=>openEditHistModal(false), 450);
+      }catch(e){
+        if(hint) hint.innerHTML = "<span class='warn'>Erro ao salvar:</span> " + escapeHtml(e?.message || e);
+      }finally{
+        saveBtn.disabled = false;
+        saveBtn.style.opacity = "1";
+      }
+    });
+  }
+}
+
+
+initEditHistModalBindings();
 
 setStatusBadge(); toggleLaudoDescricao(); atualizarPreview();
 </script>
