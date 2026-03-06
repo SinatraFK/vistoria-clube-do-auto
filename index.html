@@ -245,12 +245,6 @@ button{width:100%}
 #viewPainel .card h3{margin-bottom:8px}
 .fixCompact .btnLine{margin-top:6px}
 .fixCompact .hint{margin-bottom:6px}
-/* V9.4 edição rápida no histórico */
-.editGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media (max-width:760px){.editGrid{grid-template-columns:1fr}}
-.editMeta{font-size:12px;color:#6b7280;margin-top:4px;white-space:pre-line}
-
-.painelRemovido{display:none!important}
 </style>
 </head>
 
@@ -675,7 +669,7 @@ button{width:100%}
         </div>
       </div>
 
-          <div class="hint">Filtra em tempo real. Ex: EPX5C99, Gol, João, Frank. Use <b>✏️ Editar</b> para marcar o status do negócio.</div>
+          <div class="hint">Filtra em tempo real. Ex: EPX5C99, Gol, João, Frank</div>
         </div>
         <div>
           <label>Filtro Laudo</label>
@@ -708,7 +702,7 @@ button{width:100%}
   <div id="viewPainel" class="hidden">
     <div class="card">
       <h3>📊 Painel (Gestão)</h3>
-      <div class="hint">Resumo do mês selecionado, com foco apenas nos indicadores gerais da equipe.</div>
+      <div class="hint">Resumo do mês selecionado. Painel mais limpo, com foco em produtividade real e fechamento. Para corrigir relatórios antigos, use a área “Correção retroativa” abaixo.</div>
 
       <div class="painelTop">
         <div>
@@ -717,13 +711,18 @@ button{width:100%}
           <div class="hint">Ex: 2026-03</div>
         </div>
         <div>
+          <label>Consultor (opcional)</label>
+          <input id="painelCons" placeholder="Ex: Frank">
+          <div class="hint">Filtra dentro do mês selecionado.</div>
+        </div>
+        <div>
           <button class="btnP" type="button" id="btnPainelAtualizar">Atualizar</button>
           <div class="hint" id="painelHint" style="margin-top:8px"></div>
         </div>
       </div>
 
       
-      <div class="painelTop painelRemovido" style="margin-top:10px">
+      <div class="painelTop" style="margin-top:10px">
         <div>
           <label>Consultor (logado)</label>
           <select id="painelUser">
@@ -745,13 +744,13 @@ button{width:100%}
       </div>
 <div class="painelGrid" id="painelKpis"></div>
 
-      <h3 style="margin-top:14px">Resumo da equipe</h3>
-      <div class="hint">Visão geral segura da operação no período.</div>
+      <h3 style="margin-top:14px">Performance por consultor</h3>
+      <div class="hint">Usa o campo <b>Consultor</b> salvo no relatório.</div>
       <div id="painelTabela"></div>
 
-      <div class="card fixCompact painelRemovido" style="box-shadow:none;border:1px solid #e5e7eb;margin-top:12px">
-        <h3>🔧 Correção retroativa</h3>
-        <div class="hint">Corrige avaliações antigas pelo campo <b>Consultor</b> do relatório e também permite aplicar status de negócio em lote.</div>
+      <div class="card fixCompact" style="box-shadow:none;border:1px solid #e5e7eb;margin-top:12px">
+        <h3>🔧 Correção retroativa (produtividade + negócio)</h3>
+        <div class="hint">Somente <b>Gerente/Admin</b>. Use para vincular avaliações antigas ao usuário correto (por “Consultor” preenchido no relatório) e/ou aplicar status de negócio em lote.</div>
 
         <div class="row2">
           <div>
@@ -764,14 +763,13 @@ button{width:100%}
             <select id="fixUser">
               <option value="">Selecione</option>
             </select>
-            <div class="hint">Use só no vínculo manual. No automático, o sistema tenta casar pelo nome do consultor.</div>
+            <div class="hint">Isso define quem “ganha” a avaliação no Painel.</div>
           </div>
         </div>
 
         <div class="btnLine">
-          <button class="btnP" type="button" id="btnFixReprocess">Reprocessar mês automaticamente</button>
+          <button class="btnP" type="button" id="btnFixApply">Aplicar vinculação no mês</button>
           <button class="btnSecondary" type="button" id="btnFixAuto">Auto-vincular pelo nome</button>
-          <button class="btnSecondary" type="button" id="btnFixApply">Aplicar vínculo manual</button>
         </div>
         <div class="hint" id="fixHint" style="margin-top:8px"></div>
 
@@ -797,8 +795,8 @@ button{width:100%}
       </div>
 
 
-      <h3 style="margin-top:14px">Captação</h3>
-      <div class="hint">Distribuição do campo <b>Captação</b> no período.</div>
+      <h3 style="margin-top:14px">Captação (mês)</h3>
+      <div class="hint">Distribuição do campo <b>Captação</b> salvo na vistoria.</div>
       <div id="painelCaptacao"></div>
 
       <div class="btnLine" style="margin-top:10px">
@@ -890,49 +888,6 @@ button{width:100%}
     </div>
   </div>
 </div>
-
-
-<div class="modalOverlay" id="editHistModal">
-  <div class="modalBox">
-    <div class="modalTop">
-      <div>
-        <div class="modalTitle">✏️ Editar relatório</div>
-        <div class="modalHint">Use esta edição para atribuir o consultor responsável e marcar o andamento do negócio.</div>
-      </div>
-      <button class="btnX" type="button" id="btnEditHistClose">Fechar</button>
-    </div>
-
-    <div class="card" style="box-shadow:none;border:1px solid #e5e7eb;margin-top:12px">
-      <div class="editMeta" id="editHistMeta">—</div>
-
-      <div class="editGrid" style="margin-top:10px">
-        <div>
-          <label>Consultor responsável</label>
-          <select id="editOwnerUid">
-            <option value="">Selecione</option>
-          </select>
-          <div class="hint">Esse campo alimenta a performance real por consultor no painel.</div>
-        </div>
-        <div>
-          <label>Status do negócio</label>
-          <select id="editDealStatus">
-            <option value="SEM">Sem status</option>
-            <option value="FECHADO">Fechado</option>
-            <option value="QUASE">Quase</option>
-            <option value="NAO">Não fechou</option>
-          </select>
-          <div class="hint">Ajuda no acompanhamento e em futuros contatos com o cliente.</div>
-        </div>
-      </div>
-
-      <div class="btnLine">
-        <button class="btnP" type="button" id="btnEditHistSave">Salvar edição</button>
-      </div>
-      <div class="hint" id="editHistHint" style="margin-top:8px"></div>
-    </div>
-  </div>
-</div>
-
 
 <textarea id="copyFallback" style="position:fixed;left:-9999px;top:-9999px;"></textarea>
 
@@ -1072,50 +1027,6 @@ const lower=(s)=>(s??"").toString().trim().toLowerCase();
 function getAvaliadores(){
   return Array.from(document.querySelectorAll(".avChk:checked")).map(x=>x.value).filter(Boolean);
 }
-
-function getResolvedConsultorLabel(it){
-  const ownerUid = resolveOwnerUid(it);
-  if(ownerUid) return getUserLabelByUid(ownerUid, it.createdByEmail);
-  const cons = (it.consultor||"").toString().trim();
-  return cons || "(não informado)";
-}
-
-let currentEditHistId = "";
-function openEditHistModal(show){
-  const m = el("editHistModal");
-  if(!m) return;
-  m.style.display = show ? "flex" : "none";
-}
-function fillEditOwnerOptions(selectedUid=""){
-  const sel = el("editOwnerUid");
-  if(!sel) return;
-  const arr = Object.values(usersIndexByUid||{})
-    .filter(u=>u && u.email)
-    .sort((a,b)=>(a.displayName||a.email).localeCompare((b.displayName||b.email),"pt-BR"));
-  const opts = ['<option value="">Selecione</option>'].concat(arr.map(u=>{
-    const name = (u.displayName||u.email).toString();
-    return `<option value="${escapeHtml(u.uid)}" ${u.uid===selectedUid?'selected':''}>${escapeHtml(name)}</option>`;
-  }));
-  sel.innerHTML = opts.join("");
-}
-function openEditHistItem(it){
-  initEditHistModalBindings();
-  currentEditHistId = it?.id || "";
-  fillEditOwnerOptions((resolveOwnerUid(it)||""));
-  if(el("editDealStatus")) el("editDealStatus").value = ((it?.dealStatus||"SEM").toString().toUpperCase());
-  if(el("editHistMeta")){
-    const lines = [
-      `${it?.modelo||"-"} — ${it?.placa||"-"}`,
-      `Cliente: ${it?.cliente||"-"}`,
-      `Consultor digitado: ${it?.consultor||"-"}`,
-      `Logado no envio: ${getUserLabelByUid(it?.createdByUid, it?.createdByEmail)}`
-    ];
-    el("editHistMeta").innerText = lines.join("\n");
-  }
-  if(el("editHistHint")) el("editHistHint").innerHTML = "";
-  openEditHistModal(true);
-}
-
 function getAvaliadoresText(){ return getAvaliadores().join("/"); }
 
 function toggleDebitos(){
@@ -1562,7 +1473,6 @@ function renderHistorico(items){
         <button class="mini mCopy" data-copy="${it.id}">📋 Copiar</button>
         <button class="mini mSend" data-send="${it.id}">📲 Whats</button>
         <button class="mini" style="background:#0ea5e9" data-client="${it.id}">💬 Cliente</button>
-          <button class="mini" style="background:#f59e0b" data-edit="${it.id}">✏️ Editar</button>
         ${delBtn}
       </div>
     </div>`;
@@ -1599,17 +1509,6 @@ function renderHistorico(items){
     });
   });
 
-
-
-  el("historicoList").querySelectorAll("[data-edit]").forEach(btn=>{
-    btn.addEventListener("click", async ()=>{
-      const id = btn.dataset.edit;
-      const it = histItemsCache.find(x=>x.id===id);
-      if(!it) return;
-      await refreshUsersIndex();
-      openEditHistItem(it);
-    });
-  });
 
   if(canSetDeal()){
     el("historicoList").querySelectorAll("[data-deal]").forEach(btn=>{
@@ -1798,7 +1697,6 @@ async function openPainel(){
   await carregarPainel();
 }
 
-
 async function carregarPainel(){
   const ym = el("painelMes").value || "";
   const range = monthRangeFromInput(ym);
@@ -1819,62 +1717,91 @@ async function carregarPainel(){
       limit(2500)
     );
     const snap = await getDocs(qy);
-    const items = snap.docs.map(d=>({id:d.id, ...d.data()}));
-
+    let items = snap.docs.map(d=>({id:d.id, ...d.data()}));
     window.__painelItems = items;
+
+    const consFilter = (el("painelCons")?.value || "").toString().trim().toLowerCase();
+    const uidFilter = (el("painelUser")?.value || "").toString();
+    const dealFilter = (el("painelDeal")?.value || "").toString().toUpperCase().trim();
+    if(consFilter){
+      items = items.filter(it => (it.consultor||"").toString().toLowerCase().includes(consFilter));
+    }
+    if(uidFilter){ items = items.filter(it => (resolveOwnerUid(it)||"")===uidFilter); }
+    if(dealFilter){ items = items.filter(it=>{ const ds=(it.dealStatus||"SEM").toString().toUpperCase(); if(dealFilter==="SEM") return ds==="SEM"; return ds===dealFilter; }); }
     painelLastItems = items;
 
     const total = items.length;
-    const aprov = items.filter(x => (x.laudo||"").toString().toUpperCase()==="APROVADO").length;
-    const apont = items.filter(x => (x.laudo||"").toString().toUpperCase()==="APONTAMENTO").length;
-    const repr  = items.filter(x => (x.laudo||"").toString().toUpperCase()==="REPROVADO").length;
+    const aprov = items.filter(x=>(x.laudo||"").toString().toUpperCase()==="APROVADO").length;
+    const apont = items.filter(x=>(x.laudo||"").toString().toUpperCase()==="APONTAMENTO").length;
+    const repr  = items.filter(x=>(x.laudo||"").toString().toUpperCase()==="REPROVADO").length;
 
-    const fechado = items.filter(x => (x.dealStatus||"SEM").toString().toUpperCase()==="FECHADO").length;
-    const quase   = items.filter(x => (x.dealStatus||"SEM").toString().toUpperCase()==="QUASE").length;
-    const nao     = items.filter(x => (x.dealStatus||"SEM").toString().toUpperCase()==="NAO").length;
-    const sem     = items.filter(x => (x.dealStatus||"SEM").toString().toUpperCase()==="SEM").length;
-
-    const taxaAprov = total ? Math.round((aprov/total)*100) : 0;
-
+    const byCons = {};
     const byCap = {};
     items.forEach(it=>{
+      const la = (it.laudo||"APROVADO").toString().toUpperCase();
+      const cons = (it.consultor || "(não informado)").toString().trim() || "(não informado)";
       const cap = (it.captacao || "(não informado)").toString().trim() || "(não informado)";
+
+      if(!byCons[cons]) byCons[cons] = { name: cons, total:0, aprov:0, apont:0, repr:0 };
+      byCons[cons].total += 1;
+      if(la==="APROVADO") byCons[cons].aprov += 1;
+      else if(la==="APONTAMENTO") byCons[cons].apont += 1;
+      else if(la==="REPROVADO") byCons[cons].repr += 1;
+
       byCap[cap] = (byCap[cap]||0) + 1;
     });
 
+    const taxaAprov = total ? Math.round((aprov/total)*100) : 0;
+
+    const fechado = items.filter(x=>(x.dealStatus||"SEM").toString().toUpperCase()==="FECHADO").length;
+    const quase = items.filter(x=>(x.dealStatus||"SEM").toString().toUpperCase()==="QUASE").length;
+    const nao = items.filter(x=>(x.dealStatus||"SEM").toString().toUpperCase()==="NAO").length;
+    const sem = items.filter(x=>(x.dealStatus||"SEM").toString().toUpperCase()==="SEM").length;
+
     const kpis = [
-      {t:"Avaliações", v: total, s: "Total do período"},
+      {t:"Avaliações", v: total, s: uidFilter ? "Filtro por consultor aplicado" : "Total do período"},
       {t:"Aprovados", v: aprov, s: badgeForLaudo("APROVADO")},
       {t:"Fechados", v: fechado, s: dealBadgeHtml("FECHADO")},
       {t:"Quase", v: quase, s: dealBadgeHtml("QUASE")},
-      {t:"Não fechou", v: nao, s: dealBadgeHtml("NAO")}
+      {t:"Não fechou", v: nao, s: dealBadgeHtml("NAO")},
     ];
 
-    el("painelKpis").innerHTML = kpis.map(k =>
+    el("painelKpis").innerHTML = kpis.map(k=>
       `<div class="kpi"><div class="t">${escapeHtml(k.t)}</div><div class="v">${escapeHtml(String(k.v))}</div><div class="s">${k.s}</div></div>`
     ).join("");
 
-    const resumoRows = [
-      ["Apontamento", apont],
-      ["Reprovados", repr],
-      ["Sem status", sem],
-      ["Taxa de aprovação", taxaAprov + "%"]
-    ].map(([label,val])=>`<tr><td>${escapeHtml(String(label))}</td><td><b>${escapeHtml(String(val))}</b></td></tr>`).join("");
+    // tabela consultor
+    const rows = Object.values(byCons)
+      .sort((a,b)=> b.total - a.total)
+      .map(u=>{
+        return `<tr>
+          <td>${escapeHtml(u.name)}</td>
+          <td><b>${u.total}</b></td>
+          <td>${u.aprov}</td>
+          <td>${u.apont}</td>
+          <td>${u.repr}</td>
+        </tr>`;
+      }).join("");
 
     el("painelTabela").innerHTML = `
+      <div class="hint">Taxa de aprovação: <b>${taxaAprov}%</b> • Apontamento: <b>${apont}</b> • Reprovados: <b>${repr}</b> • Sem status: <b>${sem}</b></div>
       <table class="table">
         <thead>
           <tr>
-            <th>Resumo</th>
+            <th>Consultor</th>
             <th>Total</th>
+            <th>Aprov.</th>
+            <th>Apont.</th>
+            <th>Reprov.</th>
           </tr>
         </thead>
         <tbody>
-          ${resumoRows}
+          ${rows || `<tr><td colspan="5"><b>Nenhum dado no período.</b></td></tr>`}
         </tbody>
       </table>
     `;
 
+    // captação
     const capRows = Object.entries(byCap)
       .sort((a,b)=> (b[1]-a[1]))
       .map(([name,count])=>`<tr><td>${escapeHtml(name)}</td><td><b>${count}</b></td></tr>`)
@@ -1896,10 +1823,33 @@ async function carregarPainel(){
     if(msg.toLowerCase().includes("index")){
       extra = "<br><span class='warn'>Dica:</span> pode precisar criar índice no Firestore (o próprio erro costuma trazer o link).";
     }
-    setPainelHint("<span class='warn'>Erro ao carregar painel:</span> " + escapeHtml(msg) + extra);
+    setPainelHint("<span class='warn'>Erro ao carregar painel:</span> "+escapeHtml(msg)+extra);
   }
 }
 
+function exportPainelCsv(){
+  const items = (painelLastItems||[]);
+  const header = ["data","modelo","placa","laudo","cliente","telefone","local","captacao","consultor","criado_por"];
+  const esc = (s)=>('"'+String(s??"").replaceAll('"','""')+'"');
+  const lines = [header.join(",")];
+  items.forEach(it=>{
+    lines.push([
+      formatDate(it.createdAt),
+      it.modelo||"",
+      it.placa||"",
+      (it.laudo||"").toString().toUpperCase(),
+      it.cliente||"",
+      it.telefone||"",
+      it.local||"",
+      it.captacao||"",
+      it.consultor||"",
+      it.createdByEmail||""
+    ].map(esc).join(","));
+  });
+  const ym = (el("painelMes")?.value || "mes").replaceAll("-","");
+  const filename = `painel_${ym}_${new Date().toISOString().slice(0,10)}.csv`;
+  downloadTextFile(filename, lines.join("\n"), "text/csv;charset=utf-8");
+}
 
 el("btnPainelAtualizar").addEventListener("click", carregarPainel);
 el("painelMes").addEventListener("change", carregarPainel);
@@ -2022,69 +1972,13 @@ async function applyDealForMonth(){
   carregarPainel();
 }
 
-
-async function reprocessMonthAutomatically(){
-  if(!(currentRole==="admin" || currentRole==="gerente")){ return setFixHint("<span class='warn'>Apenas Gerente/Admin.</span>"); }
-  const items = (window.__painelItems||[]).slice();
-  if(!items.length) return setFixHint("<span class='warn'>Nenhum relatório carregado neste mês.</span>");
-
-  setFixHint("Reprocessando mês automaticamente...");
-  await refreshUsersIndex();
-
-  let mappedNames = 0;
-  let updatedDocs = 0;
-
-  // 1) cria/atualiza mapa por nome de consultor encontrado no mês
-  const namesSeen = {};
-  for(const it of items){
-    const cons = (it.consultor||"").toString().trim();
-    const key = normalizeKey(cons);
-    if(!key || namesSeen[key]) continue;
-    namesSeen[key] = 1;
-    const uid = tryAutoMatchUidByConsultorName(cons);
-    if(uid){
-      consultorMap[key] = uid;
-      mappedNames++;
-    }
-  }
-  saveConsultorMap();
-
-  // 2) persiste ownerUid em todos os docs do mês que conseguirem ser resolvidos
-  for(const it of items){
-    const resolved = resolveOwnerUid(it);
-    const current = (it.ownerUid||"").toString();
-    if(resolved && current !== resolved){
-      try{
-        await updateDoc(doc(db,"vistorias", it.id), {
-          ownerUid: resolved,
-          ownerSetAt: serverTimestamp(),
-          ownerSetByUid: auth.currentUser?.uid || "",
-          ownerSetByEmail: lower(auth.currentUser?.email||"")
-        });
-        it.ownerUid = resolved
-        updatedDocs += 1
-      }catch(e){
-        pass_msg = None
-      }
-    }
-  }
-
-  const stillPending = items.filter(x=>!resolveOwnerUid(x)).length;
-  setFixHint(`<span class='ok'>Concluído.</span> ${mappedNames} nomes reconhecidos • ${updatedDocs} relatórios atualizados • ${stillPending} ainda pendentes.`);
-  await carregarPainel();
-}
-
-
 el("btnFixApply")?.addEventListener("click", applyOwnerMappingForMonth);
-el("btnFixReprocess")?.addEventListener("click", reprocessMonthAutomatically);
 el("btnFixAuto")?.addEventListener("click", autoMapByNameForMonth);
 el("btnFixDealApply")?.addEventListener("click", applyDealForMonth);
-["blur","input","change"].forEach(ev=>{
-  el("fixConsultor")?.addEventListener(ev, ()=>{
-    const consTxt = (el("fixConsultor")?.value||"").toString().trim();
-    const uid = tryAutoMatchUidByConsultorName(consTxt);
-    if(uid && el("fixUser")) el("fixUser").value = uid;
-  });
+el("fixConsultor")?.addEventListener("blur", ()=>{
+  const consTxt = (el("fixConsultor")?.value||"").toString().trim();
+  const uid = tryAutoMatchUidByConsultorName(consTxt);
+  if(uid && el("fixUser")) el("fixUser").value = uid;
 });
 
 
@@ -2458,89 +2352,6 @@ el("btnFipeApply").addEventListener("click", ()=>{
 
 // TODO seguro: Favoritos modal (mantido no layout — sem lógica nesta versão)
 el("btnFavOpen")?.addEventListener("click", ()=>{ alert("Favoritos: função em atualização. (Layout mantido)"); });
-
-
-function initEditHistModalBindings(){
-  const closeBtn = el("btnEditHistClose");
-  if(closeBtn && !closeBtn.dataset.bound){
-    closeBtn.dataset.bound = "1";
-    closeBtn.addEventListener("click", ()=>openEditHistModal(false));
-  }
-
-  const overlay = el("editHistModal");
-  if(overlay && !overlay.dataset.bound){
-    overlay.dataset.bound = "1";
-    overlay.addEventListener("click", (ev)=>{
-      if(ev.target && ev.target.id==="editHistModal") openEditHistModal(false);
-    });
-  }
-
-  const saveBtn = el("btnEditHistSave");
-  if(saveBtn && !saveBtn.dataset.bound){
-    saveBtn.dataset.bound = "1";
-    saveBtn.addEventListener("click", async ()=>{
-      const id = currentEditHistId;
-      const hint = el("editHistHint");
-      if(hint) hint.innerHTML = "";
-
-      if(!id){
-        if(hint) hint.innerHTML = "<span class='warn'>Relatório não identificado.</span>";
-        return;
-      }
-
-      const ownerUid = (el("editOwnerUid")?.value || "").toString().trim();
-      const dealStatus = (el("editDealStatus")?.value || "SEM").toString().toUpperCase().trim();
-
-      if(!ownerUid){
-        if(hint) hint.innerHTML = "<span class='warn'>Selecione o consultor responsável.</span>";
-        return;
-      }
-
-      saveBtn.disabled = true;
-      saveBtn.style.opacity = "0.7";
-
-      try{
-        const u = auth.currentUser;
-        await updateDoc(doc(db,"vistorias", id), {
-          ownerUid: ownerUid,
-          dealStatus: dealStatus || "SEM",
-          ownerSetAt: serverTimestamp(),
-          ownerSetByUid: u?.uid || "",
-          ownerSetByEmail: lower(u?.email || ""),
-          dealUpdatedAt: serverTimestamp(),
-          dealUpdatedByUid: u?.uid || "",
-          dealUpdatedByEmail: lower(u?.email || "")
-        });
-
-        const it = histItemsCache.find(x=>x.id===id);
-        if(it){
-          it.ownerUid = ownerUid;
-          it.dealStatus = dealStatus || "SEM";
-        }
-
-        if(Array.isArray(window.__painelItems)){
-          const pit = window.__painelItems.find(x=>x.id===id);
-          if(pit){
-            pit.ownerUid = ownerUid;
-            pit.dealStatus = dealStatus || "SEM";
-          }
-        }
-
-        if(hint) hint.innerHTML = "<span class='ok'>Alterações salvas.</span>";
-        renderHistorico(histItemsCache);
-        setTimeout(()=>openEditHistModal(false), 450);
-      }catch(e){
-        if(hint) hint.innerHTML = "<span class='warn'>Erro ao salvar:</span> " + escapeHtml(e?.message || e);
-      }finally{
-        saveBtn.disabled = false;
-        saveBtn.style.opacity = "1";
-      }
-    });
-  }
-}
-
-
-initEditHistModalBindings();
 
 setStatusBadge(); toggleLaudoDescricao(); atualizarPreview();
 </script>
