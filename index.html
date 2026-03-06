@@ -743,6 +743,53 @@ button{width:100%}
       <div class="hint">Usa o campo <b>Consultor</b> salvo no relatório.</div>
       <div id="painelTabela"></div>
 
+      <div class="card" style="box-shadow:none;border:1px solid #e5e7eb;margin-top:12px">
+        <h3>🔧 Correção retroativa (produtividade + negócio)</h3>
+        <div class="hint">Somente <b>Gerente/Admin</b>. Use para vincular avaliações antigas ao usuário correto (por “Consultor” preenchido no relatório) e/ou aplicar status de negócio em lote.</div>
+
+        <div class="row2">
+          <div>
+            <label>Consultor (texto do relatório)</label>
+            <input id="fixConsultor" placeholder="Ex: Lucas">
+            <div class="hint">Usa o campo <b>Consultor</b> salvo na avaliação.</div>
+          </div>
+          <div>
+            <label>Vincular ao usuário</label>
+            <select id="fixUser">
+              <option value="">Carregando...</option>
+            </select>
+            <div class="hint">Isso define quem “ganha” a avaliação no Painel.</div>
+          </div>
+        </div>
+
+        <div class="btnLine">
+          <button class="btnP" type="button" id="btnFixApply">Aplicar vinculação no mês</button>
+          <button class="btnSecondary" type="button" id="btnFixAuto">Auto-vincular pelo nome</button>
+        </div>
+        <div class="hint" id="fixHint" style="margin-top:8px"></div>
+
+        <div style="margin-top:14px;border-top:1px dashed #e5e7eb;padding-top:12px">
+          <div class="row2">
+            <div>
+              <label>Status de negócio (lote)</label>
+              <select id="fixDeal">
+                <option value="">Não alterar</option>
+                <option value="FECHADO">Fechado</option>
+                <option value="QUASE">Quase</option>
+                <option value="NAO">Não fechou</option>
+                <option value="SEM">Sem status</option>
+              </select>
+              <div class="hint">Aplica em todas as avaliações do mês cujo “Consultor” bate com o texto informado.</div>
+            </div>
+            <div>
+              <button class="btnP" type="button" id="btnFixDealApply" style="margin-top:26px">Aplicar status no mês</button>
+              <div class="hint" id="fixDealHint" style="margin-top:8px"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
       <h3 style="margin-top:14px">Captação (mês)</h3>
       <div class="hint">Distribuição do campo <b>Captação</b> salvo na vistoria.</div>
       <div id="painelCaptacao"></div>
@@ -901,12 +948,15 @@ async function refreshUsersIndex(){
     usersIndexByUid = idx;
 
     const sel = el("painelUser");
+    const sel2 = el("fixUser");
     if(sel){
       const arr = Object.values(idx).filter(u=>u.email).sort((a,b)=>(a.displayName||a.email).localeCompare((b.displayName||b.email),"pt-BR"));
-      sel.innerHTML = ["<option value=''>Todos</option>"].concat(arr.map(u=>{
+      const opts = ["<option value=''>Todos</option>"].concat(arr.map(u=>{
         const name = (u.displayName||u.email).toString();
         return `<option value="${escapeHtml(u.uid)}">${escapeHtml(name)}</option>`;
-      })).join("");
+      }));
+      sel.innerHTML = opts.join("");
+      if(sel2) sel2.innerHTML = ["<option value=''>Selecione</option>"].concat(opts.slice(1)).join("");
     }
   }catch(e){}
 }
@@ -914,6 +964,57 @@ function getUserLabelByUid(uid, fallbackEmail){
   const u = usersIndexByUid[uid];
   return (u && (u.displayName||u.email)) ? (u.displayName||u.email) : (fallbackEmail||uid||"(desconhecido)");
 }
+
+const CONSULTOR_MAP_KEY = "clubeauto_consultor_map_v1"; // localStorage (leve e seguro)
+let consultorMap = {}; // { normalizedConsultor: uid }
+
+function normalizeKey(s){
+  const txt = (s||"").toString().trim().toLowerCase();
+  if(!txt) return "";
+  try{
+    return txt.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ").trim();
+  }catch(e){
+    return txt.replace(/\s+/g," ").trim();
+  }
+}
+function loadConsultorMap(){
+  try{
+    const raw = localStorage.getItem(CONSULTOR_MAP_KEY);
+    if(raw){
+      const obj = JSON.parse(raw);
+      if(obj && typeof obj==="object") consultorMap = obj;
+    }
+  }catch(e){}
+}
+function saveConsultorMap(){
+  try{ localStorage.setItem(CONSULTOR_MAP_KEY, JSON.stringify(consultorMap||{})); }catch(e){}
+}
+loadConsultorMap();
+
+function tryAutoMatchUidByConsultorName(consName){
+  const key = normalizeKey(consName);
+  if(!key) return "";
+  if(consultorMap[key]) return consultorMap[key];
+
+  const arr = Object.values(usersIndexByUid||{});
+  for(const u of arr){
+    const dn = normalizeKey(u.displayName||"");
+    const ep = normalizeKey(((u.email||"").split("@")[0]||""));
+    if(dn && dn===key) return u.uid;
+    if(ep && ep===key) return u.uid;
+  }
+  return "";
+}
+
+function resolveOwnerUid(it){
+  const uid = (it.ownerUid || it.createdByUid || "").toString();
+  if(uid) return uid;
+
+  const cons = (it.consultor || "").toString().trim();
+  const m = tryAutoMatchUidByConsultorName(cons);
+  return m || "";
+}
+
 
 
 const el=(id)=>document.getElementById(id);
@@ -1242,6 +1343,8 @@ async function salvarUmaVez(texto){
       createdAt:serverTimestamp(),
       createdByEmail:lower(u.email||""),
       createdByUid:u.uid,
+      ownerUid:u.uid,
+      ownerEmail:lower(u.email||""),
       roleAtCreation:currentRole,
       modelo:v("modelo"),
       placa:v("placa"),
@@ -1611,6 +1714,7 @@ async function carregarPainel(){
     );
     const snap = await getDocs(qy);
     let items = snap.docs.map(d=>({id:d.id, ...d.data()}));
+    window.__painelItems = items;
 
     const consFilter = (el("painelCons")?.value || "").toString().trim().toLowerCase();
     const uidFilter = (el("painelUser")?.value || "").toString();
@@ -1750,6 +1854,128 @@ el("btnPainelAtualizar").addEventListener("click", carregarPainel);
 el("painelMes").addEventListener("change", carregarPainel);
 el("painelUser")?.addEventListener("change", carregarPainel);
 el("painelDeal")?.addEventListener("change", carregarPainel);
+
+function setFixHint(html){ const e=el("fixHint"); if(e) e.innerHTML = html||""; }
+function setFixDealHint(html){ const e=el("fixDealHint"); if(e) e.innerHTML = html||""; }
+
+async function applyOwnerMappingForMonth(){
+  if(!(currentRole==="admin" || currentRole==="gerente")){ return setFixHint("<span class='warn'>Apenas Gerente/Admin.</span>"); }
+  const consTxt = (el("fixConsultor")?.value||"").toString().trim();
+  const uid = (el("fixUser")?.value||"").toString();
+  if(!consTxt || !uid) return setFixHint("<span class='warn'>Preencha o consultor e selecione o usuário.</span>");
+  const key = normalizeKey(consTxt);
+  consultorMap[key] = uid; saveConsultorMap();
+
+  const items = (window.__painelItems||[]).slice();
+  let count = 0;
+  setFixHint("Aplicando...");
+
+  for(const it of items){
+    const c = normalizeKey(it.consultor||"");
+    const already = (it.ownerUid||it.createdByUid||"").toString();
+    if(c===key && (!already || already!==uid)){
+      try{
+        await updateDoc(doc(db,"vistorias", it.id), {
+          ownerUid: uid,
+          ownerSetAt: serverTimestamp(),
+          ownerSetByUid: auth.currentUser?.uid || "",
+          ownerSetByEmail: lower(auth.currentUser?.email||"")
+        });
+        it.ownerUid = uid;
+        count++;
+      }catch(e){}
+    }
+  }
+  setFixHint(`<span class='ok'>Pronto.</span> ${count} avaliações vinculadas no mês.`);
+  carregarPainel();
+}
+
+async function autoMapByNameForMonth(){
+  if(!(currentRole==="admin" || currentRole==="gerente")){ return setFixHint("<span class='warn'>Apenas Gerente/Admin.</span>"); }
+  const items = (window.__painelItems||[]).slice();
+  setFixHint("Tentando auto-vincular pelo nome do consultor...");
+  let links = 0;
+
+  const found = {};
+  items.forEach(it=>{
+    const c = (it.consultor||"").toString().trim();
+    const key = normalizeKey(c);
+    if(!key || found[key]) return;
+    const uid = tryAutoMatchUidByConsultorName(c);
+    if(uid) found[key] = uid;
+  });
+
+  const entries = Object.entries(found);
+  for(const [key, uid] of entries){
+    consultorMap[key] = uid;
+    links++;
+  }
+  saveConsultorMap();
+
+  if(!links){
+    setFixHint("<span class='warn'>Nenhum nome foi reconhecido automaticamente.</span>");
+    return;
+  }
+  setFixHint(`<span class='ok'>Auto-mapeamento criado.</span> ${links} nomes reconhecidos. Aplicando no mês...`);
+
+  let count = 0;
+  for(const it of items){
+    const key = normalizeKey(it.consultor||"");
+    const uid = consultorMap[key];
+    if(!uid) continue;
+    const already = (it.ownerUid||it.createdByUid||"").toString();
+    if(!already || already!==uid){
+      try{
+        await updateDoc(doc(db,"vistorias", it.id), {
+          ownerUid: uid,
+          ownerSetAt: serverTimestamp(),
+          ownerSetByUid: auth.currentUser?.uid || "",
+          ownerSetByEmail: lower(auth.currentUser?.email||"")
+        });
+        it.ownerUid = uid;
+        count++;
+      }catch(e){}
+    }
+  }
+  setFixHint(`<span class='ok'>Concluído.</span> ${count} avaliações ajustadas no mês.`);
+  carregarPainel();
+}
+
+async function applyDealForMonth(){
+  if(!(currentRole==="admin" || currentRole==="gerente")){ return setFixDealHint("<span class='warn'>Apenas Gerente/Admin.</span>"); }
+  const consTxt = (el("fixConsultor")?.value||"").toString().trim();
+  const deal = (el("fixDeal")?.value||"").toString().toUpperCase().trim();
+  if(!consTxt || !deal) return setFixDealHint("<span class='warn'>Informe o consultor e selecione um status.</span>");
+  const key = normalizeKey(consTxt);
+
+  const items = (window.__painelItems||[]).slice();
+  let count = 0;
+  setFixDealHint("Aplicando...");
+
+  for(const it of items){
+    const c = normalizeKey(it.consultor||"");
+    if(c===key){
+      try{
+        await updateDoc(doc(db,"vistorias", it.id), {
+          dealStatus: deal,
+          dealUpdatedAt: serverTimestamp(),
+          dealUpdatedByEmail: lower(auth.currentUser?.email||""),
+          dealUpdatedByUid: auth.currentUser?.uid || ""
+        });
+        it.dealStatus = deal;
+        count++;
+      }catch(e){}
+    }
+  }
+  setFixDealHint(`<span class='ok'>Pronto.</span> ${count} avaliações atualizadas no mês.`);
+  carregarPainel();
+}
+
+el("btnFixApply")?.addEventListener("click", applyOwnerMappingForMonth);
+el("btnFixAuto")?.addEventListener("click", autoMapByNameForMonth);
+el("btnFixDealApply")?.addEventListener("click", applyDealForMonth);
+
+
 el("btnPainelExport").addEventListener("click", exportPainelCsv);
 
 /* ===== Usuários ===== */
