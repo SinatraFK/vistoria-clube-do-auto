@@ -240,6 +240,11 @@ button{width:100%}
 .histFilters{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;align-items:flex-end}
 .histFilters > div{min-width:180px;flex:1}
 .histFilters button{width:auto}
+/* V9.2 painel mais limpo */
+#painelCaptacao{display:none}
+#viewPainel .card h3{margin-bottom:8px}
+.fixCompact .btnLine{margin-top:6px}
+.fixCompact .hint{margin-bottom:6px}
 </style>
 </head>
 
@@ -697,7 +702,7 @@ button{width:100%}
   <div id="viewPainel" class="hidden">
     <div class="card">
       <h3>📊 Painel (Gestão)</h3>
-      <div class="hint">Resumo do mês selecionado (somente Gerente/Admin/Closer).</div>
+      <div class="hint">Resumo do mês selecionado. Painel mais limpo, com foco em produtividade real e fechamento. Para corrigir relatórios antigos, use a área “Correção retroativa” abaixo.</div>
 
       <div class="painelTop">
         <div>
@@ -743,7 +748,7 @@ button{width:100%}
       <div class="hint">Usa o campo <b>Consultor</b> salvo no relatório.</div>
       <div id="painelTabela"></div>
 
-      <div class="card" style="box-shadow:none;border:1px solid #e5e7eb;margin-top:12px">
+      <div class="card fixCompact" style="box-shadow:none;border:1px solid #e5e7eb;margin-top:12px">
         <h3>🔧 Correção retroativa (produtividade + negócio)</h3>
         <div class="hint">Somente <b>Gerente/Admin</b>. Use para vincular avaliações antigas ao usuário correto (por “Consultor” preenchido no relatório) e/ou aplicar status de negócio em lote.</div>
 
@@ -756,7 +761,7 @@ button{width:100%}
           <div>
             <label>Vincular ao usuário</label>
             <select id="fixUser">
-              <option value="">Carregando...</option>
+              <option value="">Selecione</option>
             </select>
             <div class="hint">Isso define quem “ganha” a avaliação no Painel.</div>
           </div>
@@ -949,15 +954,13 @@ async function refreshUsersIndex(){
 
     const sel = el("painelUser");
     const sel2 = el("fixUser");
-    if(sel){
-      const arr = Object.values(idx).filter(u=>u.email).sort((a,b)=>(a.displayName||a.email).localeCompare((b.displayName||b.email),"pt-BR"));
-      const opts = ["<option value=''>Todos</option>"].concat(arr.map(u=>{
-        const name = (u.displayName||u.email).toString();
-        return `<option value="${escapeHtml(u.uid)}">${escapeHtml(name)}</option>`;
-      }));
-      sel.innerHTML = opts.join("");
-      if(sel2) sel2.innerHTML = ["<option value=''>Selecione</option>"].concat(opts.slice(1)).join("");
-    }
+    const arr = Object.values(idx).filter(u=>u.email).sort((a,b)=>(a.displayName||a.email).localeCompare((b.displayName||b.email),"pt-BR"));
+    const opts = ["<option value=''>Todos</option>"].concat(arr.map(u=>{
+      const name = (u.displayName||u.email).toString();
+      return `<option value="${escapeHtml(u.uid)}">${escapeHtml(name)}</option>`;
+    }));
+    if(sel) sel.innerHTML = opts.join("");
+    if(sel2) sel2.innerHTML = ["<option value=''>Selecione</option>"].concat(opts.slice(1)).join("");
   }catch(e){}
 }
 function getUserLabelByUid(uid, fallbackEmail){
@@ -1690,6 +1693,7 @@ async function openPainel(){
     if(!el("painelMes").value) el("painelMes").value = ym;
   }catch(e){}
 
+  await refreshUsersIndex();
   await carregarPainel();
 }
 
@@ -1722,7 +1726,7 @@ async function carregarPainel(){
     if(consFilter){
       items = items.filter(it => (it.consultor||"").toString().toLowerCase().includes(consFilter));
     }
-    if(uidFilter){ items = items.filter(it => (it.createdByUid||"")===uidFilter); }
+    if(uidFilter){ items = items.filter(it => (resolveOwnerUid(it)||"")===uidFilter); }
     if(dealFilter){ items = items.filter(it=>{ const ds=(it.dealStatus||"SEM").toString().toUpperCase(); if(dealFilter==="SEM") return ds==="SEM"; return ds===dealFilter; }); }
     painelLastItems = items;
 
@@ -1755,14 +1759,11 @@ async function carregarPainel(){
     const sem = items.filter(x=>(x.dealStatus||"SEM").toString().toUpperCase()==="SEM").length;
 
     const kpis = [
-      {t:"Avaliações no mês", v: total, s: consFilter ? `Filtro consultor: <b>${escapeHtml(consFilter)}</b>` : "Total no período"},
+      {t:"Avaliações", v: total, s: uidFilter ? "Filtro por consultor aplicado" : "Total do período"},
       {t:"Aprovados", v: aprov, s: badgeForLaudo("APROVADO")},
-      {t:"Apontamento", v: apont, s: badgeForLaudo("APONTAMENTO")},
-      {t:"Reprovados", v: repr, s: badgeForLaudo("REPROVADO")},
       {t:"Fechados", v: fechado, s: dealBadgeHtml("FECHADO")},
       {t:"Quase", v: quase, s: dealBadgeHtml("QUASE")},
       {t:"Não fechou", v: nao, s: dealBadgeHtml("NAO")},
-      {t:"Sem status", v: sem, s: dealBadgeHtml("SEM")},
     ];
 
     el("painelKpis").innerHTML = kpis.map(k=>
@@ -1783,7 +1784,7 @@ async function carregarPainel(){
       }).join("");
 
     el("painelTabela").innerHTML = `
-      <div class="hint">Taxa de aprovação: <b>${taxaAprov}%</b></div>
+      <div class="hint">Taxa de aprovação: <b>${taxaAprov}%</b> • Apontamento: <b>${apont}</b> • Reprovados: <b>${repr}</b> • Sem status: <b>${sem}</b></div>
       <table class="table">
         <thead>
           <tr>
@@ -1872,7 +1873,7 @@ async function applyOwnerMappingForMonth(){
 
   for(const it of items){
     const c = normalizeKey(it.consultor||"");
-    const already = (it.ownerUid||it.createdByUid||"").toString();
+    const already = (it.ownerUid||"").toString();
     if(c===key && (!already || already!==uid)){
       try{
         await updateDoc(doc(db,"vistorias", it.id), {
@@ -1923,7 +1924,7 @@ async function autoMapByNameForMonth(){
     const key = normalizeKey(it.consultor||"");
     const uid = consultorMap[key];
     if(!uid) continue;
-    const already = (it.ownerUid||it.createdByUid||"").toString();
+    const already = (it.ownerUid||"").toString();
     if(!already || already!==uid){
       try{
         await updateDoc(doc(db,"vistorias", it.id), {
@@ -1974,6 +1975,11 @@ async function applyDealForMonth(){
 el("btnFixApply")?.addEventListener("click", applyOwnerMappingForMonth);
 el("btnFixAuto")?.addEventListener("click", autoMapByNameForMonth);
 el("btnFixDealApply")?.addEventListener("click", applyDealForMonth);
+el("fixConsultor")?.addEventListener("blur", ()=>{
+  const consTxt = (el("fixConsultor")?.value||"").toString().trim();
+  const uid = tryAutoMatchUidByConsultorName(consTxt);
+  if(uid && el("fixUser")) el("fixUser").value = uid;
+});
 
 
 el("btnPainelExport").addEventListener("click", exportPainelCsv);
