@@ -225,7 +225,6 @@ button{width:100%;
 .chkRow{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center;margin-bottom:8px}
 .chkRow select{margin:0}
 @media (max-width:760px){.chkRow{grid-template-columns:1fr}}
-
 </style>
 </head>
 
@@ -250,7 +249,7 @@ button{width:100%;
 </section>
 
 <section id="screenApp" class="hidden">
-  
+
   <div class="topbar">
     <div class="topbarHeader">
       <img id="logoTop" alt="Logo">
@@ -617,7 +616,7 @@ button{width:100%;
     </div>
   </div>
 
-  
+
   <div id="viewPainel" class="hidden">
     <div class="card">
       <h3>📊 Painel (Gestão)</h3>
@@ -755,7 +754,13 @@ const firebaseConfig = {
   appId: "1:647571720442:web:4257dd525b59bd89b62143"
 };
 
-const HARD_ADMINS = new Set(["admin@clubedoauto.com","frank.since96@gmail.com"].map(s=>s.toLowerCase()));
+// ✅ Correção: inclui devfrank@clubedoauto.com
+const HARD_ADMINS = new Set([
+  "admin@clubedoauto.com",
+  "frank.since96@gmail.com",
+  "devfrank@clubedoauto.com"
+].map(s=>s.toLowerCase()));
+
 const ROLE_ORDER = ["consultor","closer","gerente","admin"];
 
 const el=(id)=>document.getElementById(id);
@@ -1007,11 +1012,8 @@ function abrirWhats(texto){
 function normalizePhoneBR(raw){
   const d = onlyDigits(raw);
   if(!d) return "";
-  // Se já veio com DDI 55 (13 dígitos típicos: 55 + DDD + número)
   if(d.startsWith("55") && d.length >= 12) return d;
-  // Se veio só DDD+numero (10/11)
   if(d.length === 10 || d.length === 11) return "55" + d;
-  // fallback: retorna como está
   return d;
 }
 function abrirWhatsPara(numero, mensagem){
@@ -1086,7 +1088,6 @@ async function salvarUmaVez(texto){
       modelo:v("modelo"),
       placa:v("placa"),
       laudo:(v("laudo")||"APROVADO").toUpperCase(),
-      // campos auxiliares p/ histórico (não vão no relatório automaticamente)
       cliente:v("cliente"),
       telefone:v("telefone"),
       local:v("local"),
@@ -1131,57 +1132,18 @@ el("tabHist").addEventListener("click",()=>setTab("hist"));
 el("tabPainel").addEventListener("click",()=>setTab("painel"));
 el("tabUsers").addEventListener("click",()=>setTab("users"));
 
+/* ✅ FIX: Histórico reescrito (sem recursão infinita / sem código quebrado) */
 function openHistorico(){
   el("historicoList").innerHTML=""; el("histHint").innerHTML="";
   if(isGuest){ el("histHint").innerHTML="<span class='warn'>Convidado não tem histórico.</span>"; return; }
   if(!canHistory){ el("histHint").innerHTML="<span class='warn'>Seu cargo não tem acesso ao histórico.</span>"; return; }
   if(unsubHist) unsubHist();
+
+  const hs = el("histSearch");
   const qy=query(collection(db,"vistorias"), orderBy("createdAt","desc"), limit(200));
-  unsubHist=onSnapshot(qy,(snap)=>{
-    const items=snap.docs.map(d=>({id:d.id,...d.data()}));
-    window.__histItems = items;
-    window.__renderHist = function(){
-          window.__renderHist();
 
-el("historicoList").querySelectorAll("[data-open]").forEach(btn=>{
-        btn.addEventListener("click",()=>{ const it=items.find(x=>x.id===btn.dataset.open); if(!it) return; el("preview").innerText=(it.reportText||""); setTab("nova"); window.scrollTo({top:0,behavior:"smooth"}); });
-      });
-      el("historicoList").querySelectorAll("[data-copy]").forEach(btn=>{
-        btn.addEventListener("click",async()=>{ const it=items.find(x=>x.id===btn.dataset.copy); if(!it) return; const ok=await copiar(it.reportText||""); if(ok) alert("Copiado!"); });
-      });
-      el("historicoList").querySelectorAll("[data-send]").forEach(btn=>{
-        btn.addEventListener("click",()=>{ const it=items.find(x=>x.id===btn.dataset.send); if(!it) return; abrirWhats(it.reportText||""); });
-      });
-      el("historicoList").querySelectorAll("[data-client]").forEach(btn=>{
-        btn.addEventListener("click",()=>{
-          const it=items.find(x=>x.id===btn.dataset.client);
-          if(!it) return;
-          const msg = montarMsgCliente(it.cliente||"");
-          abrirWhatsPara(it.telefone||"", msg);
-        });
-      });
-      if(isAdmin){
-        el("historicoList").querySelectorAll("[data-del]").forEach(btn=>{
-          btn.addEventListener("click", async ()=>{
-            const id = btn.dataset.del;
-            const ok = confirm("Excluir este relatório do histórico? Essa ação não pode ser desfeita.");
-            if(!ok) return;
-            try{ await deleteDoc(doc(db,"vistorias", id)); alert("Excluído!"); }
-            catch(e){ alert("Erro ao excluir: "+(e?.message||e)); }
-          });
-        });
-      }
-    };
-
-    const hs = el("histSearch");
-    if(hs && !hs.dataset.bound){
-      hs.dataset.bound="1";
-      hs.addEventListener("input", ()=>{ if(window.__renderHist) window.__renderHist(); });
-      hs.addEventListener("change", ()=>{ if(window.__renderHist) window.__renderHist(); });
-}
-
-    
-    const q = (el("histSearch")?.value || "").toString().trim().toLowerCase();
+  const render = (items)=>{
+    const q = (hs?.value || "").toString().trim().toLowerCase();
     const filtered = !q ? items : items.filter(it=>{
       const hay = [
         it.placa||"", it.modelo||"", it.cliente||"", it.consultor||"",
@@ -1209,39 +1171,60 @@ el("historicoList").querySelectorAll("[data-open]").forEach(btn=>{
       </div>`;
     }).join("") || "<div class='histItem'><b>Nenhum registro.</b></div>";
 
+    const getById = (id)=> items.find(x=>x.id===id);
 
     el("historicoList").querySelectorAll("[data-open]").forEach(btn=>{
-      btn.addEventListener("click",()=>{ const it=items.find(x=>x.id===btn.dataset.open); if(!it) return; el("preview").innerText=(it.reportText||""); setTab("nova"); window.scrollTo({top:0,behavior:"smooth"}); });
+      btn.addEventListener("click",()=>{
+        const it=getById(btn.dataset.open); if(!it) return;
+        el("preview").innerText=(it.reportText||"");
+        setTab("nova");
+        window.scrollTo({top:0,behavior:"smooth"});
+      });
     });
     el("historicoList").querySelectorAll("[data-copy]").forEach(btn=>{
-      btn.addEventListener("click",async()=>{ const it=items.find(x=>x.id===btn.dataset.copy); if(!it) return; const ok=await copiar(it.reportText||""); if(ok) alert("Copiado!"); });
+      btn.addEventListener("click",async()=>{
+        const it=getById(btn.dataset.copy); if(!it) return;
+        const ok=await copiar(it.reportText||"");
+        if(ok) alert("Copiado!");
+      });
     });
     el("historicoList").querySelectorAll("[data-send]").forEach(btn=>{
-      btn.addEventListener("click",()=>{ const it=items.find(x=>x.id===btn.dataset.send); if(!it) return; abrirWhats(it.reportText||""); });
+      btn.addEventListener("click",()=>{
+        const it=getById(btn.dataset.send); if(!it) return;
+        abrirWhats(it.reportText||"");
+      });
     });
     el("historicoList").querySelectorAll("[data-client]").forEach(btn=>{
       btn.addEventListener("click",()=>{
-        const it=items.find(x=>x.id===btn.dataset.client);
-        if(!it) return;
+        const it=getById(btn.dataset.client); if(!it) return;
         const msg = montarMsgCliente(it.cliente||"");
         abrirWhatsPara(it.telefone||"", msg);
       });
     });
+
     if(isAdmin){
       el("historicoList").querySelectorAll("[data-del]").forEach(btn=>{
         btn.addEventListener("click", async ()=>{
           const id = btn.dataset.del;
           const ok = confirm("Excluir este relatório do histórico? Essa ação não pode ser desfeita.");
           if(!ok) return;
-          try{
-            await deleteDoc(doc(db,"vistorias", id));
-            alert("Excluído!");
-          }catch(e){
-            alert("Erro ao excluir: "+(e?.message||e));
-          }
+          try{ await deleteDoc(doc(db,"vistorias", id)); alert("Excluído!"); }
+          catch(e){ alert("Erro ao excluir: "+(e?.message||e)); }
         });
       });
     }
+  };
+
+  if(hs && !hs.dataset.bound){
+    hs.dataset.bound="1";
+    hs.addEventListener("input", ()=>{ if(window.__histItems) render(window.__histItems); });
+    hs.addEventListener("change", ()=>{ if(window.__histItems) render(window.__histItems); });
+  }
+
+  unsubHist=onSnapshot(qy,(snap)=>{
+    const items=snap.docs.map(d=>({id:d.id,...d.data()}));
+    window.__histItems = items;
+    render(items);
   },(err)=>{
     el("historicoList").innerHTML="<div class='histItem'><b>Erro:</b> "+escapeHtml(err?.message||err)+"</div>";
   });
@@ -1331,31 +1314,22 @@ async function carregarPainel(){
     const repr  = items.filter(x=>(x.laudo||"").toString().toUpperCase()==="REPROVADO").length;
 
     const by = {};
-    let somaValorPret = 0;
 
     items.forEach(it=>{
       const la = (it.laudo||"APROVADO").toString().toUpperCase();
       const cons = (it.consultorName || getFirstLineValue(it.reportText, "Consultor") || "(não informado)").toString().trim() || "(não informado)";
-      const valTxt = (it.valorPretendidoRaw || getFirstLineValue(it.reportText, "Valor pretendido") || "").toString();
-      const valNum = brlToNumber(valTxt);
-      somaValorPret += valNum;
-
-      if(!by[cons]) by[cons] = { name: cons, total:0, aprov:0, apont:0, repr:0, valor:0 };
+      if(!by[cons]) by[cons] = { name: cons, total:0, aprov:0, apont:0, repr:0 };
       by[cons].total += 1;
       if(la==="APROVADO") by[cons].aprov += 1;
       else if(la==="APONTAMENTO") by[cons].apont += 1;
       else if(la==="REPROVADO") by[cons].repr += 1;
-      by[cons].valor += valNum;
     });
-
-    const fmtMoney = (n)=> new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(n||0).replace(/ /g," ");
 
     const kpis = [
       {t:"Avaliações no mês", v: total, s: "Registros de vistoria no período"},
       {t:"Aprovados", v: aprov, s: badgeForLaudo("APROVADO")},
       {t:"Apontamento", v: apont, s: badgeForLaudo("APONTAMENTO")},
       {t:"Reprovados", v: repr, s: badgeForLaudo("REPROVADO")},
-      
     ];
 
     el("painelKpis").innerHTML = kpis.map(k=>
@@ -1363,7 +1337,7 @@ async function carregarPainel(){
     ).join("");
 
     const rows = Object.values(by)
-      .sort((a,b)=> b.total - a.total || b.valor - a.valor)
+      .sort((a,b)=> b.total - a.total)
       .map(u=>{
         return `<tr>
           <td>${escapeHtml(u.name)}</td>
@@ -1371,7 +1345,6 @@ async function carregarPainel(){
           <td>${u.aprov}</td>
           <td>${u.apont}</td>
           <td>${u.repr}</td>
-          
         </tr>`;
       }).join("");
 
@@ -1384,7 +1357,6 @@ async function carregarPainel(){
             <th>Aprov.</th>
             <th>Apont.</th>
             <th>Reprov.</th>
-            
           </tr>
         </thead>
         <tbody>
@@ -1406,7 +1378,6 @@ async function carregarPainel(){
 
 el("btnPainelAtualizar").addEventListener("click", carregarPainel);
 el("painelMes").addEventListener("change", carregarPainel);
-
 
 function openUsers(){
   el("usersList").innerHTML=""; el("usersHint").innerHTML="";
