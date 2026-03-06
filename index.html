@@ -245,6 +245,10 @@ button{width:100%}
 #viewPainel .card h3{margin-bottom:8px}
 .fixCompact .btnLine{margin-top:6px}
 .fixCompact .hint{margin-bottom:6px}
+/* V9.4 edição rápida no histórico */
+.editGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:760px){.editGrid{grid-template-columns:1fr}}
+.editMeta{font-size:12px;color:#6b7280;margin-top:4px;white-space:pre-line}
 </style>
 </head>
 
@@ -669,7 +673,7 @@ button{width:100%}
         </div>
       </div>
 
-          <div class="hint">Filtra em tempo real. Ex: EPX5C99, Gol, João, Frank</div>
+          <div class="hint">Filtra em tempo real. Ex: EPX5C99, Gol, João, Frank. Use <b>✏️ Editar</b> para atribuir consultor e status do negócio.</div>
         </div>
         <div>
           <label>Filtro Laudo</label>
@@ -702,7 +706,7 @@ button{width:100%}
   <div id="viewPainel" class="hidden">
     <div class="card">
       <h3>📊 Painel (Gestão)</h3>
-      <div class="hint">Resumo do mês selecionado. Painel mais limpo, com foco em produtividade real e fechamento. Para corrigir relatórios antigos, use a área “Correção retroativa” abaixo.</div>
+      <div class="hint">Resumo do mês selecionado. Para corrigir relatórios antigos, agora prefira o botão <b>✏️ Editar</b> direto no Histórico.</div>
 
       <div class="painelTop">
         <div>
@@ -890,6 +894,49 @@ button{width:100%}
   </div>
 </div>
 
+
+<div class="modalOverlay" id="editHistModal">
+  <div class="modalBox">
+    <div class="modalTop">
+      <div>
+        <div class="modalTitle">✏️ Editar relatório</div>
+        <div class="modalHint">Use esta edição para atribuir o consultor responsável e marcar o andamento do negócio.</div>
+      </div>
+      <button class="btnX" type="button" id="btnEditHistClose">Fechar</button>
+    </div>
+
+    <div class="card" style="box-shadow:none;border:1px solid #e5e7eb;margin-top:12px">
+      <div class="editMeta" id="editHistMeta">—</div>
+
+      <div class="editGrid" style="margin-top:10px">
+        <div>
+          <label>Consultor responsável</label>
+          <select id="editOwnerUid">
+            <option value="">Selecione</option>
+          </select>
+          <div class="hint">Esse campo alimenta a performance real por consultor no painel.</div>
+        </div>
+        <div>
+          <label>Status do negócio</label>
+          <select id="editDealStatus">
+            <option value="SEM">Sem status</option>
+            <option value="FECHADO">Fechado</option>
+            <option value="QUASE">Quase</option>
+            <option value="NAO">Não fechou</option>
+          </select>
+          <div class="hint">Ajuda no acompanhamento e em futuros contatos com o cliente.</div>
+        </div>
+      </div>
+
+      <div class="btnLine">
+        <button class="btnP" type="button" id="btnEditHistSave">Salvar edição</button>
+      </div>
+      <div class="hint" id="editHistHint" style="margin-top:8px"></div>
+    </div>
+  </div>
+</div>
+
+
 <textarea id="copyFallback" style="position:fixed;left:-9999px;top:-9999px;"></textarea>
 
 <script>
@@ -1035,6 +1082,42 @@ function getResolvedConsultorLabel(it){
   const cons = (it.consultor||"").toString().trim();
   return cons || "(não informado)";
 }
+
+let currentEditHistId = "";
+function openEditHistModal(show){
+  const m = el("editHistModal");
+  if(!m) return;
+  m.style.display = show ? "flex" : "none";
+}
+function fillEditOwnerOptions(selectedUid=""){
+  const sel = el("editOwnerUid");
+  if(!sel) return;
+  const arr = Object.values(usersIndexByUid||{})
+    .filter(u=>u.email)
+    .sort((a,b)=>(a.displayName||a.email).localeCompare((b.displayName||b.email),"pt-BR"));
+  const opts = ['<option value="">Selecione</option>'].concat(arr.map(u=>{
+    const name = (u.displayName||u.email).toString();
+    return `<option value="${escapeHtml(u.uid)}" ${u.uid===selectedUid?'selected':''}>${escapeHtml(name)}</option>`;
+  }));
+  sel.innerHTML = opts.join("");
+}
+function openEditHistItem(it){
+  currentEditHistId = it?.id || "";
+  fillEditOwnerOptions((resolveOwnerUid(it)||""));
+  if(el("editDealStatus")) el("editDealStatus").value = ((it?.dealStatus||"SEM").toString().toUpperCase());
+  if(el("editHistMeta")){
+    const lines = [
+      `${it?.modelo||"-"} — ${it?.placa||"-"}`,
+      `Cliente: ${it?.cliente||"-"}`,
+      `Consultor digitado: ${it?.consultor||"-"}`,
+      `Logado no envio: ${getUserLabelByUid(it?.createdByUid, it?.createdByEmail)}`
+    ];
+    el("editHistMeta").innerText = lines.join("\n");
+  }
+  if(el("editHistHint")) el("editHistHint").innerHTML = "";
+  openEditHistModal(true);
+}
+
 function getAvaliadoresText(){ return getAvaliadores().join("/"); }
 
 function toggleDebitos(){
@@ -1481,6 +1564,7 @@ function renderHistorico(items){
         <button class="mini mCopy" data-copy="${it.id}">📋 Copiar</button>
         <button class="mini mSend" data-send="${it.id}">📲 Whats</button>
         <button class="mini" style="background:#0ea5e9" data-client="${it.id}">💬 Cliente</button>
+          <button class="mini" style="background:#f59e0b" data-edit="${it.id}">✏️ Editar</button>
         ${delBtn}
       </div>
     </div>`;
@@ -1517,6 +1601,17 @@ function renderHistorico(items){
     });
   });
 
+
+
+  el("historicoList").querySelectorAll("[data-edit]").forEach(btn=>{
+    btn.addEventListener("click", async ()=>{
+      const id = btn.dataset.edit;
+      const it = histItemsCache.find(x=>x.id===id);
+      if(!it) return;
+      await refreshUsersIndex();
+      openEditHistItem(it);
+    });
+  });
 
   if(canSetDeal()){
     el("historicoList").querySelectorAll("[data-deal]").forEach(btn=>{
