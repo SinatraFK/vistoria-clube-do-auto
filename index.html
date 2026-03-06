@@ -11,8 +11,6 @@
 
 <!-- GitHub Pages base -->
 <script>
-  // Em produção (GitHub Pages) o app roda em /vistoria-clube-do-auto/
-  // Em dev/local, usamos "/"
   window.BASE_HREF = location.hostname.includes("github.io") ? "/vistoria-clube-do-auto/" : "/";
 </script>
 
@@ -20,7 +18,6 @@
 <link rel="apple-touch-icon" id="appleIconLink" href="">
 
 <script>
-  // aplica paths corretos o quanto antes
   (function () {
     const base = window.BASE_HREF || "/";
     const ml = document.getElementById("manifestLink");
@@ -71,8 +68,6 @@ button{width:100%}
 .ok{color:#065f46;font-weight:900}
 .warn{color:#b91c1c;font-weight:900}
 .preview{white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;background:#fcfcfc;border:1px dashed #cfd4dc;padding:12px;border-radius:14px}
-
-/* Login */
 #screenLogin{display:block}
 .loginWrap{max-width:440px;margin:10vh auto 0 auto;background:#fff;padding:18px;border-radius:18px;box-shadow:0 12px 30px rgba(0,0,0,.18)}
 .loginLogo{width:240px;display:block;margin:0 auto 14px auto}
@@ -81,8 +76,6 @@ button{width:100%}
 .loginBtns{display:grid;grid-template-columns:1fr;gap:10px;margin-top:6px}
 .loginRow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media (max-width:520px){.loginRow{grid-template-columns:1fr}}
-
-/* Histórico */
 .histItem{border:1px solid #e5e7eb;border-radius:14px;padding:12px;margin-bottom:10px;background:#fafafa}
 .histTop{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .histTitle{font-weight:900}
@@ -93,8 +86,6 @@ button{width:100%}
 .mOpen{background:#111827}
 .mCopy{background:#1976d2}
 .mSend{background:#25D366}
-
-/* Usuários */
 .userItem{border:1px solid #e5e7eb;border-radius:14px;padding:12px;margin-bottom:10px;background:#fafafa}
 .userTop{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .userEmail{font-weight:900}
@@ -102,13 +93,10 @@ button{width:100%}
 .userActions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
 @media (max-width:760px){.userActions{grid-template-columns:1fr}}
 .badgeRole{display:inline-block;padding:4px 10px;border-radius:999px;background:#111827;color:#fff;font-size:12px;font-weight:900}
-
 .chkWrap{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:6px;margin-bottom:10px}
 .chkItem{display:flex;align-items:center;gap:8px;font-weight:800;font-size:13px}
 .chkItem input[type="checkbox"]{width:auto;margin:0;padding:0}
 @media (max-width:760px){.chkWrap{grid-template-columns:1fr}}
-
-/* FIPE Modal */
 .modalOverlay{position:fixed;inset:0;background:rgba(17,24,39,.55);display:none;align-items:center;justify-content:center;padding:14px;z-index:9999}
 .modalBox{width:min(820px,100%);background:#fff;border-radius:18px;box-shadow:0 18px 45px rgba(0,0,0,.28);padding:14px;max-height:90vh;overflow:auto}
 .modalTop{display:flex;align-items:center;justify-content:space-between;gap:10px}
@@ -116,27 +104,19 @@ button{width:100%}
 .btnX{width:auto;padding:10px 12px;border-radius:12px;background:#111827;color:#fff;font-weight:900}
 .btnX:hover{opacity:.9}
 .modalHint{font-size:12px;color:#6b7280;margin-top:6px}
-.smallRow{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
-.smallRow > div{flex:1;min-width:220px}
 .btnLine{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
 .btnLine button{width:auto}
 .btnSecondary{background:#6b7280;color:#fff}
 .btnSecondary:hover{opacity:.92}
-
-/* Draft banner */
 .draftBar{display:none;align-items:center;justify-content:space-between;gap:10px;padding:12px;border-radius:14px;background:#fff7ed;border:1px solid #fed7aa;margin:10px 0;box-shadow:0 2px 10px rgba(0,0,0,.06)}
 .draftBar .msg{font-size:13px;color:#7c2d12;font-weight:900}
 .draftBar .actions{display:flex;gap:10px;flex-wrap:wrap}
 .draftBar .actions button{width:auto;margin-top:0;padding:10px 12px;border-radius:12px;font-size:13px}
 .btnDanger{background:#b91c1c;color:#fff}
 .btnDanger:hover{opacity:.92}
-
-/* V5.1 layout tweaks */
 .fipeHero{border:1px solid #dbeafe;background:#eff6ff}
 .fipeHero .modalTitle{font-size:17px}
 .granizoRow{margin-bottom:10px}
-
-/* ===== Painel (gestão) ===== */
 .painelGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 @media (max-width:900px){.painelGrid{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:520px){.painelGrid{grid-template-columns:1fr}}
@@ -154,20 +134,7 @@ button{width:100%}
 .badgeOk{background:#dcfce7;color:#065f46}
 .badgeWarn{background:#fef9c3;color:#854d0e}
 .badgeBad{background:#fee2e2;color:#991b1b}
-
-/* --- Topbar mobile layout patch --- */
-.topbar{
-  display:grid;
-  grid-template-columns:auto 1fr auto;
-  gap:14px;
-  align-items:center;
-  background:var(--preto);
-  color:#fff;
-  padding:12px;
-  border-radius:14px;
-  box-shadow:0 8px 22px rgba(0,0,0,.18);
-  margin-bottom:12px;
-}
+.topbar{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;background:var(--preto);color:#fff;padding:12px;border-radius:14px;box-shadow:0 8px 22px rgba(0,0,0,.18);margin-bottom:12px}
 .topbar img{width:150px;height:auto;display:block}
 .topbarTitle{min-width:0;display:flex;flex-direction:column;gap:6px}
 .topbarTitle .main{font-weight:900;letter-spacing:.5px;font-size:18px;line-height:1.1}
@@ -179,43 +146,20 @@ button{width:100%}
 .btnExit:hover{background:var(--verde2)}
 .btnGhost{background:rgba(255,255,255,.08);color:#fff}
 .btnGhost:hover{background:rgba(255,255,255,.14)}
-
 @media (max-width:760px){
-  .topbar{
-    grid-template-columns:1fr;
-    justify-items:center;
-    text-align:center;
-  }
-  .topbarHeader{
-    width:100%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:12px;
-  }
+  .topbar{grid-template-columns:1fr;justify-items:center;text-align:center}
+  .topbarHeader{width:100%;display:flex;align-items:center;justify-content:center;gap:12px}
   .topbar img{width:120px}
   .topbarTitle{align-items:flex-start;text-align:left}
   .userline{justify-content:flex-start}
-  .topbarBtns{
-    width:100%;
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    justify-content:center;
-    margin-top:8px;
-  }
-  .topbarBtns .btnSmall{
-    width:calc(50% - 6px);
-    max-width:220px;
-  }
+  .topbarBtns{width:100%;display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:8px}
+  .topbarBtns .btnSmall{width:calc(50% - 6px);max-width:220px}
 }
 @media (max-width:420px){
   .topbarBtns .btnSmall{width:100%;max-width:320px}
   .topbarTitle{align-items:center;text-align:center}
   .userline{justify-content:center}
 }
-
-/* --- Alinhamento de checkboxes (mobile friendly) --- */
 .chkLabel{display:flex;align-items:center;gap:8px;font-weight:800;font-size:13px;line-height:1.2}
 .chkLabel input[type="checkbox"]{width:18px;height:18px;margin:0;flex:0 0 auto}
 .chkLabelRight{display:flex;align-items:center;justify-content:space-between;gap:10px;font-weight:800;font-size:13px;line-height:1.2}
@@ -223,13 +167,9 @@ button{width:100%}
 .chkRow{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center;margin-bottom:8px}
 .chkRow select{margin:0}
 @media (max-width:760px){.chkRow{grid-template-columns:1fr}}
-
-/* Hist filters */
 .filtersRow{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px}
 @media (max-width:760px){.filtersRow{grid-template-columns:1fr}}
 .smallBtn{width:auto;padding:10px 12px;border-radius:12px;font-weight:900;border:none;cursor:pointer}
-
-/* ===== V9: Negócio (fechado/quase/não) + produtividade por usuário ===== */
 .dealBadge{display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:900}
 .dealWin{background:#dcfce7;color:#065f46}
 .dealNear{background:#fef9c3;color:#854d0e}
@@ -240,16 +180,10 @@ button{width:100%}
 .histFilters{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;align-items:flex-end}
 .histFilters > div{min-width:180px;flex:1}
 .histFilters button{width:auto}
-/* V9.2 painel mais limpo */
-#painelCaptacao{display:none}
-#viewPainel .card h3{margin-bottom:8px}
-.fixCompact .btnLine{margin-top:6px}
-.fixCompact .hint{margin-bottom:6px}
 </style>
 </head>
 
 <body>
-
 <section id="screenLogin">
   <div class="loginWrap">
     <img id="logoLogin" class="loginLogo" alt="Logo">
@@ -269,7 +203,6 @@ button{width:100%}
 </section>
 
 <section id="screenApp" class="hidden">
-
   <div class="topbar">
     <div class="topbarHeader">
       <img id="logoTop" alt="Logo">
@@ -348,35 +281,26 @@ button{width:100%}
 
     <div class="card">
       <h3>💰 Negócio</h3>
-
       <div class="row2">
         <div>
           <label>Débitos do veículo</label>
-          <select id="debitosSel">
-            <option>Não</option>
-            <option>Sim</option>
-          </select>
+          <select id="debitosSel"><option>Não</option><option>Sim</option></select>
         </div>
         <div id="debitosValorWrap" class="hidden">
           <label>Valor dos débitos</label>
           <input id="debitosValor" inputmode="numeric" placeholder="Ex: 1500">
         </div>
       </div>
-
       <div class="row2">
         <div>
           <label>Financiamento</label>
-          <select id="finSel">
-            <option>Não</option>
-            <option>Sim</option>
-          </select>
+          <select id="finSel"><option>Não</option><option>Sim</option></select>
         </div>
         <div id="finValorWrap" class="hidden">
           <label>Valor da quitação</label>
           <input id="finValor" inputmode="numeric" placeholder="Ex: 12000">
         </div>
       </div>
-
       <div class="row2">
         <div>
           <label>Fipe <span class="hint">(obrigatório)</span></label>
@@ -398,7 +322,6 @@ button{width:100%}
         <label>Descrição do laudo</label>
         <textarea id="laudoObs" placeholder="Longarina, painel, colunas, chassi..."></textarea>
       </div>
-
       <h3 style="margin-top:14px">🚨 Leilão</h3>
       <label>Situação</label>
       <select id="leilao"><option>Não</option><option>Financeira</option><option>Pequena monta</option><option>Média monta</option></select>
@@ -409,57 +332,33 @@ button{width:100%}
       <h3>⚙️ Gastos</h3>
       <label>Motor / mecânica (texto livre)</label>
       <textarea id="motor" placeholder="Ex: Rajando / Caixa de direção / Vazamento..."></textarea>
-
       <label>Luzes do painel (texto livre)</label>
       <textarea id="luzes" placeholder="Ex: ABS / Injeção / Óleo..."></textarea>
-
       <h3 style="margin-top:14px">🪑 Gastos internos</h3>
-
       <label>Tablier</label>
-      <select id="tablier">
-        <option>Bom</option>
-        <option>Avariado</option>
-      </select>
-
+      <select id="tablier"><option>Bom</option><option>Avariado</option></select>
       <div class="row2">
         <div>
           <label>Bancos (quais)</label>
           <select id="bancosOnde">
-            <option value="">Selecione</option>
-            <option>Motorista</option>
-            <option>Dianteiros</option>
-            <option>Traseiros</option>
-            <option>Todos</option>
+            <option value="">Selecione</option><option>Motorista</option><option>Dianteiros</option><option>Traseiros</option><option>Todos</option>
           </select>
         </div>
         <div>
           <label>Bancos (serviço)</label>
-          <select id="bancosServico">
-            <option>Bom</option>
-            <option>Faixa</option>
-            <option>Reformar</option>
-          </select>
+          <select id="bancosServico"><option>Bom</option><option>Faixa</option><option>Reformar</option></select>
         </div>
       </div>
-
       <div class="row2">
         <div>
           <label>Volante</label>
-          <select id="volante">
-            <option>Bom</option>
-            <option>Encapar</option>
-            <option>Trocar</option>
-          </select>
+          <select id="volante"><option>Bom</option><option>Encapar</option><option>Trocar</option></select>
         </div>
         <div>
           <label>Manopla do câmbio</label>
-          <select id="manopla">
-            <option>Bom</option>
-            <option>Trocar</option>
-          </select>
+          <select id="manopla"><option>Bom</option><option>Trocar</option></select>
         </div>
       </div>
-
       <label>Forro de porta (selecione)</label>
       <div style="border:1px dashed #e5e7eb;border-radius:14px;padding:12px;background:#fafafa;margin-bottom:10px">
         <div class="row3">
@@ -471,58 +370,38 @@ button{width:100%}
           <label class="chkLabelRight">Traseiros <input type="checkbox" id="forro_traseiros"></label>
           <label class="chkLabelRight">Todos <input type="checkbox" id="forro_todos"></label>
         </div>
-
         <div style="margin-top:10px">
           <label>Estado</label>
-          <select id="forroEstado">
-            <option>Bom</option>
-            <option>Avariado</option>
-          </select>
+          <select id="forroEstado"><option>Bom</option><option>Avariado</option></select>
         </div>
       </div>
 
       <h3 style="margin-top:14px">🚗 Gastos externos</h3>
-
       <div class="row2">
         <div>
           <label>Funilaria (peças)</label>
-          <select id="funilariaPecas">
-            <option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
-            <option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option>
-          </select>
+          <select id="funilariaPecas"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select>
         </div>
         <div>
           <label>Pneus avariados</label>
-          <select id="pneusQtd">
-            <option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
-          </select>
+          <select id="pneusQtd"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
         </div>
       </div>
-
       <div class="row2 granizoRow">
         <label class="chkLabelRight">Pintura completa <input type="checkbox" id="pinturaCompleta"></label>
         <label class="chkLabelRight">Chuva de granizo <input type="checkbox" id="chuvaGranizo"></label>
       </div>
-
       <div class="row2">
         <div>
           <label>Para-choque dianteiro</label>
-          <select id="paraChoqueD">
-            <option>Bom</option>
-            <option>Troca</option>
-          </select>
+          <select id="paraChoqueD"><option>Bom</option><option>Troca</option></select>
         </div>
         <div>
           <label>Para-choque traseiro</label>
-          <select id="paraChoqueT">
-            <option>Bom</option>
-            <option>Troca</option>
-          </select>
+          <select id="paraChoqueT"><option>Bom</option><option>Troca</option></select>
         </div>
       </div>
-
       <h3 style="margin-top:14px">💡 Faróis e lanternas</h3>
-
       <div class="row2">
         <div><label>Farol (D)</label><select id="farolD"><option>Bom</option><option>Polimento</option><option>Troca</option></select></div>
         <div><label>Farol (E)</label><select id="farolE"><option>Bom</option><option>Polimento</option><option>Troca</option></select></div>
@@ -531,39 +410,16 @@ button{width:100%}
         <div><label>Lanterna (D)</label><select id="lanternaD"><option>Bom</option><option>Polimento</option><option>Troca</option></select></div>
         <div><label>Lanterna (E)</label><select id="lanternaE"><option>Bom</option><option>Polimento</option><option>Troca</option></select></div>
       </div>
-
       <h3 style="margin-top:14px">🪟 Vidros</h3>
-
       <label>Para-brisa</label>
-      <select id="vidroParabrisa">
-        <option>OK</option>
-        <option>Reparo</option>
-        <option>Troca</option>
-      </select>
-
+      <select id="vidroParabrisa"><option>OK</option><option>Reparo</option><option>Troca</option></select>
       <div style="border:1px dashed #e5e7eb;border-radius:14px;padding:12px;background:#fafafa;margin-bottom:10px">
         <div class="hint">Demais vidros (marque e selecione a ação).</div>
-
-        <div class="chkRow">
-          <label class="chkLabelRight">Dianteiro (D) <input type="checkbox" id="vidro_dd_chk"></label>
-          <select id="vidro_dd_act"><option>Reparo</option><option>Troca</option></select>
-        </div>
-        <div class="chkRow">
-          <label class="chkLabelRight">Dianteiro (E) <input type="checkbox" id="vidro_de_chk"></label>
-          <select id="vidro_de_act"><option>Reparo</option><option>Troca</option></select>
-        </div>
-        <div class="chkRow">
-          <label class="chkLabelRight">Traseiro (D) <input type="checkbox" id="vidro_td_chk"></label>
-          <select id="vidro_td_act"><option>Reparo</option><option>Troca</option></select>
-        </div>
-        <div class="chkRow">
-          <label class="chkLabelRight">Traseiro (E) <input type="checkbox" id="vidro_te_chk"></label>
-          <select id="vidro_te_act"><option>Reparo</option><option>Troca</option></select>
-        </div>
-        <div class="chkRow">
-          <label class="chkLabelRight">Vigia <input type="checkbox" id="vidro_vg_chk"></label>
-          <select id="vidro_vg_act"><option>Reparo</option><option>Troca</option></select>
-        </div>
+        <div class="chkRow"><label class="chkLabelRight">Dianteiro (D) <input type="checkbox" id="vidro_dd_chk"></label><select id="vidro_dd_act"><option>Reparo</option><option>Troca</option></select></div>
+        <div class="chkRow"><label class="chkLabelRight">Dianteiro (E) <input type="checkbox" id="vidro_de_chk"></label><select id="vidro_de_act"><option>Reparo</option><option>Troca</option></select></div>
+        <div class="chkRow"><label class="chkLabelRight">Traseiro (D) <input type="checkbox" id="vidro_td_chk"></label><select id="vidro_td_act"><option>Reparo</option><option>Troca</option></select></div>
+        <div class="chkRow"><label class="chkLabelRight">Traseiro (E) <input type="checkbox" id="vidro_te_chk"></label><select id="vidro_te_act"><option>Reparo</option><option>Troca</option></select></div>
+        <div class="chkRow"><label class="chkLabelRight">Vigia <input type="checkbox" id="vidro_vg_chk"></label><select id="vidro_vg_act"><option>Reparo</option><option>Troca</option></select></div>
       </div>
       <div class="hint">No relatório aparecem apenas itens que geram custo. “Bom/OK/0” não aparece.</div>
     </div>
@@ -577,7 +433,6 @@ button{width:100%}
 
     <div class="card">
       <h3>👨‍🔧 Responsáveis</h3>
-
       <div class="row2">
         <div><label>Consultor <span class="hint">(obrigatório)</span></label><input id="consultor"></div>
         <div>
@@ -600,11 +455,9 @@ button{width:100%}
         <div><label>Cliente <span class="hint">(obrigatório)</span></label><input id="cliente"></div>
         <div><label>Local</label><input id="local"></div>
       </div>
-
       <label>Telefone (WhatsApp)</label>
       <input id="telefone" placeholder="Ex: 11 99999-9999">
       <div class="hint">Esse telefone NÃO vai no relatório (Whats/Copiar). Fica salvo só no histórico (gestores).</div>
-
       <label>Captação</label>
       <select id="captacao"><option value="">Selecione</option><option>Lead</option><option>Porta</option><option>Orgânico</option></select>
       <div class="hint">“Osasco - SP 📍” sempre aparece no relatório.</div>
@@ -615,7 +468,6 @@ button{width:100%}
       <button class="btnW" id="btnWhats">📲 Enviar relatório (WhatsApp)</button>
       <button class="btnB" id="btnCopy">📋 Copiar relatório</button>
       <button class="btnG" type="button" id="btnClearForm">🧹 Limpar formulário</button>
-
       <h3 style="margin-top:14px;">Prévia</h3>
       <div class="preview" id="preview"></div>
       <div class="hint" id="saveHint" style="margin-top:10px"></div>
@@ -626,67 +478,47 @@ button{width:100%}
     <div class="card">
       <h3>☁️ Histórico</h3>
       <div class="hint" id="histHint"></div>
-
-      <!-- Upgrade: filtros rápidos -->
       <div class="filtersRow" style="margin-top:10px">
         <div>
           <label>🔎 Buscar no histórico</label>
           <input id="histSearch" placeholder="Digite placa, modelo, cliente ou consultor...">
-      <div class="histFilters">
-        <div>
-          <label>📅 Período</label>
-          <select id="histPeriodo">
-            <option value="30d">Últimos 30 dias</option>
-            <option value="7d">Últimos 7 dias</option>
-            <option value="hoje">Hoje</option>
-            <option value="ontem">Ontem</option>
-            <option value="mes">Este mês</option>
-            <option value="tudo">Tudo (até 2000)</option>
-          </select>
-        </div>
-        <div>
-          <label>🏷️ Negócio</label>
-          <select id="histDeal">
-            <option value="">Todos</option>
-            <option value="FECHADO">Fechado</option>
-            <option value="QUASE">Quase</option>
-            <option value="NAO">Não fechou</option>
-            <option value="SEM">Sem status</option>
-          </select>
-        </div>
-        <div>
-          <label>📌 Laudo</label>
-          <select id="histLaudo2">
-            <option value="">Todos</option>
-            <option value="APROVADO">Aprovado</option>
-            <option value="APONTAMENTO">Apontamento</option>
-            <option value="REPROVADO">Reprovado</option>
-          </select>
-        </div>
-        <div>
-          <button class="btnP" type="button" id="btnHistRecarregar">Recarregar</button>
-          <div class="hint" id="histCount" style="margin-top:8px"></div>
-        </div>
-      </div>
-
           <div class="hint">Filtra em tempo real. Ex: EPX5C99, Gol, João, Frank</div>
         </div>
         <div>
           <label>Filtro Laudo</label>
           <select id="histLaudo">
-            <option value="">Todos</option>
-            <option>APROVADO</option>
-            <option>APONTAMENTO</option>
-            <option>REPROVADO</option>
+            <option value="">Todos</option><option>APROVADO</option><option>APONTAMENTO</option><option>REPROVADO</option>
           </select>
         </div>
         <div>
           <label>Registros</label>
-          <select id="histLimit">
-            <option value="200">200 (rápido)</option>
-            <option value="500">500</option>
-            <option value="800">800</option>
+          <select id="histLimit"><option value="200">200 (rápido)</option><option value="500">500</option><option value="800">800</option></select>
+        </div>
+      </div>
+
+      <div class="histFilters">
+        <div>
+          <label>📅 Período</label>
+          <select id="histPeriodo">
+            <option value="30d">Últimos 30 dias</option><option value="7d">Últimos 7 dias</option><option value="hoje">Hoje</option>
+            <option value="ontem">Ontem</option><option value="mes">Este mês</option><option value="tudo">Tudo (até 2000)</option>
           </select>
+        </div>
+        <div>
+          <label>🏷️ Negócio</label>
+          <select id="histDeal">
+            <option value="">Todos</option><option value="FECHADO">Fechado</option><option value="QUASE">Quase</option><option value="NAO">Não fechou</option><option value="SEM">Sem status</option>
+          </select>
+        </div>
+        <div>
+          <label>📌 Laudo</label>
+          <select id="histLaudo2">
+            <option value="">Todos</option><option value="APROVADO">Aprovado</option><option value="APONTAMENTO">Apontamento</option><option value="REPROVADO">Reprovado</option>
+          </select>
+        </div>
+        <div>
+          <button class="btnP" type="button" id="btnHistRecarregar">Recarregar</button>
+          <div class="hint" id="histCount" style="margin-top:8px"></div>
         </div>
       </div>
 
@@ -702,7 +534,7 @@ button{width:100%}
   <div id="viewPainel" class="hidden">
     <div class="card">
       <h3>📊 Painel (Gestão)</h3>
-      <div class="hint">Resumo do mês selecionado. Painel mais limpo, com foco em produtividade real e fechamento. Para corrigir relatórios antigos, use a área “Correção retroativa” abaixo.</div>
+      <div class="hint">Resumo do mês selecionado, com foco apenas nos indicadores gerais da equipe.</div>
 
       <div class="painelTop">
         <div>
@@ -711,96 +543,23 @@ button{width:100%}
           <div class="hint">Ex: 2026-03</div>
         </div>
         <div>
-          <label>Consultor (opcional)</label>
-          <input id="painelCons" placeholder="Ex: Frank">
-          <div class="hint">Filtra dentro do mês selecionado.</div>
-        </div>
-        <div>
           <button class="btnP" type="button" id="btnPainelAtualizar">Atualizar</button>
           <div class="hint" id="painelHint" style="margin-top:8px"></div>
         </div>
       </div>
 
-      
-      <div class="painelTop" style="margin-top:10px">
-        <div>
-          <label>Consultor (logado)</label>
-          <select id="painelUser">
-            <option value="">Todos</option>
-          </select>
-          <div class="hint">Mede produtividade pelo usuário logado que salvou a avaliação.</div>
-        </div>
-        <div>
-          <label>Negócio</label>
-          <select id="painelDeal">
-            <option value="">Todos</option>
-            <option value="FECHADO">Fechado</option>
-            <option value="QUASE">Quase</option>
-            <option value="NAO">Não fechou</option>
-            <option value="SEM">Sem status</option>
-          </select>
-          <div class="hint">Filtro opcional para gestão.</div>
-        </div>
-      </div>
-<div class="painelGrid" id="painelKpis"></div>
+      <div class="painelGrid" id="painelKpis"></div>
 
-      <h3 style="margin-top:14px">Performance por consultor</h3>
-      <div class="hint">Usa o campo <b>Consultor</b> salvo no relatório.</div>
+      <h3 style="margin-top:14px">Resumo da equipe</h3>
+      <div class="hint">Indicadores gerais da equipe no período.</div>
       <div id="painelTabela"></div>
 
-      <div class="card fixCompact" style="box-shadow:none;border:1px solid #e5e7eb;margin-top:12px">
-        <h3>🔧 Correção retroativa (produtividade + negócio)</h3>
-        <div class="hint">Somente <b>Gerente/Admin</b>. Use para vincular avaliações antigas ao usuário correto (por “Consultor” preenchido no relatório) e/ou aplicar status de negócio em lote.</div>
-
-        <div class="row2">
-          <div>
-            <label>Consultor (texto do relatório)</label>
-            <input id="fixConsultor" placeholder="Ex: Lucas">
-            <div class="hint">Usa o campo <b>Consultor</b> salvo na avaliação.</div>
-          </div>
-          <div>
-            <label>Vincular ao usuário</label>
-            <select id="fixUser">
-              <option value="">Selecione</option>
-            </select>
-            <div class="hint">Isso define quem “ganha” a avaliação no Painel.</div>
-          </div>
-        </div>
-
-        <div class="btnLine">
-          <button class="btnP" type="button" id="btnFixApply">Aplicar vinculação no mês</button>
-          <button class="btnSecondary" type="button" id="btnFixAuto">Auto-vincular pelo nome</button>
-        </div>
-        <div class="hint" id="fixHint" style="margin-top:8px"></div>
-
-        <div style="margin-top:14px;border-top:1px dashed #e5e7eb;padding-top:12px">
-          <div class="row2">
-            <div>
-              <label>Status de negócio (lote)</label>
-              <select id="fixDeal">
-                <option value="">Não alterar</option>
-                <option value="FECHADO">Fechado</option>
-                <option value="QUASE">Quase</option>
-                <option value="NAO">Não fechou</option>
-                <option value="SEM">Sem status</option>
-              </select>
-              <div class="hint">Aplica em todas as avaliações do mês cujo “Consultor” bate com o texto informado.</div>
-            </div>
-            <div>
-              <button class="btnP" type="button" id="btnFixDealApply" style="margin-top:26px">Aplicar status no mês</button>
-              <div class="hint" id="fixDealHint" style="margin-top:8px"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-
-      <h3 style="margin-top:14px">Captação (mês)</h3>
-      <div class="hint">Distribuição do campo <b>Captação</b> salvo na vistoria.</div>
+      <h3 style="margin-top:14px">Captação</h3>
+      <div class="hint">Distribuição do campo <b>Captação</b> no período.</div>
       <div id="painelCaptacao"></div>
 
       <div class="btnLine" style="margin-top:10px">
-        <button class="btnB" type="button" id="btnPainelExport">Exportar CSV (mês/consultor)</button>
+        <button class="btnB" type="button" id="btnPainelExport">Exportar CSV (mês)</button>
       </div>
     </div>
   </div>
@@ -828,9 +587,7 @@ button{width:100%}
       <div class="row2">
         <div>
           <label>Marca</label>
-          <select id="fipeMarca">
-            <option value="">Carregando...</option>
-          </select>
+          <select id="fipeMarca"><option value="">Carregando...</option></select>
         </div>
         <div>
           <label>Modelo (busca rápida)</label>
@@ -842,15 +599,11 @@ button{width:100%}
       <div class="row2">
         <div>
           <label>Modelo</label>
-          <select id="fipeModelo">
-            <option value="">Selecione a marca</option>
-          </select>
+          <select id="fipeModelo"><option value="">Selecione a marca</option></select>
         </div>
         <div>
           <label>Ano / combustível</label>
-          <select id="fipeAno">
-            <option value="">Selecione o modelo</option>
-          </select>
+          <select id="fipeAno"><option value="">Selecione o modelo</option></select>
         </div>
       </div>
 
@@ -892,14 +645,13 @@ button{width:100%}
 <textarea id="copyFallback" style="position:fixed;left:-9999px;top:-9999px;"></textarea>
 
 <script>
-  // Paths corretos para assets (logo)
-  document.addEventListener("DOMContentLoaded", () => {
-    const base = window.BASE_HREF || "/";
-    const a = document.getElementById("logoLogin");
-    const b = document.getElementById("logoTop");
-    if (a) a.src = base + "logo.png";
-    if (b) b.src = base + "logo.png";
-  });
+document.addEventListener("DOMContentLoaded", () => {
+  const base = window.BASE_HREF || "/";
+  const a = document.getElementById("logoLogin");
+  const b = document.getElementById("logoTop");
+  if (a) a.src = base + "logo.png";
+  if (b) b.src = base + "logo.png";
+});
 </script>
 
 <script type="module">
@@ -916,15 +668,13 @@ const firebaseConfig = {
   appId: "1:647571720442:web:4257dd525b59bd89b62143"
 };
 
-// Admins fixos (fallback). O controle final continua sendo pelo doc /users/{uid}.
-const HARD_ADMINS = new Set([
-  "admin@clubedoauto.com",
-  "frank.since96@gmail.com",
-  "devfrank@clubedoauto.com"
-].map(s=>s.toLowerCase()));
-
+const HARD_ADMINS = new Set(["admin@clubedoauto.com","frank.since96@gmail.com","devfrank@clubedoauto.com"].map(s=>s.toLowerCase()));
 const ROLE_ORDER = ["consultor","closer","gerente","admin"];
-const DEAL_LABEL = {SEM:"Sem status", FECHADO:"Fechado", QUASE:"Quase", NAO:"Não fechou"};
+
+const el=(id)=>document.getElementById(id);
+const v=(id)=>(el(id)?.value??"").toString().trim();
+const lower=(s)=>(s??"").toString().trim().toLowerCase();
+
 function dealBadgeHtml(val){
   const v = (val||"SEM").toString().toUpperCase();
   if(v==="FECHADO") return "<span class='dealBadge dealWin'>FECHADO</span>";
@@ -943,24 +693,9 @@ async function refreshUsersIndex(){
     snap.docs.forEach(d=>{
       const data = d.data()||{};
       const uid = data.uid || d.id;
-      idx[uid] = {
-        uid,
-        email: (data.email||"").toString(),
-        role: (data.role||"consultor").toString(),
-        displayName: (data.displayName||"").toString()
-      };
+      idx[uid] = { uid, email:(data.email||"").toString(), role:(data.role||"consultor").toString(), displayName:(data.displayName||"").toString() };
     });
     usersIndexByUid = idx;
-
-    const sel = el("painelUser");
-    const sel2 = el("fixUser");
-    const arr = Object.values(idx).filter(u=>u.email).sort((a,b)=>(a.displayName||a.email).localeCompare((b.displayName||b.email),"pt-BR"));
-    const opts = ["<option value=''>Todos</option>"].concat(arr.map(u=>{
-      const name = (u.displayName||u.email).toString();
-      return `<option value="${escapeHtml(u.uid)}">${escapeHtml(name)}</option>`;
-    }));
-    if(sel) sel.innerHTML = opts.join("");
-    if(sel2) sel2.innerHTML = ["<option value=''>Selecione</option>"].concat(opts.slice(1)).join("");
   }catch(e){}
 }
 function getUserLabelByUid(uid, fallbackEmail){
@@ -968,77 +703,10 @@ function getUserLabelByUid(uid, fallbackEmail){
   return (u && (u.displayName||u.email)) ? (u.displayName||u.email) : (fallbackEmail||uid||"(desconhecido)");
 }
 
-const CONSULTOR_MAP_KEY = "clubeauto_consultor_map_v1"; // localStorage (leve e seguro)
-let consultorMap = {}; // { normalizedConsultor: uid }
-
-function normalizeKey(s){
-  const txt = (s||"").toString().trim().toLowerCase();
-  if(!txt) return "";
-  try{
-    return txt.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ").trim();
-  }catch(e){
-    return txt.replace(/\s+/g," ").trim();
-  }
-}
-function loadConsultorMap(){
-  try{
-    const raw = localStorage.getItem(CONSULTOR_MAP_KEY);
-    if(raw){
-      const obj = JSON.parse(raw);
-      if(obj && typeof obj==="object") consultorMap = obj;
-    }
-  }catch(e){}
-}
-function saveConsultorMap(){
-  try{ localStorage.setItem(CONSULTOR_MAP_KEY, JSON.stringify(consultorMap||{})); }catch(e){}
-}
-loadConsultorMap();
-
-function tryAutoMatchUidByConsultorName(consName){
-  const key = normalizeKey(consName);
-  if(!key) return "";
-  if(consultorMap[key]) return consultorMap[key];
-
-  const arr = Object.values(usersIndexByUid||{});
-  for(const u of arr){
-    const dn = normalizeKey(u.displayName||"");
-    const ep = normalizeKey(((u.email||"").split("@")[0]||""));
-    if(dn && dn===key) return u.uid;
-    if(ep && ep===key) return u.uid;
-  }
-  return "";
-}
-
-function resolveOwnerUid(it){
-  const uid = (it.ownerUid || it.createdByUid || "").toString();
-  if(uid) return uid;
-
-  const cons = (it.consultor || "").toString().trim();
-  const m = tryAutoMatchUidByConsultorName(cons);
-  return m || "";
-}
-
-
-
-const el=(id)=>document.getElementById(id);
-const v=(id)=>(el(id).value??"").toString().trim();
-const lower=(s)=>(s??"").toString().trim().toLowerCase();
-
-function getAvaliadores(){
-  return Array.from(document.querySelectorAll(".avChk:checked")).map(x=>x.value).filter(Boolean);
-}
+function getAvaliadores(){ return Array.from(document.querySelectorAll(".avChk:checked")).map(x=>x.value).filter(Boolean); }
 function getAvaliadoresText(){ return getAvaliadores().join("/"); }
-
-function toggleDebitos(){
-  const sim = (v("debitosSel")||"Não") === "Sim";
-  el("debitosValorWrap").classList.toggle("hidden", !sim);
-  if(!sim) el("debitosValor").value="";
-}
-function toggleFin(){
-  const sim = (v("finSel")||"Não") === "Sim";
-  el("finValorWrap").classList.toggle("hidden", !sim);
-  if(!sim) el("finValor").value="";
-}
+function toggleDebitos(){ const sim=(v("debitosSel")||"Não")==="Sim"; el("debitosValorWrap").classList.toggle("hidden", !sim); if(!sim) el("debitosValor").value=""; }
+function toggleFin(){ const sim=(v("finSel")||"Não")==="Sim"; el("finValorWrap").classList.toggle("hidden", !sim); if(!sim) el("finValor").value=""; }
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -1046,25 +714,16 @@ const db = getFirestore(app);
 await setPersistence(auth, browserLocalPersistence);
 
 let isGuest=false, currentRole="consultor", canHistory=false, isAdmin=false, canPainel=false;
-let unsubHist=null, unsubUsers=null;
+let unsubUsers=null;
 
-function computePermissions(){
-  canHistory=(currentRole==="admin"||currentRole==="gerente"||currentRole==="closer");
-  isAdmin=(currentRole==="admin");
-  canPainel=canHistory;
-}
-function setRoleUI(){
-  el("roleTxt").textContent=currentRole;
-  el("tabUsers").classList.toggle("hidden", !isAdmin);
-  el("tabPainel").classList.toggle("hidden", !canPainel);
-}
-
+function computePermissions(){ canHistory=(currentRole==="admin"||currentRole==="gerente"||currentRole==="closer"); isAdmin=(currentRole==="admin"); canPainel=canHistory; }
+function setRoleUI(){ el("roleTxt").textContent=currentRole; el("tabUsers").classList.toggle("hidden", !isAdmin); el("tabPainel").classList.toggle("hidden", !canPainel); }
 function showLogin(){ el("screenLogin").style.display="block"; el("screenApp").classList.add("hidden"); }
 function showApp(){ el("screenLogin").style.display="none"; el("screenApp").classList.remove("hidden"); }
 
 async function ensureUserDoc(user){
-  const uid=user.uid; const email=lower(user.email||"");
-  const ref=doc(db,"users",uid); const snap=await getDoc(ref);
+  const uid=user.uid, email=lower(user.email||"");
+  const ref=doc(db,"users",uid), snap=await getDoc(ref);
   if(!snap.exists()){
     const role=HARD_ADMINS.has(email)?"admin":"consultor";
     await setDoc(ref,{uid,email,role,displayName:(email.split("@")[0]||"").slice(0,24),createdAt:serverTimestamp(),updatedAt:serverTimestamp()},{merge:true});
@@ -1072,10 +731,7 @@ async function ensureUserDoc(user){
   }
   const data=snap.data()||{};
   let role=(data.role || (HARD_ADMINS.has(email)?"admin":"consultor")).toString();
-  if(HARD_ADMINS.has(email) && role!=="admin"){
-    await setDoc(ref,{role:"admin",updatedAt:serverTimestamp()},{merge:true});
-    role="admin";
-  }
+  if(HARD_ADMINS.has(email) && role!=="admin"){ await setDoc(ref,{role:"admin",updatedAt:serverTimestamp()},{merge:true}); role="admin"; }
   return role;
 }
 
@@ -1084,26 +740,11 @@ function fmtKM(raw){ const d=onlyDigits(raw); if(!d) return ""; return new Intl.
 function fmtBRL(raw){ const d=onlyDigits(raw); if(!d) return ""; return new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(Number(d)).replace(/ /g," "); }
 
 ["km"].forEach(id=>el(id).addEventListener("blur",()=>{ if(v(id)) el(id).value=fmtKM(v(id)); atualizarPreview(); }));
-el("kmComprou").addEventListener("blur",()=>{
-  const val = v("kmComprou");
-  const digs = onlyDigits(val);
-  if(val && digs && digs.length === val.replace(/\s|\./g,"").length){
-    el("kmComprou").value = fmtKM(val);
-  }
-  atualizarPreview();
-});
+el("kmComprou").addEventListener("blur",()=>{ const val=v("kmComprou"), digs=onlyDigits(val); if(val && digs && digs.length===val.replace(/\s|\./g,"").length) el("kmComprou").value=fmtKM(val); atualizarPreview(); });
 ["fipe","valorPretendido","debitosValor","finValor"].forEach(id=>{ const e=el(id); if(!e) return; e.addEventListener("blur",()=>{ if(v(id)) el(id).value=fmtBRL(v(id)); atualizarPreview(); }); });
 
-function setStatusBadge(){
-  const s=(v("laudo")||"APROVADO").toUpperCase();
-  el("statusTxt").innerText=s;
-  el("dot").style.background = (s==="REPROVADO")?"#d32f2f":(s==="APONTAMENTO")?"#f9a825":"#2e7d32";
-}
-function toggleLaudoDescricao(){
-  const s=(v("laudo")||"APROVADO").toUpperCase();
-  if(s==="APROVADO"){ el("laudoObsWrap").style.display="none"; el("laudoObs").value=""; }
-  else el("laudoObsWrap").style.display="block";
-}
+function setStatusBadge(){ const s=(v("laudo")||"APROVADO").toUpperCase(); el("statusTxt").innerText=s; el("dot").style.background=(s==="REPROVADO")?"#d32f2f":(s==="APONTAMENTO")?"#f9a825":"#2e7d32"; }
+function toggleLaudoDescricao(){ const s=(v("laudo")||"APROVADO").toUpperCase(); if(s==="APROVADO"){ el("laudoObsWrap").style.display="none"; el("laudoObs").value=""; } else el("laudoObsWrap").style.display="block"; }
 
 function focusWarn(id,msg){ alert(msg); el(id).focus(); el(id).scrollIntoView({behavior:"smooth",block:"center"}); return false; }
 function validar(){
@@ -1117,7 +758,7 @@ function validar(){
   const s=(v("laudo")||"APROVADO").toUpperCase();
   if(s!=="APROVADO" && !v("laudoObs")) return focusWarn("laudoObs","Descreva o laudo.");
   if(!v("consultor")) return focusWarn("consultor","Obrigatório: Consultor");
-  if(getAvaliadores().length===0) { alert("Obrigatório: Selecione ao menos 1 avaliador."); const w=el("avaliadoresWrap"); w.scrollIntoView({behavior:"smooth",block:"center"}); return false; }
+  if(getAvaliadores().length===0){ alert("Obrigatório: Selecione ao menos 1 avaliador."); el("avaliadoresWrap").scrollIntoView({behavior:"smooth",block:"center"}); return false; }
   if((v("debitosSel")==="Sim") && !v("debitosValor")) return focusWarn("debitosValor","Informe o valor dos débitos.");
   if((v("finSel")==="Sim") && !v("finValor")) return focusWarn("finValor","Informe o valor da quitação.");
   if(!v("cliente")) return focusWarn("cliente","Obrigatório: Cliente");
@@ -1126,7 +767,6 @@ function validar(){
 
 function montar(){
   const lines = [];
-
   lines.push("🚗 *Veículo*");
   lines.push(`*Modelo:* ${v("modelo")}`);
   lines.push(`*Ano:* ${v("ano")}`);
@@ -1139,14 +779,8 @@ function montar(){
   lines.push("💰 *Negócio*");
   lines.push(`*Fipe:* ${v("fipe")}`);
   if(v("valorPretendido")) lines.push(`*Valor pretendido:* ${v("valorPretendido")}`);
-  if(v("debitosSel")==="Sim"){
-    const val=v("debitosValor");
-    lines.push(`*Débitos do veículo:* ${val || "—"}`);
-  }
-  if(v("finSel")==="Sim"){
-    const val=v("finValor");
-    lines.push(`*Financiamento (quitação):* ${val || "—"}`);
-  }
+  if(v("debitosSel")==="Sim") lines.push(`*Débitos do veículo:* ${v("debitosValor") || "—"}`);
+  if(v("finSel")==="Sim") lines.push(`*Financiamento (quitação):* ${v("finValor") || "—"}`);
 
   lines.push("");
   lines.push("📋 *Laudo*");
@@ -1155,109 +789,39 @@ function montar(){
   lines.push(`${ic} ${laudo}`);
   if(laudo!=="APROVADO" && v("laudoObs")) lines.push(v("laudoObs"));
 
-  const le=v("leilao");
-  if(le && le.toLowerCase()!=="não"){
-    lines.push("");
-    lines.push(`🚨 *Leilão:* ${le}`);
-  }
+  if(v("leilao") && v("leilao").toLowerCase()!=="não"){ lines.push(""); lines.push(`🚨 *Leilão:* ${v("leilao")}`); }
 
   const gastos=[];
   if(v("motor")) gastos.push(v("motor"));
   if(v("luzes")) gastos.push(v("luzes"));
-
   if(v("tablier")==="Avariado") gastos.push("Tablier: Avariado");
-
-  const bo=v("bancosOnde");
-  const bs=v("bancosServico");
-  if(bo && bs && bs!=="Bom") gastos.push(`Bancos (${bo}): ${bs}`);
-
-  const vol=v("volante");
-  if(vol && vol!=="Bom") gastos.push(`Volante: ${vol}`);
-
-  const man=v("manopla");
-  if(man && man!=="Bom") gastos.push("Manopla do câmbio: Trocar");
-
-  const forroEstado=v("forroEstado");
-  if(forroEstado==="Avariado"){
+  if(v("bancosOnde") && v("bancosServico") && v("bancosServico")!=="Bom") gastos.push(`Bancos (${v("bancosOnde")}): ${v("bancosServico")}`);
+  if(v("volante") && v("volante")!=="Bom") gastos.push(`Volante: ${v("volante")}`);
+  if(v("manopla") && v("manopla")!=="Bom") gastos.push("Manopla do câmbio: Trocar");
+  if(v("forroEstado")==="Avariado"){
     const portas=[];
-    const add=(id,label)=>{ if(el(id)?.checked) portas.push(label); };
-    add("forro_motorista","Motorista");
-    add("forro_passageiro","Passageiro");
-    add("forro_traseiro_d","Traseiro D");
-    add("forro_traseiro_e","Traseiro E");
-    add("forro_dianteiros","Dianteiros");
-    add("forro_traseiros","Traseiros");
-    add("forro_todos","Todos");
+    [["forro_motorista","Motorista"],["forro_passageiro","Passageiro"],["forro_traseiro_d","Traseiro D"],["forro_traseiro_e","Traseiro E"],["forro_dianteiros","Dianteiros"],["forro_traseiros","Traseiros"],["forro_todos","Todos"]].forEach(([id,label])=>{ if(el(id)?.checked) portas.push(label); });
     if(portas.length) gastos.push(`Forro de porta (${portas.join(", ")}): Avariado`);
   }
-
-  const pecas = Number(v("funilariaPecas")||"0");
-  const pintura = !!el("pinturaCompleta")?.checked;
-  const granizo = !!el("chuvaGranizo")?.checked;
+  const pecas=Number(v("funilariaPecas")||"0"), pintura=!!el("pinturaCompleta")?.checked, granizo=!!el("chuvaGranizo")?.checked;
   if(pecas>0 || pintura || granizo){
-    const parts=[];
-    if(pecas>0) parts.push(`${pecas} ${pecas===1?"peça":"peças"}`);
-    if(pintura) parts.push("Pintura completa");
-    if(granizo) parts.push("Chuva de granizo");
+    const parts=[]; if(pecas>0) parts.push(`${pecas} ${pecas===1?"peça":"peças"}`); if(pintura) parts.push("Pintura completa"); if(granizo) parts.push("Chuva de granizo");
     gastos.push(`Funilaria: ${parts.join(" + ")}`);
   }
-
-  const pneus = Number(v("pneusQtd")||"0");
+  const pneus=Number(v("pneusQtd")||"0");
   if(pneus>0) gastos.push(`Pneus: ${pneus} ${pneus===1?"avariado":"avariados"}`);
-
   if(v("paraChoqueD")==="Troca") gastos.push("Para-choque dianteiro: Troca");
   if(v("paraChoqueT")==="Troca") gastos.push("Para-choque traseiro: Troca");
+  [["farolD","Farol (D)"],["farolE","Farol (E)"],["lanternaD","Lanterna (D)"],["lanternaE","Lanterna (E)"]].forEach(([id,label])=>{ const val=v(id); if(val && val!=="Bom") gastos.push(`${label}: ${val}`); });
+  if(v("vidroParabrisa") && v("vidroParabrisa")!=="OK") gastos.push(`Para-brisa: ${v("vidroParabrisa")}`);
+  [["vidro_dd_chk","vidro_dd_act","Vidro dianteiro (D)"],["vidro_de_chk","vidro_de_act","Vidro dianteiro (E)"],["vidro_td_chk","vidro_td_act","Vidro traseiro (D)"],["vidro_te_chk","vidro_te_act","Vidro traseiro (E)"],["vidro_vg_chk","vidro_vg_act","Vigia"]].forEach(([chk,act,label])=>{ if(el(chk)?.checked) gastos.push(`${label}: ${v(act)||"Reparo"}`); });
+  if(gastos.length){ lines.push(""); lines.push("⚙️ *Gastos*"); lines.push(...gastos); }
 
-  const fd=v("farolD"); if(fd && fd!=="Bom") gastos.push(`Farol (D): ${fd}`);
-  const fe=v("farolE"); if(fe && fe!=="Bom") gastos.push(`Farol (E): ${fe}`);
-  const ld=v("lanternaD"); if(ld && ld!=="Bom") gastos.push(`Lanterna (D): ${ld}`);
-  const le2=v("lanternaE"); if(le2 && le2!=="Bom") gastos.push(`Lanterna (E): ${le2}`);
-
-  const pb=v("vidroParabrisa");
-  if(pb && pb!=="OK") gastos.push(`Para-brisa: ${pb}`);
-
-  const vidros = [
-    ["vidro_dd_chk","vidro_dd_act","Vidro dianteiro (D)"],
-    ["vidro_de_chk","vidro_de_act","Vidro dianteiro (E)"],
-    ["vidro_td_chk","vidro_td_act","Vidro traseiro (D)"],
-    ["vidro_te_chk","vidro_te_act","Vidro traseiro (E)"],
-    ["vidro_vg_chk","vidro_vg_act","Vigia"],
-  ];
-  vidros.forEach(([chk,act,label])=>{
-    if(el(chk)?.checked){
-      const a=v(act)||"Reparo";
-      gastos.push(`${label}: ${a}`);
-    }
-  });
-
-  if(gastos.length){
-    lines.push("");
-    lines.push("⚙️ *Gastos*");
-    lines.push(...gastos);
-  }
-
-  if(v("testeRodagem")){
-    lines.push("");
-    lines.push("🛣️ *Teste de Rodagem*");
-    lines.push(v("testeRodagem"));
-  }
-
-  lines.push("");
-  lines.push("👨‍🔧 *Responsáveis*");
-  lines.push(`*Consultor:* ${v("consultor")}`);
-  lines.push(`*Avaliadores:* ${getAvaliadoresText()}`);
-
-  lines.push("");
-  lines.push("👤 *Cliente*");
-  lines.push(`*Cliente:* ${v("cliente")}`);
-  if(v("local")) lines.push(`*Local:* ${v("local")}`);
-  if(v("captacao")) lines.push(`*Captação:* ${v("captacao")}`);
-  lines.push("");
-  lines.push("Osasco - SP 📍");
-
+  if(v("testeRodagem")){ lines.push(""); lines.push("🛣️ *Teste de Rodagem*"); lines.push(v("testeRodagem")); }
+  lines.push(""); lines.push("👨‍🔧 *Responsáveis*"); lines.push(`*Consultor:* ${v("consultor")}`); lines.push(`*Avaliadores:* ${getAvaliadoresText()}`);
+  lines.push(""); lines.push("👤 *Cliente*"); lines.push(`*Cliente:* ${v("cliente")}`); if(v("local")) lines.push(`*Local:* ${v("local")}`); if(v("captacao")) lines.push(`*Captação:* ${v("captacao")}`); lines.push(""); lines.push("Osasco - SP 📍");
   return lines.join("\n").trim();
 }
-
 function atualizarPreview(){ el("preview").innerText = montar(); }
 
 async function copiar(texto){
@@ -1271,83 +835,46 @@ function abrirWhats(texto){
   const a=document.createElement("a"); a.href=url; a.target="_blank"; a.rel="noopener";
   document.body.appendChild(a); a.click(); a.remove();
 }
-
-function normalizePhoneBR(raw){
-  const d = onlyDigits(raw);
-  if(!d) return "";
-  if(d.startsWith("55") && d.length >= 12) return d;
-  if(d.length === 10 || d.length === 11) return "55" + d;
-  return d;
-}
+function normalizePhoneBR(raw){ const d=onlyDigits(raw); if(!d) return ""; if(d.startsWith("55") && d.length>=12) return d; if(d.length===10 || d.length===11) return "55"+d; return d; }
 function abrirWhatsPara(numero, mensagem){
-  const phone = normalizePhoneBR(numero);
-  if(!phone) { alert("Telefone do cliente não encontrado neste registro."); return; }
+  const phone=normalizePhoneBR(numero);
+  if(!phone){ alert("Telefone do cliente não encontrado neste registro."); return; }
   const url="https://wa.me/"+phone+"?text="+encodeURIComponent(mensagem||"");
   const a=document.createElement("a"); a.href=url; a.target="_blank"; a.rel="noopener";
   document.body.appendChild(a); a.click(); a.remove();
 }
 function montarMsgCliente(nomeCliente){
-  const nome = (nomeCliente||"").toString().trim();
-  const nomeLinha = nome ? (" " + nome) : "";
-  return (
-`Olá${nomeLinha}, tudo bem?
+  const nome=(nomeCliente||"").toString().trim();
+  return (`Olá${nome?(" "+nome):""}, tudo bem?
 Aqui é da *Clube do Auto*.
 
 Você veio até nossa loja fazer a *avaliação do seu veículo* e estamos revisando algumas negociações essa semana.
 
 Talvez consigamos *melhorar sua proposta* ou encontrar um veículo interessante para troca.
 
-Se ainda tiver interesse, me avisa por aqui ou pode passar na loja que conversamos. 🚗`
-  ).trim();
+Se ainda tiver interesse, me avisa por aqui ou pode passar na loja que conversamos. 🚗`).trim();
 }
 
-// ===== lembrar último consultor =====
 const LAST_CONSULTOR_KEY = "clubeauto_last_consultor_v1";
-function loadLastConsultor(){
-  try{
-    const last = localStorage.getItem(LAST_CONSULTOR_KEY) || "";
-    if(last && !v("consultor")) el("consultor").value = last;
-  }catch(e){}
-}
-function saveLastConsultor(){
-  try{
-    const val = v("consultor");
-    if(val) localStorage.setItem(LAST_CONSULTOR_KEY, val);
-  }catch(e){}
-}
+function loadLastConsultor(){ try{ const last=localStorage.getItem(LAST_CONSULTOR_KEY)||""; if(last && !v("consultor")) el("consultor").value=last; }catch(e){} }
+function saveLastConsultor(){ try{ const val=v("consultor"); if(val) localStorage.setItem(LAST_CONSULTOR_KEY,val); }catch(e){} }
 el("consultor").addEventListener("blur", ()=>{ saveLastConsultor(); atualizarPreview(); });
 el("consultor").addEventListener("change", ()=>{ saveLastConsultor(); atualizarPreview(); });
 
-let lastSaveSig = "";
-let savingNow = false;
-let lastSaveAt = 0;
-
-function makeSaveSig(texto){
-  const u = auth.currentUser;
-  const uid = u?.uid || "";
-  return uid + "||" + texto;
-}
-
+let lastSaveSig="", savingNow=false, lastSaveAt=0;
+function makeSaveSig(texto){ const u=auth.currentUser; return (u?.uid||"")+"||"+texto; }
 async function salvarUmaVez(texto){
-  if(isGuest) return { saved:false, reason:"guest" };
-  const u=auth.currentUser; if(!u) return { saved:false, reason:"no-user" };
-
-  const sig = makeSaveSig(texto);
-  const now = Date.now();
-
-  if(sig === lastSaveSig && (now - lastSaveAt) < 15000){
-    return { saved:false, reason:"dedup" };
-  }
-  if(savingNow) return { saved:false, reason:"in-flight" };
-
-  savingNow = true;
+  if(isGuest) return {saved:false, reason:"guest"};
+  const u=auth.currentUser; if(!u) return {saved:false, reason:"no-user"};
+  const sig=makeSaveSig(texto), now=Date.now();
+  if(sig===lastSaveSig && (now-lastSaveAt)<15000) return {saved:false, reason:"dedup"};
+  if(savingNow) return {saved:false, reason:"in-flight"};
+  savingNow=true;
   try{
     await addDoc(collection(db,"vistorias"),{
       createdAt:serverTimestamp(),
       createdByEmail:lower(u.email||""),
       createdByUid:u.uid,
-      ownerUid:u.uid,
-      ownerEmail:lower(u.email||""),
       roleAtCreation:currentRole,
       modelo:v("modelo"),
       placa:v("placa"),
@@ -1363,26 +890,14 @@ async function salvarUmaVez(texto){
       dealUpdatedByEmail:lower(u.email||""),
       dealUpdatedByUid:u.uid
     });
-    lastSaveSig = sig;
-    lastSaveAt = now;
-    el("saveHint").innerHTML="<span class='ok'>Salvo na nuvem.</span>";
-    return { saved:true };
+    lastSaveSig=sig; lastSaveAt=now; el("saveHint").innerHTML="<span class='ok'>Salvo na nuvem.</span>"; return {saved:true};
   }catch(e){
     el("saveHint").innerHTML="<span class='warn'>Falha ao salvar:</span> "+(e?.message||e);
-    return { saved:false, reason:"error", error:e };
-  }finally{
-    savingNow = false;
-  }
+    return {saved:false, reason:"error", error:e};
+  }finally{ savingNow=false; }
 }
-
 function escapeHtml(s){ return (s??"").toString().replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;"); }
-function formatDate(ts){
-  try{
-    const d=ts?.toDate?ts.toDate():null;
-    if(!d) return "";
-    return new Intl.DateTimeFormat("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}).format(d);
-  }catch(e){ return ""; }
-}
+function formatDate(ts){ try{ const d=ts?.toDate?ts.toDate():null; if(!d) return ""; return new Intl.DateTimeFormat("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}).format(d);}catch(e){ return ""; } }
 
 function setTab(tab){
   const nova=tab==="nova", hist=tab==="hist", painel=tab==="painel", users=tab==="users";
@@ -1402,67 +917,42 @@ el("tabHist").addEventListener("click",()=>setTab("hist"));
 el("tabPainel").addEventListener("click",()=>setTab("painel"));
 el("tabUsers").addEventListener("click",()=>setTab("users"));
 
-/* ===== Histórico (FIX + Upgrade filtros + export CSV) ===== */
-let histItemsCache = [];
-
-function getHistLimit(){
-  const n = Number(el("histLimit")?.value || "200");
-  return Number.isFinite(n) ? n : 200;
-}
-function getHistLaudoFilter(){
-  const sel = el("histLaudo2") || el("histLaudo");
-  const v = (sel?.value || "").toString().toUpperCase().trim();
-  return v || "";
-}
-function getHistDealFilter(){
-  return (el("histDeal")?.value || "").toString().toUpperCase().trim();
-}
-function getHistPeriodo(){
-  return (el("histPeriodo")?.value || "30d").toString();
-}
+let histItemsCache=[];
+function getHistLaudoFilter(){ const sel=el("histLaudo2") || el("histLaudo"); return ((sel?.value)||"").toString().toUpperCase().trim() || ""; }
+function getHistDealFilter(){ return (el("histDeal")?.value || "").toString().toUpperCase().trim(); }
+function getHistPeriodo(){ return (el("histPeriodo")?.value || "30d").toString(); }
 function periodToRange(periodo){
   const now = new Date();
-  const startOfDay = (d)=> new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0,0,0);
-  const addDays = (d, n)=> new Date(d.getFullYear(), d.getMonth(), d.getDate()+n, 0,0,0);
-  if(periodo==="7d") return { start: new Date(now.getTime()-7*24*60*60*1000), end: null, lim: 800 };
-  if(periodo==="30d") return { start: new Date(now.getTime()-30*24*60*60*1000), end: null, lim: 800 };
-  if(periodo==="hoje"){ const s=startOfDay(now); return { start:s, end:addDays(s,1), lim: 800 }; }
-  if(periodo==="ontem"){ const e=startOfDay(now); const s=addDays(e,-1); return { start:s, end:e, lim: 800 }; }
-  if(periodo==="mes"){ const s=new Date(now.getFullYear(), now.getMonth(), 1, 0,0,0); const e=new Date(now.getFullYear(), now.getMonth()+1, 1, 0,0,0); return { start:s, end:e, lim: 2500 }; }
-  return { start:null, end:null, lim: 2000 };
+  const startOfDay=(d)=>new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0,0,0);
+  const addDays=(d,n)=>new Date(d.getFullYear(), d.getMonth(), d.getDate()+n, 0,0,0);
+  if(periodo==="7d") return { start:new Date(now.getTime()-7*24*60*60*1000), end:null, lim:800 };
+  if(periodo==="30d") return { start:new Date(now.getTime()-30*24*60*60*1000), end:null, lim:800 };
+  if(periodo==="hoje"){ const s=startOfDay(now); return { start:s, end:addDays(s,1), lim:800 }; }
+  if(periodo==="ontem"){ const e=startOfDay(now); const s=addDays(e,-1); return { start:s, end:e, lim:800 }; }
+  if(periodo==="mes"){ const s=new Date(now.getFullYear(), now.getMonth(), 1, 0,0,0); const e=new Date(now.getFullYear(), now.getMonth()+1, 1, 0,0,0); return { start:s, end:e, lim:2500 }; }
+  return { start:null, end:null, lim:2000 };
 }
-function renderHistorico(items){
-  const q = (el("histSearch")?.value || "").toString().trim().toLowerCase();
-  const la = getHistLaudoFilter();
-  const deal = (getHistDealFilter()||"").toString().toUpperCase().trim();
 
-  const filtered = items.filter(it=>{
-    if(la){
-      const itla = (it.laudo||"APROVADO").toString().toUpperCase();
-      if(itla !== la) return false;
-    }
-    if(deal){
-      const ds=(it.dealStatus||"SEM").toString().toUpperCase();
-      if(deal==="SEM"){ if(ds!=="SEM") return false; }
-      else if(ds!==deal) return false;
-    }
+function renderHistorico(items){
+  const q=(el("histSearch")?.value || "").toString().trim().toLowerCase();
+  const la=getHistLaudoFilter(), deal=getHistDealFilter();
+  const filtered=items.filter(it=>{
+    if(la){ const itla=(it.laudo||"APROVADO").toString().toUpperCase(); if(itla!==la) return false; }
+    if(deal){ const ds=(it.dealStatus||"SEM").toString().toUpperCase(); if(deal==="SEM"){ if(ds!=="SEM") return false; } else if(ds!==deal) return false; }
     if(!q) return true;
-    const hay = [
-      it.placa||"", it.modelo||"", it.cliente||"", it.consultor||"",
-      it.createdByEmail||"", (it.laudo||"")
-    ].join(" ").toLowerCase();
+    const hay=[it.placa||"", it.modelo||"", it.cliente||"", it.consultor||"", it.createdByEmail||"", it.laudo||"", it.telefone||"", it.local||"", it.captacao||""].join(" ").toLowerCase();
     return hay.includes(q);
   });
 
   if(el("histCount")) el("histCount").innerHTML = `<span class="ok">${filtered.length}</span> exibindo • <span class="hint">${items.length} carregados</span>`;
 
   el("historicoList").innerHTML = filtered.map(it=>{
-    const la2=(it.laudo||"APROVADO").toUpperCase();
+    const la2=(it.laudo||"APROVADO").toString().toUpperCase();
     const icon=(la2==="REPROVADO")?"🔴":(la2==="APONTAMENTO")?"🟡":"🟢";
     const title=`${icon} ${escapeHtml(it.modelo||"-")} — ${escapeHtml(it.placa||"-")}`;
-    const extra = [it.cliente ? ("Cliente: " + it.cliente) : "", it.consultor ? ("Atendeu: " + it.consultor) : "", ("Logado: " + getUserLabelByUid(it.createdByUid, it.createdByEmail))].filter(Boolean).join(" • ");
+    const extra=[it.cliente?("Cliente: "+it.cliente):"", it.consultor?("Consultor: "+it.consultor):"", ("Logado: "+getUserLabelByUid(it.createdByUid, it.createdByEmail))].filter(Boolean).join(" • ");
     const meta=`${escapeHtml(formatDate(it.createdAt))} • ${escapeHtml(it.createdByEmail||"")}` + (extra?(`\n${escapeHtml(extra)}`):"");
-    const delBtn = isAdmin ? `<button class="mini" style="background:#b91c1c" data-del="${it.id}">🗑 Excluir</button>` : "";
+    const delBtn=isAdmin?`<button class="mini" style="background:#b91c1c" data-del="${it.id}">🗑 Excluir</button>`:"";
     const dealVal=(it.dealStatus||"SEM").toString().toUpperCase();
     const dealBadge=dealBadgeHtml(dealVal);
     const dealBtns=canSetDeal()?`<button class="mini mDeal" data-deal="${it.id}" data-val="FECHADO">✅ Fechado</button><button class="mini mDeal" data-deal="${it.id}" data-val="QUASE">🟡 Quase</button><button class="mini mDeal" data-deal="${it.id}" data-val="NAO">❌ Não</button><button class="mini btnSecondary" data-deal="${it.id}" data-val="SEM">↩️ Limpar</button>`:``;
@@ -1475,198 +965,92 @@ function renderHistorico(items){
         <button class="mini" style="background:#0ea5e9" data-client="${it.id}">💬 Cliente</button>
         ${delBtn}
       </div>
+      ${dealBtns ? `<div class="histBtns" style="grid-template-columns:repeat(4,1fr);margin-top:8px">${dealBtns}</div>` : ``}
     </div>`;
   }).join("") || "<div class='histItem'><b>Nenhum registro.</b></div>";
 
-  const getById = (id)=> filtered.find(x=>x.id===id) || histItemsCache.find(x=>x.id===id);
+  const getById=(id)=>filtered.find(x=>x.id===id) || histItemsCache.find(x=>x.id===id);
 
-  el("historicoList").querySelectorAll("[data-open]").forEach(btn=>{
-    btn.addEventListener("click",()=>{
-      const it=getById(btn.dataset.open); if(!it) return;
-      el("preview").innerText=(it.reportText||"");
-      setTab("nova");
-      window.scrollTo({top:0,behavior:"smooth"});
-    });
-  });
-  el("historicoList").querySelectorAll("[data-copy]").forEach(btn=>{
-    btn.addEventListener("click",async()=>{
-      const it=getById(btn.dataset.copy); if(!it) return;
-      const ok=await copiar(it.reportText||"");
-      if(ok) alert("Copiado!");
-    });
-  });
-  el("historicoList").querySelectorAll("[data-send]").forEach(btn=>{
-    btn.addEventListener("click",()=>{
-      const it=getById(btn.dataset.send); if(!it) return;
-      abrirWhats(it.reportText||"");
-    });
-  });
-  el("historicoList").querySelectorAll("[data-client]").forEach(btn=>{
-    btn.addEventListener("click",()=>{
-      const it=getById(btn.dataset.client); if(!it) return;
-      const msg = montarMsgCliente(it.cliente||"");
-      abrirWhatsPara(it.telefone||"", msg);
-    });
-  });
-
+  el("historicoList").querySelectorAll("[data-open]").forEach(btn=>btn.addEventListener("click",()=>{ const it=getById(btn.dataset.open); if(!it) return; el("preview").innerText=(it.reportText||""); setTab("nova"); window.scrollTo({top:0,behavior:"smooth"}); }));
+  el("historicoList").querySelectorAll("[data-copy]").forEach(btn=>btn.addEventListener("click", async()=>{ const it=getById(btn.dataset.copy); if(!it) return; const ok=await copiar(it.reportText||""); if(ok) alert("Copiado!"); }));
+  el("historicoList").querySelectorAll("[data-send]").forEach(btn=>btn.addEventListener("click",()=>{ const it=getById(btn.dataset.send); if(!it) return; abrirWhats(it.reportText||""); }));
+  el("historicoList").querySelectorAll("[data-client]").forEach(btn=>btn.addEventListener("click",()=>{ const it=getById(btn.dataset.client); if(!it) return; abrirWhatsPara(it.telefone||"", montarMsgCliente(it.cliente||"")); }));
 
   if(canSetDeal()){
-    el("historicoList").querySelectorAll("[data-deal]").forEach(btn=>{
-      btn.addEventListener("click", async ()=>{
-        const id = btn.dataset.deal;
-        const val = (btn.dataset.val||"SEM").toString().toUpperCase();
-        try{
-          const u = auth.currentUser;
-          if(!u) return alert("Faça login novamente.");
-          await updateDoc(doc(db,"vistorias", id), {
-            dealStatus: val,
-            dealUpdatedAt: serverTimestamp(),
-            dealUpdatedByEmail: lower(u.email||""),
-            dealUpdatedByUid: u.uid
-          });
-          const it = histItemsCache.find(x=>x.id===id);
-          if(it) it.dealStatus = val;
-          renderHistorico(histItemsCache);
-        }catch(e){
-          alert("Erro ao atualizar status: " + (e?.message||e));
-        }
-      });
-    });
+    el("historicoList").querySelectorAll("[data-deal]").forEach(btn=>btn.addEventListener("click", async ()=>{
+      const id=btn.dataset.deal, val=(btn.dataset.val||"SEM").toString().toUpperCase();
+      try{
+        const u=auth.currentUser; if(!u) return alert("Faça login novamente.");
+        await updateDoc(doc(db,"vistorias", id), { dealStatus:val, dealUpdatedAt:serverTimestamp(), dealUpdatedByEmail:lower(u.email||""), dealUpdatedByUid:u.uid });
+        const it=histItemsCache.find(x=>x.id===id); if(it) it.dealStatus=val;
+        renderHistorico(histItemsCache);
+      }catch(e){ alert("Erro ao atualizar status: "+(e?.message||e)); }
+    }));
   }
-
   if(isAdmin){
-    el("historicoList").querySelectorAll("[data-del]").forEach(btn=>{
-      btn.addEventListener("click", async ()=>{
-        const id = btn.dataset.del;
-        const ok = confirm("Excluir este relatório do histórico? Essa ação não pode ser desfeita.");
-        if(!ok) return;
-        try{ await deleteDoc(doc(db,"vistorias", id)); alert("Excluído!"); }
-        catch(e){ alert("Erro ao excluir: "+(e?.message||e)); }
-      });
-    });
+    el("historicoList").querySelectorAll("[data-del]").forEach(btn=>btn.addEventListener("click", async ()=>{
+      const id=btn.dataset.del;
+      if(!confirm("Excluir este relatório do histórico? Essa ação não pode ser desfeita.")) return;
+      try{ await deleteDoc(doc(db,"vistorias", id)); alert("Excluído!"); openHistorico(); }catch(e){ alert("Erro ao excluir: "+(e?.message||e)); }
+    }));
   }
-
-  // hint: contagem
-  const total = items.length;
-  const shown = filtered.length;
-  el("histHint").innerHTML = `<span class='ok'>Carregado.</span> Mostrando ${shown} de ${total}.`;
+  el("histHint").innerHTML = `<span class='ok'>Carregado.</span> Mostrando ${filtered.length} de ${items.length}.`;
 }
 
 function openHistorico(){
-  el("historicoList").innerHTML=""; el("histHint").innerHTML="";
-  if(el("histCount")) el("histCount").innerHTML="";
+  el("historicoList").innerHTML=""; el("histHint").innerHTML=""; if(el("histCount")) el("histCount").innerHTML="";
   if(isGuest){ el("histHint").innerHTML="<span class='warn'>Convidado não tem histórico.</span>"; return; }
   if(!canHistory){ el("histHint").innerHTML="<span class='warn'>Seu cargo não tem acesso ao histórico.</span>"; return; }
 
-  if(unsubHist){ try{unsubHist();}catch(e){} unsubHist=null; }
-
   const reload = async ()=>{
-    el("histHint").innerHTML="Carregando...";
-    el("historicoList").innerHTML="";
+    el("histHint").innerHTML="Carregando..."; el("historicoList").innerHTML="";
     try{
       await refreshUsersIndex();
-      const {start,end,lim} = periodToRange(getHistPeriodo());
-      let qy = null;
-      if(start && end){
-        qy = query(collection(db,"vistorias"), where("createdAt", ">=", start), where("createdAt", "<", end), orderBy("createdAt","desc"), limit(lim));
-      }else if(start){
-        qy = query(collection(db,"vistorias"), where("createdAt", ">=", start), orderBy("createdAt","desc"), limit(lim));
-      }else{
-        qy = query(collection(db,"vistorias"), orderBy("createdAt","desc"), limit(lim));
-      }
-      const snap = await getDocs(qy);
-      histItemsCache = snap.docs.map(d=>({id:d.id,...d.data()}));
+      const {start,end,lim}=periodToRange(getHistPeriodo());
+      let qy=null;
+      if(start && end) qy=query(collection(db,"vistorias"), where("createdAt", ">=", start), where("createdAt", "<", end), orderBy("createdAt","desc"), limit(lim));
+      else if(start) qy=query(collection(db,"vistorias"), where("createdAt", ">=", start), orderBy("createdAt","desc"), limit(lim));
+      else qy=query(collection(db,"vistorias"), orderBy("createdAt","desc"), limit(lim));
+      const snap=await getDocs(qy);
+      histItemsCache=snap.docs.map(d=>({id:d.id,...d.data()}));
       el("histHint").innerHTML="";
       renderHistorico(histItemsCache);
-    }catch(err){
-      el("histHint").innerHTML="<span class='warn'>Erro ao carregar histórico:</span> "+escapeHtml(err?.message||err);
-    }
+    }catch(err){ el("histHint").innerHTML="<span class='warn'>Erro ao carregar histórico:</span> "+escapeHtml(err?.message||err); }
   };
 
-  const btn = el("btnHistRecarregar");
-  if(btn && !btn.dataset.bound){
-    btn.dataset.bound="1";
-    btn.addEventListener("click", reload);
-  }
-  const per = el("histPeriodo");
-  if(per && !per.dataset.bound){
-    per.dataset.bound="1";
-    per.addEventListener("change", reload);
-  }
-  ["histSearch","histDeal","histLaudo2"].forEach(id=>{
-    const e = el(id);
-    if(e && !e.dataset.bound){
-      e.dataset.bound="1";
-      e.addEventListener("input", ()=>renderHistorico(histItemsCache));
-      e.addEventListener("change", ()=>renderHistorico(histItemsCache));
-    }
+  const btn=el("btnHistRecarregar"); if(btn && !btn.dataset.bound){ btn.dataset.bound="1"; btn.addEventListener("click", reload); }
+  const per=el("histPeriodo"); if(per && !per.dataset.bound){ per.dataset.bound="1"; per.addEventListener("change", reload); }
+  ["histSearch","histDeal","histLaudo2","histLaudo"].forEach(id=>{
+    const e=el(id); if(e && !e.dataset.bound){ e.dataset.bound="1"; e.addEventListener("input", ()=>renderHistorico(histItemsCache)); e.addEventListener("change", ()=>renderHistorico(histItemsCache)); }
   });
-
   reload();
 }
 
-
 function downloadTextFile(filename, content, mime="text/plain;charset=utf-8"){
-  const blob = new Blob([content], {type:mime});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(()=>URL.revokeObjectURL(url), 2000);
+  const blob=new Blob([content], {type:mime}), url=URL.createObjectURL(blob), a=document.createElement("a");
+  a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url), 2000);
 }
-
 function exportHistoricoCsv(){
-  const q = (el("histSearch")?.value || "").toString().trim().toLowerCase();
-  const la = getHistLaudoFilter();
-
-  const rows = histItemsCache.filter(it=>{
-    if(la){
-      const itla = (it.laudo||"APROVADO").toString().toUpperCase();
-      if(itla !== la) return false;
-    }
+  const q=(el("histSearch")?.value || "").toString().trim().toLowerCase();
+  const la=getHistLaudoFilter(), deal=getHistDealFilter();
+  const rows=histItemsCache.filter(it=>{
+    if(la){ const itla=(it.laudo||"APROVADO").toString().toUpperCase(); if(itla!==la) return false; }
+    if(deal){ const ds=(it.dealStatus||"SEM").toString().toUpperCase(); if(deal==="SEM"){ if(ds!=="SEM") return false; } else if(ds!==deal) return false; }
     if(!q) return true;
-    const hay = [
-      it.placa||"", it.modelo||"", it.cliente||"", it.consultor||"",
-      it.createdByEmail||"", (it.laudo||"")
-    ].join(" ").toLowerCase();
+    const hay=[it.placa||"", it.modelo||"", it.cliente||"", it.consultor||"", it.createdByEmail||"", it.laudo||""].join(" ").toLowerCase();
     return hay.includes(q);
   });
-
-  const header = ["data","modelo","placa","laudo","cliente","telefone","local","captacao","consultor","criado_por"];
-  const esc = (s)=>('"'+String(s??"").replaceAll('"','""')+'"');
-  const lines = [header.join(",")];
-
-  rows.forEach(it=>{
-    lines.push([
-      formatDate(it.createdAt),
-      it.modelo||"",
-      it.placa||"",
-      (it.laudo||"").toString().toUpperCase(),
-      it.cliente||"",
-      it.telefone||"",
-      it.local||"",
-      it.captacao||"",
-      it.consultor||"",
-      it.createdByEmail||""
-    ].map(esc).join(","));
-  });
-
-  const filename = `historico_${new Date().toISOString().slice(0,10)}.csv`;
-  downloadTextFile(filename, lines.join("\n"), "text/csv;charset=utf-8");
+  const header=["data","modelo","placa","laudo","negocio","cliente","telefone","local","captacao","consultor","criado_por"];
+  const esc=(s)=>('"'+String(s??"").replaceAll('"','""')+'"');
+  const lines=[header.join(",")];
+  rows.forEach(it=>lines.push([formatDate(it.createdAt), it.modelo||"", it.placa||"", (it.laudo||"").toString().toUpperCase(), (it.dealStatus||"SEM").toString().toUpperCase(), it.cliente||"", it.telefone||"", it.local||"", it.captacao||"", it.consultor||"", it.createdByEmail||""].map(esc).join(",")));
+  downloadTextFile(`historico_${new Date().toISOString().slice(0,10)}.csv`, lines.join("\n"), "text/csv;charset=utf-8");
 }
 
-/* ===== Painel (Upgrade: consultor opcional + captação + export CSV) ===== */
 function monthRangeFromInput(value){
-  const parts = (value||"").split("-");
-  const yy = Number(parts[0]||"0");
-  const mm = Number(parts[1]||"0");
+  const parts=(value||"").split("-"), yy=Number(parts[0]||"0"), mm=Number(parts[1]||"0");
   if(!yy || !mm) return null;
-  const start = new Date(yy, mm-1, 1, 0, 0, 0);
-  const end   = new Date(yy, mm,   1, 0, 0, 0);
-  return { start, end };
+  return { start:new Date(yy, mm-1, 1, 0,0,0), end:new Date(yy, mm, 1, 0,0,0) };
 }
 function badgeForLaudo(la){
   const s=(la||"APROVADO").toString().toUpperCase();
@@ -1676,315 +1060,82 @@ function badgeForLaudo(la){
 }
 function setPainelHint(html){ el("painelHint").innerHTML = html || ""; }
 
-let painelLastItems = [];
-
+let painelLastItems=[];
 async function openPainel(){
-  el("painelKpis").innerHTML="";
-  el("painelTabela").innerHTML="";
-  el("painelCaptacao").innerHTML="";
-  setPainelHint("");
-
+  el("painelKpis").innerHTML=""; el("painelTabela").innerHTML=""; el("painelCaptacao").innerHTML=""; setPainelHint("");
   if(isGuest){ setPainelHint("<span class='warn'>Convidado não tem acesso.</span>"); return; }
   if(!canPainel){ setPainelHint("<span class='warn'>Seu cargo não tem acesso ao Painel.</span>"); return; }
-
-  try{
-    const now = new Date();
-    const ym = now.toISOString().slice(0,7);
-    if(!el("painelMes").value) el("painelMes").value = ym;
-  }catch(e){}
-
-  await refreshUsersIndex();
+  try{ const now=new Date(), ym=now.toISOString().slice(0,7); if(!el("painelMes").value) el("painelMes").value=ym; }catch(e){}
   await carregarPainel();
 }
-
 async function carregarPainel(){
-  const ym = el("painelMes").value || "";
-  const range = monthRangeFromInput(ym);
+  const ym=el("painelMes").value || "", range=monthRangeFromInput(ym);
   if(!range){ setPainelHint("<span class='warn'>Selecione um mês válido.</span>"); return; }
-
   setPainelHint("Carregando dados do mês...");
-  el("painelKpis").innerHTML="";
-  el("painelTabela").innerHTML="";
-  el("painelCaptacao").innerHTML="";
-  painelLastItems = [];
-
+  el("painelKpis").innerHTML=""; el("painelTabela").innerHTML=""; el("painelCaptacao").innerHTML=""; painelLastItems=[];
   try{
-    const qy = query(
-      collection(db,"vistorias"),
-      where("createdAt", ">=", range.start),
-      where("createdAt", "<", range.end),
-      orderBy("createdAt","desc"),
-      limit(2500)
-    );
-    const snap = await getDocs(qy);
-    let items = snap.docs.map(d=>({id:d.id, ...d.data()}));
-    window.__painelItems = items;
+    const qy=query(collection(db,"vistorias"), where("createdAt", ">=", range.start), where("createdAt", "<", range.end), orderBy("createdAt","desc"), limit(2500));
+    const snap=await getDocs(qy);
+    const items=snap.docs.map(d=>({id:d.id, ...d.data()}));
+    window.__painelItems=items; painelLastItems=items;
 
-    const consFilter = (el("painelCons")?.value || "").toString().trim().toLowerCase();
-    const uidFilter = (el("painelUser")?.value || "").toString();
-    const dealFilter = (el("painelDeal")?.value || "").toString().toUpperCase().trim();
-    if(consFilter){
-      items = items.filter(it => (it.consultor||"").toString().toLowerCase().includes(consFilter));
-    }
-    if(uidFilter){ items = items.filter(it => (resolveOwnerUid(it)||"")===uidFilter); }
-    if(dealFilter){ items = items.filter(it=>{ const ds=(it.dealStatus||"SEM").toString().toUpperCase(); if(dealFilter==="SEM") return ds==="SEM"; return ds===dealFilter; }); }
-    painelLastItems = items;
+    const total=items.length;
+    const aprov=items.filter(x=>(x.laudo||"").toString().toUpperCase()==="APROVADO").length;
+    const apont=items.filter(x=>(x.laudo||"").toString().toUpperCase()==="APONTAMENTO").length;
+    const repr=items.filter(x=>(x.laudo||"").toString().toUpperCase()==="REPROVADO").length;
+    const fechado=items.filter(x=>(x.dealStatus||"SEM").toString().toUpperCase()==="FECHADO").length;
+    const quase=items.filter(x=>(x.dealStatus||"SEM").toString().toUpperCase()==="QUASE").length;
+    const nao=items.filter(x=>(x.dealStatus||"SEM").toString().toUpperCase()==="NAO").length;
+    const sem=items.filter(x=>(x.dealStatus||"SEM").toString().toUpperCase()==="SEM").length;
+    const taxaAprov=total ? Math.round((aprov/total)*100) : 0;
 
-    const total = items.length;
-    const aprov = items.filter(x=>(x.laudo||"").toString().toUpperCase()==="APROVADO").length;
-    const apont = items.filter(x=>(x.laudo||"").toString().toUpperCase()==="APONTAMENTO").length;
-    const repr  = items.filter(x=>(x.laudo||"").toString().toUpperCase()==="REPROVADO").length;
+    const byCap={};
+    items.forEach(it=>{ const cap=(it.captacao || "(não informado)").toString().trim() || "(não informado)"; byCap[cap]=(byCap[cap]||0)+1; });
 
-    const byCons = {};
-    const byCap = {};
-    items.forEach(it=>{
-      const la = (it.laudo||"APROVADO").toString().toUpperCase();
-      const cons = (it.consultor || "(não informado)").toString().trim() || "(não informado)";
-      const cap = (it.captacao || "(não informado)").toString().trim() || "(não informado)";
-
-      if(!byCons[cons]) byCons[cons] = { name: cons, total:0, aprov:0, apont:0, repr:0 };
-      byCons[cons].total += 1;
-      if(la==="APROVADO") byCons[cons].aprov += 1;
-      else if(la==="APONTAMENTO") byCons[cons].apont += 1;
-      else if(la==="REPROVADO") byCons[cons].repr += 1;
-
-      byCap[cap] = (byCap[cap]||0) + 1;
-    });
-
-    const taxaAprov = total ? Math.round((aprov/total)*100) : 0;
-
-    const fechado = items.filter(x=>(x.dealStatus||"SEM").toString().toUpperCase()==="FECHADO").length;
-    const quase = items.filter(x=>(x.dealStatus||"SEM").toString().toUpperCase()==="QUASE").length;
-    const nao = items.filter(x=>(x.dealStatus||"SEM").toString().toUpperCase()==="NAO").length;
-    const sem = items.filter(x=>(x.dealStatus||"SEM").toString().toUpperCase()==="SEM").length;
-
-    const kpis = [
-      {t:"Avaliações", v: total, s: uidFilter ? "Filtro por consultor aplicado" : "Total do período"},
-      {t:"Aprovados", v: aprov, s: badgeForLaudo("APROVADO")},
-      {t:"Fechados", v: fechado, s: dealBadgeHtml("FECHADO")},
-      {t:"Quase", v: quase, s: dealBadgeHtml("QUASE")},
-      {t:"Não fechou", v: nao, s: dealBadgeHtml("NAO")},
+    const kpis=[
+      {t:"Avaliações", v:total, s:"Total do período"},
+      {t:"Aprovados", v:aprov, s:badgeForLaudo("APROVADO")},
+      {t:"Fechados", v:fechado, s:dealBadgeHtml("FECHADO")},
+      {t:"Quase", v:quase, s:dealBadgeHtml("QUASE")},
+      {t:"Não fechou", v:nao, s:dealBadgeHtml("NAO")}
     ];
+    el("painelKpis").innerHTML = kpis.map(k=>`<div class="kpi"><div class="t">${escapeHtml(k.t)}</div><div class="v">${escapeHtml(String(k.v))}</div><div class="s">${k.s}</div></div>`).join("");
 
-    el("painelKpis").innerHTML = kpis.map(k=>
-      `<div class="kpi"><div class="t">${escapeHtml(k.t)}</div><div class="v">${escapeHtml(String(k.v))}</div><div class="s">${k.s}</div></div>`
-    ).join("");
-
-    // tabela consultor
-    const rows = Object.values(byCons)
-      .sort((a,b)=> b.total - a.total)
-      .map(u=>{
-        return `<tr>
-          <td>${escapeHtml(u.name)}</td>
-          <td><b>${u.total}</b></td>
-          <td>${u.aprov}</td>
-          <td>${u.apont}</td>
-          <td>${u.repr}</td>
-        </tr>`;
-      }).join("");
-
+    const resumoRows=[["Apontamento", apont],["Reprovados", repr],["Sem status", sem],["Taxa de aprovação", taxaAprov+"%"]]
+      .map(([label,val])=>`<tr><td>${escapeHtml(String(label))}</td><td><b>${escapeHtml(String(val))}</b></td></tr>`).join("");
     el("painelTabela").innerHTML = `
-      <div class="hint">Taxa de aprovação: <b>${taxaAprov}%</b> • Apontamento: <b>${apont}</b> • Reprovados: <b>${repr}</b> • Sem status: <b>${sem}</b></div>
       <table class="table">
-        <thead>
-          <tr>
-            <th>Consultor</th>
-            <th>Total</th>
-            <th>Aprov.</th>
-            <th>Apont.</th>
-            <th>Reprov.</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${rows || `<tr><td colspan="5"><b>Nenhum dado no período.</b></td></tr>`}
-        </tbody>
+        <thead><tr><th>Resumo</th><th>Total</th></tr></thead>
+        <tbody>${resumoRows}</tbody>
       </table>
     `;
 
-    // captação
-    const capRows = Object.entries(byCap)
-      .sort((a,b)=> (b[1]-a[1]))
-      .map(([name,count])=>`<tr><td>${escapeHtml(name)}</td><td><b>${count}</b></td></tr>`)
-      .join("");
-
+    const capRows=Object.entries(byCap).sort((a,b)=>(b[1]-a[1])).map(([name,count])=>`<tr><td>${escapeHtml(name)}</td><td><b>${count}</b></td></tr>`).join("");
     el("painelCaptacao").innerHTML = `
       <table class="table">
         <thead><tr><th>Captação</th><th>Total</th></tr></thead>
-        <tbody>
-          ${capRows || `<tr><td colspan="2"><b>Nenhum dado.</b></td></tr>`}
-        </tbody>
+        <tbody>${capRows || `<tr><td colspan="2"><b>Nenhum dado.</b></td></tr>`}</tbody>
       </table>
     `;
 
     setPainelHint(`<span class='ok'>Painel carregado.</span> (${total} registros)`);
   }catch(e){
-    const msg = (e?.message||e||"").toString();
-    let extra = "";
-    if(msg.toLowerCase().includes("index")){
-      extra = "<br><span class='warn'>Dica:</span> pode precisar criar índice no Firestore (o próprio erro costuma trazer o link).";
-    }
+    const msg=(e?.message||e||"").toString();
+    const extra=msg.toLowerCase().includes("index") ? "<br><span class='warn'>Dica:</span> pode precisar criar índice no Firestore (o próprio erro costuma trazer o link)." : "";
     setPainelHint("<span class='warn'>Erro ao carregar painel:</span> "+escapeHtml(msg)+extra);
   }
 }
-
 function exportPainelCsv(){
-  const items = (painelLastItems||[]);
-  const header = ["data","modelo","placa","laudo","cliente","telefone","local","captacao","consultor","criado_por"];
-  const esc = (s)=>('"'+String(s??"").replaceAll('"','""')+'"');
-  const lines = [header.join(",")];
-  items.forEach(it=>{
-    lines.push([
-      formatDate(it.createdAt),
-      it.modelo||"",
-      it.placa||"",
-      (it.laudo||"").toString().toUpperCase(),
-      it.cliente||"",
-      it.telefone||"",
-      it.local||"",
-      it.captacao||"",
-      it.consultor||"",
-      it.createdByEmail||""
-    ].map(esc).join(","));
-  });
-  const ym = (el("painelMes")?.value || "mes").replaceAll("-","");
-  const filename = `painel_${ym}_${new Date().toISOString().slice(0,10)}.csv`;
-  downloadTextFile(filename, lines.join("\n"), "text/csv;charset=utf-8");
+  const items=painelLastItems||[], esc=(s)=>('"'+String(s??"").replaceAll('"','""')+'"');
+  const lines=[["data","modelo","placa","laudo","negocio","cliente","telefone","local","captacao","consultor","criado_por"].join(",")];
+  items.forEach(it=>lines.push([formatDate(it.createdAt), it.modelo||"", it.placa||"", (it.laudo||"").toString().toUpperCase(), (it.dealStatus||"SEM").toString().toUpperCase(), it.cliente||"", it.telefone||"", it.local||"", it.captacao||"", it.consultor||"", it.createdByEmail||""].map(esc).join(",")));
+  const ym=(el("painelMes")?.value || "mes").replaceAll("-","");
+  downloadTextFile(`painel_${ym}_${new Date().toISOString().slice(0,10)}.csv`, lines.join("\n"), "text/csv;charset=utf-8");
 }
-
 el("btnPainelAtualizar").addEventListener("click", carregarPainel);
 el("painelMes").addEventListener("change", carregarPainel);
-el("painelUser")?.addEventListener("change", carregarPainel);
-el("painelDeal")?.addEventListener("change", carregarPainel);
-
-function setFixHint(html){ const e=el("fixHint"); if(e) e.innerHTML = html||""; }
-function setFixDealHint(html){ const e=el("fixDealHint"); if(e) e.innerHTML = html||""; }
-
-async function applyOwnerMappingForMonth(){
-  if(!(currentRole==="admin" || currentRole==="gerente")){ return setFixHint("<span class='warn'>Apenas Gerente/Admin.</span>"); }
-  const consTxt = (el("fixConsultor")?.value||"").toString().trim();
-  const uid = (el("fixUser")?.value||"").toString();
-  if(!consTxt || !uid) return setFixHint("<span class='warn'>Preencha o consultor e selecione o usuário.</span>");
-  const key = normalizeKey(consTxt);
-  consultorMap[key] = uid; saveConsultorMap();
-
-  const items = (window.__painelItems||[]).slice();
-  let count = 0;
-  setFixHint("Aplicando...");
-
-  for(const it of items){
-    const c = normalizeKey(it.consultor||"");
-    const already = (it.ownerUid||"").toString();
-    if(c===key && (!already || already!==uid)){
-      try{
-        await updateDoc(doc(db,"vistorias", it.id), {
-          ownerUid: uid,
-          ownerSetAt: serverTimestamp(),
-          ownerSetByUid: auth.currentUser?.uid || "",
-          ownerSetByEmail: lower(auth.currentUser?.email||"")
-        });
-        it.ownerUid = uid;
-        count++;
-      }catch(e){}
-    }
-  }
-  setFixHint(`<span class='ok'>Pronto.</span> ${count} avaliações vinculadas no mês.`);
-  carregarPainel();
-}
-
-async function autoMapByNameForMonth(){
-  if(!(currentRole==="admin" || currentRole==="gerente")){ return setFixHint("<span class='warn'>Apenas Gerente/Admin.</span>"); }
-  const items = (window.__painelItems||[]).slice();
-  setFixHint("Tentando auto-vincular pelo nome do consultor...");
-  let links = 0;
-
-  const found = {};
-  items.forEach(it=>{
-    const c = (it.consultor||"").toString().trim();
-    const key = normalizeKey(c);
-    if(!key || found[key]) return;
-    const uid = tryAutoMatchUidByConsultorName(c);
-    if(uid) found[key] = uid;
-  });
-
-  const entries = Object.entries(found);
-  for(const [key, uid] of entries){
-    consultorMap[key] = uid;
-    links++;
-  }
-  saveConsultorMap();
-
-  if(!links){
-    setFixHint("<span class='warn'>Nenhum nome foi reconhecido automaticamente.</span>");
-    return;
-  }
-  setFixHint(`<span class='ok'>Auto-mapeamento criado.</span> ${links} nomes reconhecidos. Aplicando no mês...`);
-
-  let count = 0;
-  for(const it of items){
-    const key = normalizeKey(it.consultor||"");
-    const uid = consultorMap[key];
-    if(!uid) continue;
-    const already = (it.ownerUid||"").toString();
-    if(!already || already!==uid){
-      try{
-        await updateDoc(doc(db,"vistorias", it.id), {
-          ownerUid: uid,
-          ownerSetAt: serverTimestamp(),
-          ownerSetByUid: auth.currentUser?.uid || "",
-          ownerSetByEmail: lower(auth.currentUser?.email||"")
-        });
-        it.ownerUid = uid;
-        count++;
-      }catch(e){}
-    }
-  }
-  setFixHint(`<span class='ok'>Concluído.</span> ${count} avaliações ajustadas no mês.`);
-  carregarPainel();
-}
-
-async function applyDealForMonth(){
-  if(!(currentRole==="admin" || currentRole==="gerente")){ return setFixDealHint("<span class='warn'>Apenas Gerente/Admin.</span>"); }
-  const consTxt = (el("fixConsultor")?.value||"").toString().trim();
-  const deal = (el("fixDeal")?.value||"").toString().toUpperCase().trim();
-  if(!consTxt || !deal) return setFixDealHint("<span class='warn'>Informe o consultor e selecione um status.</span>");
-  const key = normalizeKey(consTxt);
-
-  const items = (window.__painelItems||[]).slice();
-  let count = 0;
-  setFixDealHint("Aplicando...");
-
-  for(const it of items){
-    const c = normalizeKey(it.consultor||"");
-    if(c===key){
-      try{
-        await updateDoc(doc(db,"vistorias", it.id), {
-          dealStatus: deal,
-          dealUpdatedAt: serverTimestamp(),
-          dealUpdatedByEmail: lower(auth.currentUser?.email||""),
-          dealUpdatedByUid: auth.currentUser?.uid || ""
-        });
-        it.dealStatus = deal;
-        count++;
-      }catch(e){}
-    }
-  }
-  setFixDealHint(`<span class='ok'>Pronto.</span> ${count} avaliações atualizadas no mês.`);
-  carregarPainel();
-}
-
-el("btnFixApply")?.addEventListener("click", applyOwnerMappingForMonth);
-el("btnFixAuto")?.addEventListener("click", autoMapByNameForMonth);
-el("btnFixDealApply")?.addEventListener("click", applyDealForMonth);
-el("fixConsultor")?.addEventListener("blur", ()=>{
-  const consTxt = (el("fixConsultor")?.value||"").toString().trim();
-  const uid = tryAutoMatchUidByConsultorName(consTxt);
-  if(uid && el("fixUser")) el("fixUser").value = uid;
-});
-
-
 el("btnPainelExport").addEventListener("click", exportPainelCsv);
 
-/* ===== Usuários ===== */
 function openUsers(){
   el("usersList").innerHTML=""; el("usersHint").innerHTML="";
   if(isGuest){ el("usersHint").innerHTML="<span class='warn'>Convidado não tem acesso.</span>"; return; }
@@ -2008,31 +1159,21 @@ function openUsers(){
       </div>`;
     }).join("") || "<div class='userItem'><b>Nenhum usuário.</b></div>";
 
-    el("usersList").querySelectorAll("[data-save]").forEach(btn=>{
-      btn.addEventListener("click",async()=>{
-        const id=btn.dataset.save;
-        const sel=el("usersList").querySelector(`select[data-role="${id}"]`);
-        const newRole=(sel?.value||"consultor").toString();
-        const inp=el("usersList").querySelector(`input[data-name="${id}"]`);
-        const newName=((inp?.value||"").toString().trim()).slice(0,32);
-        try{
-          await updateDoc(doc(db,"users",id),{role:newRole,displayName:newName,updatedAt:serverTimestamp()});
-          alert("Salvo!");
-          refreshUsersIndex();
-          if(auth.currentUser && id===auth.currentUser.uid){
-            currentRole=newRole;
-            computePermissions();
-            setRoleUI();
-          }
-        }catch(e){ alert("Erro: "+(e?.message||e)); }
-      });
-    });
-  },(err)=>{
-    el("usersList").innerHTML="<div class='userItem'><b>Erro:</b> "+escapeHtml(err?.message||err)+"</div>";
-  });
+    el("usersList").querySelectorAll("[data-save]").forEach(btn=>btn.addEventListener("click", async()=>{
+      const id=btn.dataset.save;
+      const sel=el("usersList").querySelector(`select[data-role="${id}"]`);
+      const inp=el("usersList").querySelector(`input[data-name="${id}"]`);
+      const newRole=(sel?.value||"consultor").toString();
+      const newName=((inp?.value||"").toString().trim()).slice(0,32);
+      try{
+        await updateDoc(doc(db,"users", id), {role:newRole, displayName:newName, updatedAt:serverTimestamp()});
+        alert("Salvo!");
+        if(auth.currentUser && id===auth.currentUser.uid){ currentRole=newRole; computePermissions(); setRoleUI(); }
+      }catch(e){ alert("Erro: "+(e?.message||e)); }
+    }));
+  }, (err)=>{ el("usersList").innerHTML="<div class='userItem'><b>Erro:</b> "+escapeHtml(err?.message||err)+"</div>"; });
 }
 
-/* ===== Login ===== */
 el("btnDoLogin").addEventListener("click", async ()=>{
   const email=v("loginEmail"), pass=v("loginPass");
   if(!email||!pass) return el("loginHint").innerHTML="<span class='warn'>Preencha e-mail e senha.</span>";
@@ -2046,91 +1187,38 @@ el("btnCreateUser").addEventListener("click", async ()=>{
   try{ await createUserWithEmailAndPassword(auth,email,pass); isGuest=false; el("loginHint").innerHTML="<span class='ok'>Usuário cadastrado!</span>"; }
   catch(e){ el("loginHint").innerHTML="<span class='warn'>Erro ao cadastrar:</span> "+(e?.message||e); }
 });
-el("btnGuest").addEventListener("click", ()=>{
-  isGuest=true; try{ signOut(auth);}catch(e){}
-  showApp(); el("whoami").textContent="Convidado";
-  currentRole="convidado"; computePermissions(); setRoleUI(); setTab("nova");
-  loadLastConsultor();
-});
+el("btnGuest").addEventListener("click", ()=>{ isGuest=true; try{ signOut(auth);}catch(e){} showApp(); el("whoami").textContent="Convidado"; currentRole="convidado"; computePermissions(); setRoleUI(); setTab("nova"); loadLastConsultor(); });
 el("btnLogout").addEventListener("click", async ()=>{ isGuest=false; try{ await signOut(auth);}catch(e){} showLogin(); });
 el("btnSwitchUser").addEventListener("click", ()=>{ isGuest=false; showLogin(); });
 
-/* ===== Ações ===== */
 function setButtonsDisabled(disabled){
-  el("btnWhats").disabled = disabled;
-  el("btnCopy").disabled = disabled;
-  el("btnWhats").style.opacity = disabled ? "0.6" : "1";
-  el("btnCopy").style.opacity = disabled ? "0.6" : "1";
+  el("btnWhats").disabled=disabled; el("btnCopy").disabled=disabled;
+  el("btnWhats").style.opacity=disabled?"0.6":"1"; el("btnCopy").style.opacity=disabled?"0.6":"1";
 }
+el("btnWhats").addEventListener("click", async ()=>{ if(!validar()) return; const texto=montar(); setButtonsDisabled(true); await salvarUmaVez(texto); abrirWhats(texto); setButtonsDisabled(false); });
+el("btnCopy").addEventListener("click", async ()=>{ if(!validar()) return; const texto=montar(); setButtonsDisabled(true); await salvarUmaVez(texto); const ok=await copiar(texto); if(ok) alert("Copiado!"); setButtonsDisabled(false); });
 
-el("btnWhats").addEventListener("click", async ()=>{
-  if(!validar()) return;
-  const texto=montar();
-  setButtonsDisabled(true);
-  await salvarUmaVez(texto);
-  abrirWhats(texto);
-  setButtonsDisabled(false);
+["modelo","ano","versao","placa","km","kmComprou","debitosSel","debitosValor","finSel","finValor","fipe","valorPretendido","laudo","laudoObs","leilao","motor","luzes","testeRodagem","consultor","cliente","local","captacao","tablier","bancosOnde","bancosServico","volante","manopla","forro_motorista","forro_passageiro","forro_traseiro_d","forro_traseiro_e","forro_dianteiros","forro_traseiros","forro_todos","forroEstado","funilariaPecas","pneusQtd","pinturaCompleta","chuvaGranizo","paraChoqueD","paraChoqueT","farolD","farolE","lanternaD","lanternaE","vidroParabrisa","vidro_dd_chk","vidro_dd_act","vidro_de_chk","vidro_de_act","vidro_td_chk","vidro_td_act","vidro_te_chk","vidro_te_act","vidro_vg_chk","vidro_vg_act"].forEach(id=>{
+  const e=el(id); if(!e) return;
+  e.addEventListener("input", ()=>{ if(id==="laudo"){ setStatusBadge(); toggleLaudoDescricao(); } atualizarPreview(); });
+  e.addEventListener("change", ()=>{ if(id==="laudo"){ setStatusBadge(); toggleLaudoDescricao(); } atualizarPreview(); });
 });
 
-el("btnCopy").addEventListener("click", async ()=>{
-  if(!validar()) return;
-  const texto=montar();
-  setButtonsDisabled(true);
-  await salvarUmaVez(texto);
-  const ok=await copiar(texto);
-  if(ok) alert("Copiado!");
-  setButtonsDisabled(false);
-});
-
-/* ===== binds preview ===== */
-["modelo","ano","versao","placa","km","kmComprou","debitosSel","debitosValor","finSel","finValor","fipe","valorPretendido","laudo","laudoObs","leilao","motor","luzes","testeRodagem","consultor","cliente","local","captacao","tablier","bancosOnde","bancosServico","volante","manopla","forro_motorista","forro_passageiro","forro_traseiro_d","forro_traseiro_e","forro_dianteiros","forro_traseiros","forro_todos","forroEstado","funilariaPecas","pneusQtd","pinturaCompleta","chuvaGranizo","paraChoqueD","paraChoqueT","farolD","farolE","lanternaD","lanternaE","vidroParabrisa","vidro_dd_chk","vidro_dd_act","vidro_de_chk","vidro_de_act","vidro_td_chk","vidro_td_act","vidro_te_chk","vidro_te_act","vidro_vg_chk","vidro_vg_act"]
-.forEach(id=>{
-  const e = el(id);
-  if(!e) return;
-  e.addEventListener("input",()=>{ if(id==="laudo"){setStatusBadge();toggleLaudoDescricao();} atualizarPreview(); });
-  e.addEventListener("change",()=>{ if(id==="laudo"){setStatusBadge();toggleLaudoDescricao();} atualizarPreview(); });
-});
-
-// binds histórico filtros
-["histSearch","histLaudo"].forEach(id=>{
-  const e = el(id);
-  if(!e) return;
-  e.addEventListener("input", ()=> renderHistorico(histItemsCache));
-  e.addEventListener("change", ()=> renderHistorico(histItemsCache));
-});
+["histSearch","histLaudo"].forEach(id=>{ const e=el(id); if(!e) return; e.addEventListener("input", ()=>renderHistorico(histItemsCache)); e.addEventListener("change", ()=>renderHistorico(histItemsCache)); });
 el("histLimit").addEventListener("change", openHistorico);
 el("btnHistRefresh").addEventListener("click", openHistorico);
 el("btnHistExport").addEventListener("click", exportHistoricoCsv);
 
-// Debitos/Financiamento toggles
 el("debitosSel").addEventListener("change",()=>{ toggleDebitos(); atualizarPreview(); });
 el("finSel").addEventListener("change",()=>{ toggleFin(); atualizarPreview(); });
-
-// Avaliadores checkboxes
 document.querySelectorAll(".avChk").forEach(c=>c.addEventListener("change",()=>atualizarPreview()));
-
 toggleDebitos(); toggleFin();
 
-// Comprou (Km): opção "Cliente não sabe"
 (function(){
-  const chk = el("kmComprouNaoSabe");
-  const wrap = el("kmComprouWrap");
-  const inp = el("kmComprou");
+  const chk=el("kmComprouNaoSabe"), wrap=el("kmComprouWrap"), inp=el("kmComprou");
   if(!chk || !wrap || !inp) return;
-  const apply = ()=>{
-    if(chk.checked){
-      inp.value = "Não sabe";
-      inp.disabled = true;
-      wrap.classList.add("hidden");
-    }else{
-      inp.disabled = false;
-      wrap.classList.remove("hidden");
-      if((inp.value||"").trim() === "Não sabe") inp.value = "";
-    }
-    atualizarPreview();
-  };
-  chk.addEventListener("change", apply);
-  apply();
+  const apply=()=>{ if(chk.checked){ inp.value="Não sabe"; inp.disabled=true; wrap.classList.add("hidden"); } else { inp.disabled=false; wrap.classList.remove("hidden"); if((inp.value||"").trim()==="Não sabe") inp.value=""; } atualizarPreview(); };
+  chk.addEventListener("change", apply); apply();
 })();
 
 onAuthStateChanged(auth, async (u)=>{
@@ -2138,220 +1226,70 @@ onAuthStateChanged(auth, async (u)=>{
   if(u){
     showApp();
     el("whoami").textContent=lower(u.email||"");
-    try{ currentRole = await ensureUserDoc(u); }
-    catch(e){ currentRole = HARD_ADMINS.has(lower(u.email||"")) ? "admin":"consultor"; }
-    computePermissions();
-    setRoleUI();
-    setTab("nova");
-    loadLastConsultor();
+    try{ currentRole=await ensureUserDoc(u); }catch(e){ currentRole=HARD_ADMINS.has(lower(u.email||""))?"admin":"consultor"; }
+    computePermissions(); setRoleUI(); setTab("nova"); loadLastConsultor();
   }else{
-    showLogin();
-    currentRole="consultor";
-    computePermissions();
-    setRoleUI();
+    showLogin(); currentRole="consultor"; computePermissions(); setRoleUI();
   }
 });
 
-/* ===== FIPE inteligente (carros) - API gratuita (parallelum) ===== */
-const FIPE_BASE = "https://parallelum.com.br/fipe/api/v1/carros";
-
-let fipeCache = { brands: null, modelsByBrand: {}, yearsByModel: {} };
-
-function loadCache(){
-  try{
-    const raw = localStorage.getItem("fipeCache_v1");
-    if(raw){
-      const obj = JSON.parse(raw);
-      if(obj && typeof obj === "object"){
-        fipeCache = {...fipeCache, ...obj};
-      }
-    }
-  }catch(e){}
-}
-function saveCache(){
-  try{ localStorage.setItem("fipeCache_v1", JSON.stringify(fipeCache)); }catch(e){}
-}
+const FIPE_BASE="https://parallelum.com.br/fipe/api/v1/carros";
+let fipeCache={ brands:null, modelsByBrand:{}, yearsByModel:{} };
+function loadCache(){ try{ const raw=localStorage.getItem("fipeCache_v1"); if(raw){ const obj=JSON.parse(raw); if(obj && typeof obj==="object") fipeCache={...fipeCache, ...obj}; } }catch(e){} }
+function saveCache(){ try{ localStorage.setItem("fipeCache_v1", JSON.stringify(fipeCache)); }catch(e){} }
 loadCache();
-
-function showFipeModal(show){
-  const m = el("fipeModal");
-  if(!m) return;
-  m.style.display = show ? "flex" : "none";
-}
-
-async function fipeFetchJson(url){
-  const r = await fetch(url, { headers: { "accept":"application/json" } });
-  if(!r.ok) throw new Error(`FIPE HTTP ${r.status}`);
-  return await r.json();
-}
-function setFipeStatus(html){ el("fipeStatus").innerHTML = html || ""; }
-
-function fillSelect(selectId, items, placeholder){
-  const sel = el(selectId);
-  if(!sel) return;
-  const opts = [];
-  opts.push(`<option value="">${placeholder}</option>`);
-  items.forEach(it=>{
-    const code = (it.codigo ?? it.code ?? it.id ?? "").toString();
-    const name = (it.nome ?? it.name ?? "").toString();
-    opts.push(`<option value="${escapeHtml(code)}">${escapeHtml(name)}</option>`);
-  });
-  sel.innerHTML = opts.join("");
-}
-
-async function ensureBrands(){
-  if(fipeCache.brands && Array.isArray(fipeCache.brands) && fipeCache.brands.length) return fipeCache.brands;
-  const brands = await fipeFetchJson(`${FIPE_BASE}/marcas`);
-  fipeCache.brands = brands;
-  saveCache();
-  return brands;
-}
-async function ensureModels(brandCode){
-  if(!brandCode) return [];
-  if(fipeCache.modelsByBrand[brandCode]) return fipeCache.modelsByBrand[brandCode];
-  const data = await fipeFetchJson(`${FIPE_BASE}/marcas/${brandCode}/modelos`);
-  const models = (data && data.modelos) ? data.modelos : [];
-  fipeCache.modelsByBrand[brandCode] = models;
-  saveCache();
-  return models;
-}
-async function ensureYears(brandCode, modelCode){
-  if(!brandCode || !modelCode) return [];
-  const key = `${brandCode}-${modelCode}`;
-  if(fipeCache.yearsByModel[key]) return fipeCache.yearsByModel[key];
-  const years = await fipeFetchJson(`${FIPE_BASE}/marcas/${brandCode}/modelos/${modelCode}/anos`);
-  fipeCache.yearsByModel[key] = years;
-  saveCache();
-  return years;
-}
-
-let lastFipeResult = null;
-
+function showFipeModal(show){ const m=el("fipeModal"); if(m) m.style.display=show?"flex":"none"; }
+async function fipeFetchJson(url){ const r=await fetch(url, {headers:{accept:"application/json"}}); if(!r.ok) throw new Error(`FIPE HTTP ${r.status}`); return await r.json(); }
+function setFipeStatus(html){ el("fipeStatus").innerHTML=html || ""; }
+function fillSelect(selectId, items, placeholder){ const sel=el(selectId); if(!sel) return; sel.innerHTML=[`<option value="">${placeholder}</option>`].concat(items.map(it=>`<option value="${escapeHtml((it.codigo ?? it.code ?? it.id ?? "").toString())}">${escapeHtml((it.nome ?? it.name ?? "").toString())}</option>`)).join(""); }
+async function ensureBrands(){ if(fipeCache.brands?.length) return fipeCache.brands; const brands=await fipeFetchJson(`${FIPE_BASE}/marcas`); fipeCache.brands=brands; saveCache(); return brands; }
+async function ensureModels(brandCode){ if(!brandCode) return []; if(fipeCache.modelsByBrand[brandCode]) return fipeCache.modelsByBrand[brandCode]; const data=await fipeFetchJson(`${FIPE_BASE}/marcas/${brandCode}/modelos`); const models=(data && data.modelos)?data.modelos:[]; fipeCache.modelsByBrand[brandCode]=models; saveCache(); return models; }
+async function ensureYears(brandCode, modelCode){ if(!brandCode || !modelCode) return []; const key=`${brandCode}-${modelCode}`; if(fipeCache.yearsByModel[key]) return fipeCache.yearsByModel[key]; const years=await fipeFetchJson(`${FIPE_BASE}/marcas/${brandCode}/modelos/${modelCode}/anos`); fipeCache.yearsByModel[key]=years; saveCache(); return years; }
+let lastFipeResult=null;
 function renderFipeResult(obj){
   if(!obj){ el("fipeResult").innerText="—"; return; }
-  const lines = [];
-  if(obj.Marca) lines.push(`Marca: ${obj.Marca}`);
-  if(obj.Modelo) lines.push(`Modelo: ${obj.Modelo}`);
-  if(obj.AnoModelo!=null) lines.push(`Ano: ${obj.AnoModelo}`);
-  if(obj.Combustivel) lines.push(`Combustível: ${obj.Combustivel}`);
-  if(obj.CodigoFipe) lines.push(`Código FIPE: ${obj.CodigoFipe}`);
-  if(obj.MesReferencia) lines.push(`Ref.: ${obj.MesReferencia}`);
-  if(obj.Valor) lines.push(`Valor: ${obj.Valor}`);
-  el("fipeResult").innerText = lines.join("\n");
+  const lines=[]; if(obj.Marca) lines.push(`Marca: ${obj.Marca}`); if(obj.Modelo) lines.push(`Modelo: ${obj.Modelo}`); if(obj.AnoModelo!=null) lines.push(`Ano: ${obj.AnoModelo}`); if(obj.Combustivel) lines.push(`Combustível: ${obj.Combustivel}`); if(obj.CodigoFipe) lines.push(`Código FIPE: ${obj.CodigoFipe}`); if(obj.MesReferencia) lines.push(`Ref.: ${obj.MesReferencia}`); if(obj.Valor) lines.push(`Valor: ${obj.Valor}`); el("fipeResult").innerText=lines.join("\n");
 }
-
 async function refreshFipePrice(){
-  const brand = el("fipeMarca").value;
-  const model = el("fipeModelo").value;
-  const year  = el("fipeAno").value;
-  lastFipeResult = null;
-  renderFipeResult(null);
+  const brand=el("fipeMarca").value, model=el("fipeModelo").value, year=el("fipeAno").value;
+  lastFipeResult=null; renderFipeResult(null);
   if(!brand || !model || !year) return;
   setFipeStatus("Buscando valor FIPE...");
-  try{
-    const obj = await fipeFetchJson(`${FIPE_BASE}/marcas/${brand}/modelos/${model}/anos/${encodeURIComponent(year)}`);
-    lastFipeResult = obj;
-    renderFipeResult(obj);
-    setFipeStatus("<span class='ok'>Consulta pronta.</span>");
-  }catch(e){
-    setFipeStatus("<span class='warn'>Falha na consulta FIPE:</span> " + escapeHtml(e?.message||e));
-  }
+  try{ const obj=await fipeFetchJson(`${FIPE_BASE}/marcas/${brand}/modelos/${model}/anos/${encodeURIComponent(year)}`); lastFipeResult=obj; renderFipeResult(obj); setFipeStatus("<span class='ok'>Consulta pronta.</span>"); }
+  catch(e){ setFipeStatus("<span class='warn'>Falha na consulta FIPE:</span> "+escapeHtml(e?.message||e)); }
 }
-
-function filterModelOptions(){
-  const txt = lower(el("fipeBuscaModelo").value || "");
-  const sel = el("fipeModelo");
-  if(!sel) return;
-  const all = sel.querySelectorAll("option");
-  all.forEach((opt, idx)=>{
-    if(idx===0) return;
-    const show = !txt || (opt.textContent || "").toLowerCase().includes(txt);
-    opt.style.display = show ? "" : "none";
-  });
-}
-
+function filterModelOptions(){ const txt=lower(el("fipeBuscaModelo").value || ""), sel=el("fipeModelo"); if(!sel) return; sel.querySelectorAll("option").forEach((opt,idx)=>{ if(idx===0) return; opt.style.display=!txt || (opt.textContent||"").toLowerCase().includes(txt) ? "" : "none"; }); }
 async function openFipe(){
-  showFipeModal(true);
-  setFipeStatus("Carregando marcas...");
-  try{
-    const brands = await ensureBrands();
-    fillSelect("fipeMarca", brands, "Selecione");
-    setFipeStatus("");
-  }catch(e){
-    setFipeStatus("<span class='warn'>Não foi possível carregar marcas:</span> " + escapeHtml(e?.message||e));
-  }
-  el("fipeBuscaModelo").value = "";
-  el("fipeModelo").innerHTML = "<option value=''>Selecione a marca</option>";
-  el("fipeAno").innerHTML = "<option value=''>Selecione o modelo</option>";
-  lastFipeResult = null;
-  renderFipeResult(null);
+  showFipeModal(true); setFipeStatus("Carregando marcas...");
+  try{ fillSelect("fipeMarca", await ensureBrands(), "Selecione"); setFipeStatus(""); }catch(e){ setFipeStatus("<span class='warn'>Não foi possível carregar marcas:</span> "+escapeHtml(e?.message||e)); }
+  el("fipeBuscaModelo").value=""; el("fipeModelo").innerHTML="<option value=''>Selecione a marca</option>"; el("fipeAno").innerHTML="<option value=''>Selecione o modelo</option>"; lastFipeResult=null; renderFipeResult(null);
 }
-
 el("btnFipe").addEventListener("click", openFipe);
 el("btnFipeClose").addEventListener("click", ()=>showFipeModal(false));
-el("fipeModal").addEventListener("click",(ev)=>{ if(ev.target && ev.target.id==="fipeModal") showFipeModal(false); });
-
-el("btnFipeClear").addEventListener("click", ()=>{
-  el("fipe").value="";
-  atualizarPreview();
-});
-
+el("fipeModal").addEventListener("click", ev=>{ if(ev.target?.id==="fipeModal") showFipeModal(false); });
+el("btnFipeClear").addEventListener("click", ()=>{ el("fipe").value=""; atualizarPreview(); });
 el("fipeMarca").addEventListener("change", async ()=>{
-  const brand = el("fipeMarca").value;
-  el("fipeBuscaModelo").value="";
-  el("fipeAno").innerHTML = "<option value=''>Selecione o modelo</option>";
-  lastFipeResult = null; renderFipeResult(null);
-  if(!brand){
-    el("fipeModelo").innerHTML = "<option value=''>Selecione a marca</option>";
-    return;
-  }
+  const brand=el("fipeMarca").value; el("fipeBuscaModelo").value=""; el("fipeAno").innerHTML="<option value=''>Selecione o modelo</option>"; lastFipeResult=null; renderFipeResult(null);
+  if(!brand){ el("fipeModelo").innerHTML="<option value=''>Selecione a marca</option>"; return; }
   setFipeStatus("Carregando modelos...");
-  try{
-    const models = await ensureModels(brand);
-    fillSelect("fipeModelo", models, "Selecione");
-    filterModelOptions();
-    setFipeStatus("");
-  }catch(e){
-    setFipeStatus("<span class='warn'>Falha ao carregar modelos:</span> " + escapeHtml(e?.message||e));
-  }
+  try{ fillSelect("fipeModelo", await ensureModels(brand), "Selecione"); filterModelOptions(); setFipeStatus(""); }catch(e){ setFipeStatus("<span class='warn'>Falha ao carregar modelos:</span> "+escapeHtml(e?.message||e)); }
 });
-
 el("fipeBuscaModelo").addEventListener("input", filterModelOptions);
-
 el("fipeModelo").addEventListener("change", async ()=>{
-  const brand = el("fipeMarca").value;
-  const model = el("fipeModelo").value;
-  lastFipeResult = null; renderFipeResult(null);
-  if(!brand || !model){
-    el("fipeAno").innerHTML = "<option value=''>Selecione o modelo</option>";
-    return;
-  }
+  const brand=el("fipeMarca").value, model=el("fipeModelo").value; lastFipeResult=null; renderFipeResult(null);
+  if(!brand || !model){ el("fipeAno").innerHTML="<option value=''>Selecione o modelo</option>"; return; }
   setFipeStatus("Carregando anos...");
-  try{
-    const years = await ensureYears(brand, model);
-    fillSelect("fipeAno", years, "Selecione");
-    setFipeStatus("");
-  }catch(e){
-    setFipeStatus("<span class='warn'>Falha ao carregar anos:</span> " + escapeHtml(e?.message||e));
-  }
+  try{ fillSelect("fipeAno", await ensureYears(brand, model), "Selecione"); setFipeStatus(""); }catch(e){ setFipeStatus("<span class='warn'>Falha ao carregar anos:</span> "+escapeHtml(e?.message||e)); }
 });
-
 el("fipeAno").addEventListener("change", refreshFipePrice);
-
 el("btnFipeApply").addEventListener("click", ()=>{
-  if(!lastFipeResult){
-    alert("Selecione Marca, Modelo e Ano para consultar o valor.");
-    return;
-  }
-  if(lastFipeResult.Modelo) el("modelo").value = lastFipeResult.Modelo;
-  if(lastFipeResult.AnoModelo!=null) el("ano").value = String(lastFipeResult.AnoModelo);
-  if(lastFipeResult.Valor) el("fipe").value = lastFipeResult.Valor;
-  atualizarPreview();
-  showFipeModal(false);
+  if(!lastFipeResult){ alert("Selecione Marca, Modelo e Ano para consultar o valor."); return; }
+  if(lastFipeResult.Modelo) el("modelo").value=lastFipeResult.Modelo;
+  if(lastFipeResult.AnoModelo!=null) el("ano").value=String(lastFipeResult.AnoModelo);
+  if(lastFipeResult.Valor) el("fipe").value=lastFipeResult.Valor;
+  atualizarPreview(); showFipeModal(false);
 });
-
-// TODO seguro: Favoritos modal (mantido no layout — sem lógica nesta versão)
-el("btnFavOpen")?.addEventListener("click", ()=>{ alert("Favoritos: função em atualização. (Layout mantido)"); });
+el("btnFavOpen")?.addEventListener("click", ()=>alert("Favoritos: função em atualização. (Layout mantido)"));
 
 setStatusBadge(); toggleLaudoDescricao(); atualizarPreview();
 </script>
@@ -2364,6 +1302,5 @@ if("serviceWorker" in navigator){
   });
 }
 </script>
-
 </body>
 </html>
