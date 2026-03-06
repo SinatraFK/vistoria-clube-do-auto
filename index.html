@@ -228,6 +228,18 @@ button{width:100%}
 .filtersRow{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px}
 @media (max-width:760px){.filtersRow{grid-template-columns:1fr}}
 .smallBtn{width:auto;padding:10px 12px;border-radius:12px;font-weight:900;border:none;cursor:pointer}
+
+/* ===== V9: Negócio (fechado/quase/não) + produtividade por usuário ===== */
+.dealBadge{display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:900}
+.dealWin{background:#dcfce7;color:#065f46}
+.dealNear{background:#fef9c3;color:#854d0e}
+.dealLose{background:#fee2e2;color:#991b1b}
+.dealNone{background:#e5e7eb;color:#374151}
+.mDeal{background:#7c3aed}
+.mDeal:hover{opacity:.92}
+.histFilters{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;align-items:flex-end}
+.histFilters > div{min-width:180px;flex:1}
+.histFilters button{width:auto}
 </style>
 </head>
 
@@ -615,6 +627,43 @@ button{width:100%}
         <div>
           <label>🔎 Buscar no histórico</label>
           <input id="histSearch" placeholder="Digite placa, modelo, cliente ou consultor...">
+      <div class="histFilters">
+        <div>
+          <label>📅 Período</label>
+          <select id="histPeriodo">
+            <option value="30d">Últimos 30 dias</option>
+            <option value="7d">Últimos 7 dias</option>
+            <option value="hoje">Hoje</option>
+            <option value="ontem">Ontem</option>
+            <option value="mes">Este mês</option>
+            <option value="tudo">Tudo (até 2000)</option>
+          </select>
+        </div>
+        <div>
+          <label>🏷️ Negócio</label>
+          <select id="histDeal">
+            <option value="">Todos</option>
+            <option value="FECHADO">Fechado</option>
+            <option value="QUASE">Quase</option>
+            <option value="NAO">Não fechou</option>
+            <option value="SEM">Sem status</option>
+          </select>
+        </div>
+        <div>
+          <label>📌 Laudo</label>
+          <select id="histLaudo2">
+            <option value="">Todos</option>
+            <option value="APROVADO">Aprovado</option>
+            <option value="APONTAMENTO">Apontamento</option>
+            <option value="REPROVADO">Reprovado</option>
+          </select>
+        </div>
+        <div>
+          <button class="btnP" type="button" id="btnHistRecarregar">Recarregar</button>
+          <div class="hint" id="histCount" style="margin-top:8px"></div>
+        </div>
+      </div>
+
           <div class="hint">Filtra em tempo real. Ex: EPX5C99, Gol, João, Frank</div>
         </div>
         <div>
@@ -667,7 +716,28 @@ button{width:100%}
         </div>
       </div>
 
-      <div class="painelGrid" id="painelKpis"></div>
+      
+      <div class="painelTop" style="margin-top:10px">
+        <div>
+          <label>Consultor (logado)</label>
+          <select id="painelUser">
+            <option value="">Todos</option>
+          </select>
+          <div class="hint">Mede produtividade pelo usuário logado que salvou a avaliação.</div>
+        </div>
+        <div>
+          <label>Negócio</label>
+          <select id="painelDeal">
+            <option value="">Todos</option>
+            <option value="FECHADO">Fechado</option>
+            <option value="QUASE">Quase</option>
+            <option value="NAO">Não fechou</option>
+            <option value="SEM">Sem status</option>
+          </select>
+          <div class="hint">Filtro opcional para gestão.</div>
+        </div>
+      </div>
+<div class="painelGrid" id="painelKpis"></div>
 
       <h3 style="margin-top:14px">Performance por consultor</h3>
       <div class="hint">Usa o campo <b>Consultor</b> salvo no relatório.</div>
@@ -802,6 +872,49 @@ const HARD_ADMINS = new Set([
 ].map(s=>s.toLowerCase()));
 
 const ROLE_ORDER = ["consultor","closer","gerente","admin"];
+const DEAL_LABEL = {SEM:"Sem status", FECHADO:"Fechado", QUASE:"Quase", NAO:"Não fechou"};
+function dealBadgeHtml(val){
+  const v = (val||"SEM").toString().toUpperCase();
+  if(v==="FECHADO") return "<span class='dealBadge dealWin'>FECHADO</span>";
+  if(v==="QUASE") return "<span class='dealBadge dealNear'>QUASE</span>";
+  if(v==="NAO") return "<span class='dealBadge dealLose'>NÃO</span>";
+  return "<span class='dealBadge dealNone'>SEM</span>";
+}
+function canSetDeal(){ return (currentRole==="admin" || currentRole==="gerente"); }
+
+let usersIndexByUid = {};
+async function refreshUsersIndex(){
+  try{
+    const qy = query(collection(db,"users"), orderBy("email","asc"), limit(2000));
+    const snap = await getDocs(qy);
+    const idx = {};
+    snap.docs.forEach(d=>{
+      const data = d.data()||{};
+      const uid = data.uid || d.id;
+      idx[uid] = {
+        uid,
+        email: (data.email||"").toString(),
+        role: (data.role||"consultor").toString(),
+        displayName: (data.displayName||"").toString()
+      };
+    });
+    usersIndexByUid = idx;
+
+    const sel = el("painelUser");
+    if(sel){
+      const arr = Object.values(idx).filter(u=>u.email).sort((a,b)=>(a.displayName||a.email).localeCompare((b.displayName||b.email),"pt-BR"));
+      sel.innerHTML = ["<option value=''>Todos</option>"].concat(arr.map(u=>{
+        const name = (u.displayName||u.email).toString();
+        return `<option value="${escapeHtml(u.uid)}">${escapeHtml(name)}</option>`;
+      })).join("");
+    }
+  }catch(e){}
+}
+function getUserLabelByUid(uid, fallbackEmail){
+  const u = usersIndexByUid[uid];
+  return (u && (u.displayName||u.email)) ? (u.displayName||u.email) : (fallbackEmail||uid||"(desconhecido)");
+}
+
 
 const el=(id)=>document.getElementById(id);
 const v=(id)=>(el(id).value??"").toString().trim();
@@ -850,7 +963,7 @@ async function ensureUserDoc(user){
   const ref=doc(db,"users",uid); const snap=await getDoc(ref);
   if(!snap.exists()){
     const role=HARD_ADMINS.has(email)?"admin":"consultor";
-    await setDoc(ref,{uid,email,role,createdAt:serverTimestamp(),updatedAt:serverTimestamp()},{merge:true});
+    await setDoc(ref,{uid,email,role,displayName:(email.split("@")[0]||"").slice(0,24),createdAt:serverTimestamp(),updatedAt:serverTimestamp()},{merge:true});
     return role;
   }
   const data=snap.data()||{};
@@ -1138,7 +1251,11 @@ async function salvarUmaVez(texto){
       local:v("local"),
       captacao:v("captacao"),
       consultor:v("consultor"),
-      reportText:texto
+      reportText:texto,
+      dealStatus:"SEM",
+      dealUpdatedAt:serverTimestamp(),
+      dealUpdatedByEmail:lower(u.email||""),
+      dealUpdatedByUid:u.uid
     });
     lastSaveSig = sig;
     lastSaveAt = now;
@@ -1187,17 +1304,41 @@ function getHistLimit(){
   return Number.isFinite(n) ? n : 200;
 }
 function getHistLaudoFilter(){
-  const s = (el("histLaudo")?.value || "").toString().trim().toUpperCase();
-  return s || "";
+  const sel = el("histLaudo2") || el("histLaudo");
+  const v = (sel?.value || "").toString().toUpperCase().trim();
+  return v || "";
+}
+function getHistDealFilter(){
+  return (el("histDeal")?.value || "").toString().toUpperCase().trim();
+}
+function getHistPeriodo(){
+  return (el("histPeriodo")?.value || "30d").toString();
+}
+function periodToRange(periodo){
+  const now = new Date();
+  const startOfDay = (d)=> new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0,0,0);
+  const addDays = (d, n)=> new Date(d.getFullYear(), d.getMonth(), d.getDate()+n, 0,0,0);
+  if(periodo==="7d") return { start: new Date(now.getTime()-7*24*60*60*1000), end: null, lim: 800 };
+  if(periodo==="30d") return { start: new Date(now.getTime()-30*24*60*60*1000), end: null, lim: 800 };
+  if(periodo==="hoje"){ const s=startOfDay(now); return { start:s, end:addDays(s,1), lim: 800 }; }
+  if(periodo==="ontem"){ const e=startOfDay(now); const s=addDays(e,-1); return { start:s, end:e, lim: 800 }; }
+  if(periodo==="mes"){ const s=new Date(now.getFullYear(), now.getMonth(), 1, 0,0,0); const e=new Date(now.getFullYear(), now.getMonth()+1, 1, 0,0,0); return { start:s, end:e, lim: 2500 }; }
+  return { start:null, end:null, lim: 2000 };
 }
 function renderHistorico(items){
   const q = (el("histSearch")?.value || "").toString().trim().toLowerCase();
   const la = getHistLaudoFilter();
+  const deal = (getHistDealFilter()||"").toString().toUpperCase().trim();
 
   const filtered = items.filter(it=>{
     if(la){
       const itla = (it.laudo||"APROVADO").toString().toUpperCase();
       if(itla !== la) return false;
+    }
+    if(deal){
+      const ds=(it.dealStatus||"SEM").toString().toUpperCase();
+      if(deal==="SEM"){ if(ds!=="SEM") return false; }
+      else if(ds!==deal) return false;
     }
     if(!q) return true;
     const hay = [
@@ -1207,15 +1348,20 @@ function renderHistorico(items){
     return hay.includes(q);
   });
 
+  if(el("histCount")) el("histCount").innerHTML = `<span class="ok">${filtered.length}</span> exibindo • <span class="hint">${items.length} carregados</span>`;
+
   el("historicoList").innerHTML = filtered.map(it=>{
     const la2=(it.laudo||"APROVADO").toUpperCase();
     const icon=(la2==="REPROVADO")?"🔴":(la2==="APONTAMENTO")?"🟡":"🟢";
     const title=`${icon} ${escapeHtml(it.modelo||"-")} — ${escapeHtml(it.placa||"-")}`;
-    const extra = [it.cliente ? ("Cliente: " + it.cliente) : "", it.consultor ? ("Consultor: " + it.consultor) : ""].filter(Boolean).join(" • ");
+    const extra = [it.cliente ? ("Cliente: " + it.cliente) : "", it.consultor ? ("Atendeu: " + it.consultor) : "", ("Logado: " + getUserLabelByUid(it.createdByUid, it.createdByEmail))].filter(Boolean).join(" • ");
     const meta=`${escapeHtml(formatDate(it.createdAt))} • ${escapeHtml(it.createdByEmail||"")}` + (extra?(`\n${escapeHtml(extra)}`):"");
     const delBtn = isAdmin ? `<button class="mini" style="background:#b91c1c" data-del="${it.id}">🗑 Excluir</button>` : "";
+    const dealVal=(it.dealStatus||"SEM").toString().toUpperCase();
+    const dealBadge=dealBadgeHtml(dealVal);
+    const dealBtns=canSetDeal()?`<button class="mini mDeal" data-deal="${it.id}" data-val="FECHADO">✅ Fechado</button><button class="mini mDeal" data-deal="${it.id}" data-val="QUASE">🟡 Quase</button><button class="mini mDeal" data-deal="${it.id}" data-val="NAO">❌ Não</button><button class="mini btnSecondary" data-deal="${it.id}" data-val="SEM">↩️ Limpar</button>`:``;
     return `<div class="histItem">
-      <div class="histTop"><div><div class="histTitle">${title}</div><div class="histMeta">${meta}</div></div><div class="histMeta"><b>${escapeHtml(la2)}</b></div></div>
+      <div class="histTop"><div><div class="histTitle">${title}</div><div class="histMeta">${meta}</div></div><div class="histMeta"><b>${escapeHtml(la2)}</b><div style="margin-top:6px">${dealBadge}</div></div></div>
       <div class="histBtns">
         <button class="mini mOpen" data-open="${it.id}">📄 Abrir</button>
         <button class="mini mCopy" data-copy="${it.id}">📋 Copiar</button>
@@ -1257,6 +1403,31 @@ function renderHistorico(items){
     });
   });
 
+
+  if(canSetDeal()){
+    el("historicoList").querySelectorAll("[data-deal]").forEach(btn=>{
+      btn.addEventListener("click", async ()=>{
+        const id = btn.dataset.deal;
+        const val = (btn.dataset.val||"SEM").toString().toUpperCase();
+        try{
+          const u = auth.currentUser;
+          if(!u) return alert("Faça login novamente.");
+          await updateDoc(doc(db,"vistorias", id), {
+            dealStatus: val,
+            dealUpdatedAt: serverTimestamp(),
+            dealUpdatedByEmail: lower(u.email||""),
+            dealUpdatedByUid: u.uid
+          });
+          const it = histItemsCache.find(x=>x.id===id);
+          if(it) it.dealStatus = val;
+          renderHistorico(histItemsCache);
+        }catch(e){
+          alert("Erro ao atualizar status: " + (e?.message||e));
+        }
+      });
+    });
+  }
+
   if(isAdmin){
     el("historicoList").querySelectorAll("[data-del]").forEach(btn=>{
       btn.addEventListener("click", async ()=>{
@@ -1277,19 +1448,57 @@ function renderHistorico(items){
 
 function openHistorico(){
   el("historicoList").innerHTML=""; el("histHint").innerHTML="";
+  if(el("histCount")) el("histCount").innerHTML="";
   if(isGuest){ el("histHint").innerHTML="<span class='warn'>Convidado não tem histórico.</span>"; return; }
   if(!canHistory){ el("histHint").innerHTML="<span class='warn'>Seu cargo não tem acesso ao histórico.</span>"; return; }
-  if(unsubHist) unsubHist();
 
-  const lim = getHistLimit();
-  const qy=query(collection(db,"vistorias"), orderBy("createdAt","desc"), limit(lim));
-  unsubHist=onSnapshot(qy,(snap)=>{
-    histItemsCache = snap.docs.map(d=>({id:d.id,...d.data()}));
-    renderHistorico(histItemsCache);
-  },(err)=>{
-    el("historicoList").innerHTML="<div class='histItem'><b>Erro:</b> "+escapeHtml(err?.message||err)+"</div>";
+  if(unsubHist){ try{unsubHist();}catch(e){} unsubHist=null; }
+
+  const reload = async ()=>{
+    el("histHint").innerHTML="Carregando...";
+    el("historicoList").innerHTML="";
+    try{
+      await refreshUsersIndex();
+      const {start,end,lim} = periodToRange(getHistPeriodo());
+      let qy = null;
+      if(start && end){
+        qy = query(collection(db,"vistorias"), where("createdAt", ">=", start), where("createdAt", "<", end), orderBy("createdAt","desc"), limit(lim));
+      }else if(start){
+        qy = query(collection(db,"vistorias"), where("createdAt", ">=", start), orderBy("createdAt","desc"), limit(lim));
+      }else{
+        qy = query(collection(db,"vistorias"), orderBy("createdAt","desc"), limit(lim));
+      }
+      const snap = await getDocs(qy);
+      histItemsCache = snap.docs.map(d=>({id:d.id,...d.data()}));
+      el("histHint").innerHTML="";
+      renderHistorico(histItemsCache);
+    }catch(err){
+      el("histHint").innerHTML="<span class='warn'>Erro ao carregar histórico:</span> "+escapeHtml(err?.message||err);
+    }
+  };
+
+  const btn = el("btnHistRecarregar");
+  if(btn && !btn.dataset.bound){
+    btn.dataset.bound="1";
+    btn.addEventListener("click", reload);
+  }
+  const per = el("histPeriodo");
+  if(per && !per.dataset.bound){
+    per.dataset.bound="1";
+    per.addEventListener("change", reload);
+  }
+  ["histSearch","histDeal","histLaudo2"].forEach(id=>{
+    const e = el(id);
+    if(e && !e.dataset.bound){
+      e.dataset.bound="1";
+      e.addEventListener("input", ()=>renderHistorico(histItemsCache));
+      e.addEventListener("change", ()=>renderHistorico(histItemsCache));
+    }
   });
+
+  reload();
 }
+
 
 function downloadTextFile(filename, content, mime="text/plain;charset=utf-8"){
   const blob = new Blob([content], {type:mime});
@@ -1404,9 +1613,13 @@ async function carregarPainel(){
     let items = snap.docs.map(d=>({id:d.id, ...d.data()}));
 
     const consFilter = (el("painelCons")?.value || "").toString().trim().toLowerCase();
+    const uidFilter = (el("painelUser")?.value || "").toString();
+    const dealFilter = (el("painelDeal")?.value || "").toString().toUpperCase().trim();
     if(consFilter){
       items = items.filter(it => (it.consultor||"").toString().toLowerCase().includes(consFilter));
     }
+    if(uidFilter){ items = items.filter(it => (it.createdByUid||"")===uidFilter); }
+    if(dealFilter){ items = items.filter(it=>{ const ds=(it.dealStatus||"SEM").toString().toUpperCase(); if(dealFilter==="SEM") return ds==="SEM"; return ds===dealFilter; }); }
     painelLastItems = items;
 
     const total = items.length;
@@ -1432,11 +1645,20 @@ async function carregarPainel(){
 
     const taxaAprov = total ? Math.round((aprov/total)*100) : 0;
 
+    const fechado = items.filter(x=>(x.dealStatus||"SEM").toString().toUpperCase()==="FECHADO").length;
+    const quase = items.filter(x=>(x.dealStatus||"SEM").toString().toUpperCase()==="QUASE").length;
+    const nao = items.filter(x=>(x.dealStatus||"SEM").toString().toUpperCase()==="NAO").length;
+    const sem = items.filter(x=>(x.dealStatus||"SEM").toString().toUpperCase()==="SEM").length;
+
     const kpis = [
       {t:"Avaliações no mês", v: total, s: consFilter ? `Filtro consultor: <b>${escapeHtml(consFilter)}</b>` : "Total no período"},
       {t:"Aprovados", v: aprov, s: badgeForLaudo("APROVADO")},
       {t:"Apontamento", v: apont, s: badgeForLaudo("APONTAMENTO")},
       {t:"Reprovados", v: repr, s: badgeForLaudo("REPROVADO")},
+      {t:"Fechados", v: fechado, s: dealBadgeHtml("FECHADO")},
+      {t:"Quase", v: quase, s: dealBadgeHtml("QUASE")},
+      {t:"Não fechou", v: nao, s: dealBadgeHtml("NAO")},
+      {t:"Sem status", v: sem, s: dealBadgeHtml("SEM")},
     ];
 
     el("painelKpis").innerHTML = kpis.map(k=>
@@ -1526,6 +1748,8 @@ function exportPainelCsv(){
 
 el("btnPainelAtualizar").addEventListener("click", carregarPainel);
 el("painelMes").addEventListener("change", carregarPainel);
+el("painelUser")?.addEventListener("change", carregarPainel);
+el("painelDeal")?.addEventListener("change", carregarPainel);
 el("btnPainelExport").addEventListener("click", exportPainelCsv);
 
 /* ===== Usuários ===== */
@@ -1545,8 +1769,9 @@ function openUsers(){
           <div class="badgeRole">${escapeHtml(u.role||"consultor")}</div>
         </div>
         <div class="userActions">
+          <div><label>Nome (painel)</label><input data-name="${u.id}" placeholder="Ex: Lucas" value="${escapeHtml(u.displayName||"")}"></div>
           <div><label>Alterar cargo</label><select data-role="${u.id}">${opts}</select></div>
-          <div><button class="btnP" data-save="${u.id}">Salvar cargo</button></div>
+          <div><button class="btnP" data-save="${u.id}">Salvar</button></div>
         </div>
       </div>`;
     }).join("") || "<div class='userItem'><b>Nenhum usuário.</b></div>";
@@ -1556,9 +1781,12 @@ function openUsers(){
         const id=btn.dataset.save;
         const sel=el("usersList").querySelector(`select[data-role="${id}"]`);
         const newRole=(sel?.value||"consultor").toString();
+        const inp=el("usersList").querySelector(`input[data-name="${id}"]`);
+        const newName=((inp?.value||"").toString().trim()).slice(0,32);
         try{
-          await updateDoc(doc(db,"users",id),{role:newRole,updatedAt:serverTimestamp()});
-          alert("Cargo atualizado!");
+          await updateDoc(doc(db,"users",id),{role:newRole,displayName:newName,updatedAt:serverTimestamp()});
+          alert("Salvo!");
+          refreshUsersIndex();
           if(auth.currentUser && id===auth.currentUser.uid){
             currentRole=newRole;
             computePermissions();
