@@ -241,7 +241,7 @@ button{width:100%}
 .histFilters > div{min-width:180px;flex:1}
 .histFilters button{width:auto}
 /* V9.2 painel mais limpo */
-
+#painelCaptacao{display:none}
 #viewPainel .card h3{margin-bottom:8px}
 .fixCompact .btnLine{margin-top:6px}
 .fixCompact .hint{margin-bottom:6px}
@@ -249,6 +249,8 @@ button{width:100%}
 .editGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media (max-width:760px){.editGrid{grid-template-columns:1fr}}
 .editMeta{font-size:12px;color:#6b7280;margin-top:4px;white-space:pre-line}
+
+.painelRemovido{display:none!important}
 </style>
 </head>
 
@@ -715,21 +717,83 @@ button{width:100%}
           <div class="hint">Ex: 2026-03</div>
         </div>
         <div>
-          <label>Consultor (opcional)</label>
-          <input id="painelCons" placeholder="Ex: Frank">
-          <div class="hint">Filtra dentro do mês selecionado.</div>
-        </div>
-        <div>
           <button class="btnP" type="button" id="btnPainelAtualizar">Atualizar</button>
           <div class="hint" id="painelHint" style="margin-top:8px"></div>
         </div>
       </div>
-      <div class="painelGrid" id="painelKpis"></div>
+
+      
+      <div class="painelTop painelRemovido" style="margin-top:10px">
+        <div>
+          <label>Consultor (logado)</label>
+          <select id="painelUser">
+            <option value="">Todos</option>
+          </select>
+          <div class="hint">Mede produtividade pelo usuário logado que salvou a avaliação.</div>
+        </div>
+        <div>
+          <label>Negócio</label>
+          <select id="painelDeal">
+            <option value="">Todos</option>
+            <option value="FECHADO">Fechado</option>
+            <option value="QUASE">Quase</option>
+            <option value="NAO">Não fechou</option>
+            <option value="SEM">Sem status</option>
+          </select>
+          <div class="hint">Filtro opcional para gestão.</div>
+        </div>
+      </div>
+<div class="painelGrid" id="painelKpis"></div>
 
       <h3 style="margin-top:14px">Resumo da equipe</h3>
-      <div class="hint">Indicadores gerais da equipe no período selecionado.</div>
+      <div class="hint">Visão geral segura da operação no período.</div>
       <div id="painelTabela"></div>
 
+      <div class="card fixCompact painelRemovido" style="box-shadow:none;border:1px solid #e5e7eb;margin-top:12px">
+        <h3>🔧 Correção retroativa</h3>
+        <div class="hint">Corrige avaliações antigas pelo campo <b>Consultor</b> do relatório e também permite aplicar status de negócio em lote.</div>
+
+        <div class="row2">
+          <div>
+            <label>Consultor (texto do relatório)</label>
+            <input id="fixConsultor" placeholder="Ex: Lucas">
+            <div class="hint">Usa o campo <b>Consultor</b> salvo na avaliação.</div>
+          </div>
+          <div>
+            <label>Vincular ao usuário</label>
+            <select id="fixUser">
+              <option value="">Selecione</option>
+            </select>
+            <div class="hint">Use só no vínculo manual. No automático, o sistema tenta casar pelo nome do consultor.</div>
+          </div>
+        </div>
+
+        <div class="btnLine">
+          <button class="btnP" type="button" id="btnFixReprocess">Reprocessar mês automaticamente</button>
+          <button class="btnSecondary" type="button" id="btnFixAuto">Auto-vincular pelo nome</button>
+          <button class="btnSecondary" type="button" id="btnFixApply">Aplicar vínculo manual</button>
+        </div>
+        <div class="hint" id="fixHint" style="margin-top:8px"></div>
+
+        <div style="margin-top:14px;border-top:1px dashed #e5e7eb;padding-top:12px">
+          <div class="row2">
+            <div>
+              <label>Status de negócio (lote)</label>
+              <select id="fixDeal">
+                <option value="">Não alterar</option>
+                <option value="FECHADO">Fechado</option>
+                <option value="QUASE">Quase</option>
+                <option value="NAO">Não fechou</option>
+                <option value="SEM">Sem status</option>
+              </select>
+              <div class="hint">Aplica em todas as avaliações do mês cujo “Consultor” bate com o texto informado.</div>
+            </div>
+            <div>
+              <button class="btnP" type="button" id="btnFixDealApply" style="margin-top:26px">Aplicar status no mês</button>
+              <div class="hint" id="fixDealHint" style="margin-top:8px"></div>
+            </div>
+          </div>
+        </div>
       </div>
 
 
@@ -833,7 +897,7 @@ button{width:100%}
     <div class="modalTop">
       <div>
         <div class="modalTitle">✏️ Editar relatório</div>
-        <div class="modalHint">Use esta edição para marcar o andamento do negócio.</div>
+        <div class="modalHint">Use esta edição para atribuir o consultor responsável e marcar o andamento do negócio.</div>
       </div>
       <button class="btnX" type="button" id="btnEditHistClose">Fechar</button>
     </div>
@@ -842,6 +906,13 @@ button{width:100%}
       <div class="editMeta" id="editHistMeta">—</div>
 
       <div class="editGrid" style="margin-top:10px">
+        <div>
+          <label>Consultor responsável</label>
+          <select id="editOwnerUid">
+            <option value="">Selecione</option>
+          </select>
+          <div class="hint">Esse campo alimenta a performance real por consultor no painel.</div>
+        </div>
         <div>
           <label>Status do negócio</label>
           <select id="editDealStatus">
@@ -925,6 +996,16 @@ async function refreshUsersIndex(){
       };
     });
     usersIndexByUid = idx;
+
+    const sel = el("painelUser");
+    const sel2 = el("fixUser");
+    const arr = Object.values(idx).filter(u=>u.email).sort((a,b)=>(a.displayName||a.email).localeCompare((b.displayName||b.email),"pt-BR"));
+    const opts = ["<option value=''>Todos</option>"].concat(arr.map(u=>{
+      const name = (u.displayName||u.email).toString();
+      return `<option value="${escapeHtml(u.uid)}">${escapeHtml(name)}</option>`;
+    }));
+    if(sel) sel.innerHTML = opts.join("");
+    if(sel2) sel2.innerHTML = ["<option value=''>Selecione</option>"].concat(opts.slice(1)).join("");
   }catch(e){}
 }
 function getUserLabelByUid(uid, fallbackEmail){
@@ -932,7 +1013,72 @@ function getUserLabelByUid(uid, fallbackEmail){
   return (u && (u.displayName||u.email)) ? (u.displayName||u.email) : (fallbackEmail||uid||"(desconhecido)");
 }
 
+const CONSULTOR_MAP_KEY = "clubeauto_consultor_map_v1"; // localStorage (leve e seguro)
+let consultorMap = {}; // { normalizedConsultor: uid }
 
+function normalizeKey(s){
+  const txt = (s||"").toString().trim().toLowerCase();
+  if(!txt) return "";
+  try{
+    return txt.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ").trim();
+  }catch(e){
+    return txt.replace(/\s+/g," ").trim();
+  }
+}
+function loadConsultorMap(){
+  try{
+    const raw = localStorage.getItem(CONSULTOR_MAP_KEY);
+    if(raw){
+      const obj = JSON.parse(raw);
+      if(obj && typeof obj==="object") consultorMap = obj;
+    }
+  }catch(e){}
+}
+function saveConsultorMap(){
+  try{ localStorage.setItem(CONSULTOR_MAP_KEY, JSON.stringify(consultorMap||{})); }catch(e){}
+}
+loadConsultorMap();
+
+function tryAutoMatchUidByConsultorName(consName){
+  const key = normalizeKey(consName);
+  if(!key) return "";
+  if(consultorMap[key]) return consultorMap[key];
+
+  const arr = Object.values(usersIndexByUid||{});
+  for(const u of arr){
+    const dn = normalizeKey(u.displayName||"");
+    const ep = normalizeKey(((u.email||"").split("@")[0]||""));
+    if(dn && dn===key) return u.uid;
+    if(ep && ep===key) return u.uid;
+  }
+  return "";
+}
+
+function resolveOwnerUid(it){
+  const uid = (it.ownerUid || it.createdByUid || "").toString();
+  if(uid) return uid;
+
+  const cons = (it.consultor || "").toString().trim();
+  const m = tryAutoMatchUidByConsultorName(cons);
+  return m || "";
+}
+
+
+
+const el=(id)=>document.getElementById(id);
+const v=(id)=>(el(id).value??"").toString().trim();
+const lower=(s)=>(s??"").toString().trim().toLowerCase();
+
+function getAvaliadores(){
+  return Array.from(document.querySelectorAll(".avChk:checked")).map(x=>x.value).filter(Boolean);
+}
+
+function getResolvedConsultorLabel(it){
+  const ownerUid = resolveOwnerUid(it);
+  if(ownerUid) return getUserLabelByUid(ownerUid, it.createdByEmail);
+  const cons = (it.consultor||"").toString().trim();
+  return cons || "(não informado)";
+}
 
 let currentEditHistId = "";
 function openEditHistModal(show){
@@ -955,6 +1101,7 @@ function fillEditOwnerOptions(selectedUid=""){
 function openEditHistItem(it){
   initEditHistModalBindings();
   currentEditHistId = it?.id || "";
+  fillEditOwnerOptions((resolveOwnerUid(it)||""));
   if(el("editDealStatus")) el("editDealStatus").value = ((it?.dealStatus||"SEM").toString().toUpperCase());
   if(el("editHistMeta")){
     const lines = [
@@ -963,8 +1110,7 @@ function openEditHistItem(it){
       `Consultor digitado: ${it?.consultor||"-"}`,
       `Logado no envio: ${getUserLabelByUid(it?.createdByUid, it?.createdByEmail)}`
     ];
-    el("editHistMeta").innerText = lines.join("
-");
+    el("editHistMeta").innerText = lines.join("\n");
   }
   if(el("editHistHint")) el("editHistHint").innerHTML = "";
   openEditHistModal(true);
@@ -1289,6 +1435,8 @@ async function salvarUmaVez(texto){
       createdAt:serverTimestamp(),
       createdByEmail:lower(u.email||""),
       createdByUid:u.uid,
+      ownerUid:u.uid,
+      ownerEmail:lower(u.email||""),
       roleAtCreation:currentRole,
       modelo:v("modelo"),
       placa:v("placa"),
@@ -1401,7 +1549,7 @@ function renderHistorico(items){
     const la2=(it.laudo||"APROVADO").toUpperCase();
     const icon=(la2==="REPROVADO")?"🔴":(la2==="APONTAMENTO")?"🟡":"🟢";
     const title=`${icon} ${escapeHtml(it.modelo||"-")} — ${escapeHtml(it.placa||"-")}`;
-    const extra = [it.cliente ? ("Cliente: " + it.cliente) : "", it.consultor ? ("Consultor: " + it.consultor) : "", ("Logado: " + getUserLabelByUid(it.createdByUid, it.createdByEmail))].filter(Boolean).join(" • ");
+    const extra = [it.cliente ? ("Cliente: " + it.cliente) : "", it.consultor ? ("Atendeu: " + it.consultor) : "", ("Logado: " + getUserLabelByUid(it.createdByUid, it.createdByEmail))].filter(Boolean).join(" • ");
     const meta=`${escapeHtml(formatDate(it.createdAt))} • ${escapeHtml(it.createdByEmail||"")}` + (extra?(`\n${escapeHtml(extra)}`):"");
     const delBtn = isAdmin ? `<button class="mini" style="background:#b91c1c" data-del="${it.id}">🗑 Excluir</button>` : "";
     const dealVal=(it.dealStatus||"SEM").toString().toUpperCase();
@@ -1454,10 +1602,11 @@ function renderHistorico(items){
 
 
   el("historicoList").querySelectorAll("[data-edit]").forEach(btn=>{
-    btn.addEventListener("click", ()=>{
+    btn.addEventListener("click", async ()=>{
       const id = btn.dataset.edit;
       const it = histItemsCache.find(x=>x.id===id);
       if(!it) return;
+      await refreshUsersIndex();
       openEditHistItem(it);
     });
   });
@@ -1649,6 +1798,7 @@ async function openPainel(){
   await carregarPainel();
 }
 
+
 async function carregarPainel(){
   const ym = el("painelMes").value || "";
   const range = monthRangeFromInput(ym);
@@ -1669,42 +1819,49 @@ async function carregarPainel(){
       limit(2500)
     );
     const snap = await getDocs(qy);
-    let items = snap.docs.map(d=>({id:d.id, ...d.data()}));
-    window.__painelItems = items;
+    const items = snap.docs.map(d=>({id:d.id, ...d.data()}));
 
-    const consFilter = (el("painelCons")?.value || "").toString().trim().toLowerCase();
-    if(consFilter){
-      items = items.filter(it => (it.consultor||"").toString().toLowerCase().includes(consFilter));
-    });
+    window.__painelItems = items;
+    painelLastItems = items;
+
+    const total = items.length;
+    const aprov = items.filter(x => (x.laudo||"").toString().toUpperCase()==="APROVADO").length;
+    const apont = items.filter(x => (x.laudo||"").toString().toUpperCase()==="APONTAMENTO").length;
+    const repr  = items.filter(x => (x.laudo||"").toString().toUpperCase()==="REPROVADO").length;
+
+    const fechado = items.filter(x => (x.dealStatus||"SEM").toString().toUpperCase()==="FECHADO").length;
+    const quase   = items.filter(x => (x.dealStatus||"SEM").toString().toUpperCase()==="QUASE").length;
+    const nao     = items.filter(x => (x.dealStatus||"SEM").toString().toUpperCase()==="NAO").length;
+    const sem     = items.filter(x => (x.dealStatus||"SEM").toString().toUpperCase()==="SEM").length;
 
     const taxaAprov = total ? Math.round((aprov/total)*100) : 0;
 
-    const fechado = items.filter(x=>(x.dealStatus||"SEM").toString().toUpperCase()==="FECHADO").length;
-    const quase = items.filter(x=>(x.dealStatus||"SEM").toString().toUpperCase()==="QUASE").length;
-    const nao = items.filter(x=>(x.dealStatus||"SEM").toString().toUpperCase()==="NAO").length;
-    const sem = items.filter(x=>(x.dealStatus||"SEM").toString().toUpperCase()==="SEM").length;
+    const byCap = {};
+    items.forEach(it=>{
+      const cap = (it.captacao || "(não informado)").toString().trim() || "(não informado)";
+      byCap[cap] = (byCap[cap]||0) + 1;
+    });
 
     const kpis = [
       {t:"Avaliações", v: total, s: "Total do período"},
       {t:"Aprovados", v: aprov, s: badgeForLaudo("APROVADO")},
       {t:"Fechados", v: fechado, s: dealBadgeHtml("FECHADO")},
       {t:"Quase", v: quase, s: dealBadgeHtml("QUASE")},
-      {t:"Não fechou", v: nao, s: dealBadgeHtml("NAO")},
+      {t:"Não fechou", v: nao, s: dealBadgeHtml("NAO")}
     ];
 
-    el("painelKpis").innerHTML = kpis.map(k=>
+    el("painelKpis").innerHTML = kpis.map(k =>
       `<div class="kpi"><div class="t">${escapeHtml(k.t)}</div><div class="v">${escapeHtml(String(k.v))}</div><div class="s">${k.s}</div></div>`
     ).join("");
 
-    // tabela consultor
-    const rowsTeam = [
+    const resumoRows = [
       ["Apontamento", apont],
       ["Reprovados", repr],
-      ["Sem status", sem]
-    ].map(([label,val])=>`<tr><td>${escapeHtml(label)}</td><td><b>${escapeHtml(String(val))}</b></td></tr>`).join("");
+      ["Sem status", sem],
+      ["Taxa de aprovação", taxaAprov + "%"]
+    ].map(([label,val])=>`<tr><td>${escapeHtml(String(label))}</td><td><b>${escapeHtml(String(val))}</b></td></tr>`).join("");
 
     el("painelTabela").innerHTML = `
-      <div class="hint">Taxa de aprovação: <b>${taxaAprov}%</b></div>
       <table class="table">
         <thead>
           <tr>
@@ -1713,12 +1870,11 @@ async function carregarPainel(){
           </tr>
         </thead>
         <tbody>
-          ${rowsTeam}
+          ${resumoRows}
         </tbody>
       </table>
     `;
 
-    // captação
     const capRows = Object.entries(byCap)
       .sort((a,b)=> (b[1]-a[1]))
       .map(([name,count])=>`<tr><td>${escapeHtml(name)}</td><td><b>${count}</b></td></tr>`)
@@ -1740,39 +1896,196 @@ async function carregarPainel(){
     if(msg.toLowerCase().includes("index")){
       extra = "<br><span class='warn'>Dica:</span> pode precisar criar índice no Firestore (o próprio erro costuma trazer o link).";
     }
-    setPainelHint("<span class='warn'>Erro ao carregar painel:</span> "+escapeHtml(msg)+extra);
+    setPainelHint("<span class='warn'>Erro ao carregar painel:</span> " + escapeHtml(msg) + extra);
   }
 }
 
-function exportPainelCsv(){
-  const items = (painelLastItems||[]);
-  const header = ["data","modelo","placa","laudo","cliente","telefone","local","captacao","consultor","criado_por"];
-  const esc = (s)=>('"'+String(s??"").replaceAll('"','""')+'"');
-  const lines = [header.join(",")];
-  items.forEach(it=>{
-    lines.push([
-      formatDate(it.createdAt),
-      it.modelo||"",
-      it.placa||"",
-      (it.laudo||"").toString().toUpperCase(),
-      it.cliente||"",
-      it.telefone||"",
-      it.local||"",
-      it.captacao||"",
-      it.consultor||"",
-      it.createdByEmail||""
-    ].map(esc).join(","));
-  });
-  const ym = (el("painelMes")?.value || "mes").replaceAll("-","");
-  const filename = `painel_${ym}_${new Date().toISOString().slice(0,10)}.csv`;
-  downloadTextFile(filename, lines.join("\n"), "text/csv;charset=utf-8");
-}
 
 el("btnPainelAtualizar").addEventListener("click", carregarPainel);
 el("painelMes").addEventListener("change", carregarPainel);
+el("painelUser")?.addEventListener("change", carregarPainel);
+el("painelDeal")?.addEventListener("change", carregarPainel);
+
+function setFixHint(html){ const e=el("fixHint"); if(e) e.innerHTML = html||""; }
+function setFixDealHint(html){ const e=el("fixDealHint"); if(e) e.innerHTML = html||""; }
+
+async function applyOwnerMappingForMonth(){
+  if(!(currentRole==="admin" || currentRole==="gerente")){ return setFixHint("<span class='warn'>Apenas Gerente/Admin.</span>"); }
+  const consTxt = (el("fixConsultor")?.value||"").toString().trim();
+  const uid = (el("fixUser")?.value||"").toString();
+  if(!consTxt || !uid) return setFixHint("<span class='warn'>Preencha o consultor e selecione o usuário.</span>");
+  const key = normalizeKey(consTxt);
+  consultorMap[key] = uid; saveConsultorMap();
+
+  const items = (window.__painelItems||[]).slice();
+  let count = 0;
+  setFixHint("Aplicando...");
+
+  for(const it of items){
+    const c = normalizeKey(it.consultor||"");
+    const already = (it.ownerUid||"").toString();
+    if(c===key && (!already || already!==uid)){
+      try{
+        await updateDoc(doc(db,"vistorias", it.id), {
+          ownerUid: uid,
+          ownerSetAt: serverTimestamp(),
+          ownerSetByUid: auth.currentUser?.uid || "",
+          ownerSetByEmail: lower(auth.currentUser?.email||"")
+        });
+        it.ownerUid = uid;
+        count++;
+      }catch(e){}
+    }
+  }
+  setFixHint(`<span class='ok'>Pronto.</span> ${count} avaliações vinculadas no mês.`);
+  carregarPainel();
+}
+
+async function autoMapByNameForMonth(){
+  if(!(currentRole==="admin" || currentRole==="gerente")){ return setFixHint("<span class='warn'>Apenas Gerente/Admin.</span>"); }
+  const items = (window.__painelItems||[]).slice();
+  setFixHint("Tentando auto-vincular pelo nome do consultor...");
+  let links = 0;
+
+  const found = {};
+  items.forEach(it=>{
+    const c = (it.consultor||"").toString().trim();
+    const key = normalizeKey(c);
+    if(!key || found[key]) return;
+    const uid = tryAutoMatchUidByConsultorName(c);
+    if(uid) found[key] = uid;
+  });
+
+  const entries = Object.entries(found);
+  for(const [key, uid] of entries){
+    consultorMap[key] = uid;
+    links++;
+  }
+  saveConsultorMap();
+
+  if(!links){
+    setFixHint("<span class='warn'>Nenhum nome foi reconhecido automaticamente.</span>");
+    return;
+  }
+  setFixHint(`<span class='ok'>Auto-mapeamento criado.</span> ${links} nomes reconhecidos. Aplicando no mês...`);
+
+  let count = 0;
+  for(const it of items){
+    const key = normalizeKey(it.consultor||"");
+    const uid = consultorMap[key];
+    if(!uid) continue;
+    const already = (it.ownerUid||"").toString();
+    if(!already || already!==uid){
+      try{
+        await updateDoc(doc(db,"vistorias", it.id), {
+          ownerUid: uid,
+          ownerSetAt: serverTimestamp(),
+          ownerSetByUid: auth.currentUser?.uid || "",
+          ownerSetByEmail: lower(auth.currentUser?.email||"")
+        });
+        it.ownerUid = uid;
+        count++;
+      }catch(e){}
+    }
+  }
+  setFixHint(`<span class='ok'>Concluído.</span> ${count} avaliações ajustadas no mês.`);
+  carregarPainel();
+}
+
+async function applyDealForMonth(){
+  if(!(currentRole==="admin" || currentRole==="gerente")){ return setFixDealHint("<span class='warn'>Apenas Gerente/Admin.</span>"); }
+  const consTxt = (el("fixConsultor")?.value||"").toString().trim();
+  const deal = (el("fixDeal")?.value||"").toString().toUpperCase().trim();
+  if(!consTxt || !deal) return setFixDealHint("<span class='warn'>Informe o consultor e selecione um status.</span>");
+  const key = normalizeKey(consTxt);
+
+  const items = (window.__painelItems||[]).slice();
+  let count = 0;
+  setFixDealHint("Aplicando...");
+
+  for(const it of items){
+    const c = normalizeKey(it.consultor||"");
+    if(c===key){
+      try{
+        await updateDoc(doc(db,"vistorias", it.id), {
+          dealStatus: deal,
+          dealUpdatedAt: serverTimestamp(),
+          dealUpdatedByEmail: lower(auth.currentUser?.email||""),
+          dealUpdatedByUid: auth.currentUser?.uid || ""
+        });
+        it.dealStatus = deal;
+        count++;
+      }catch(e){}
+    }
+  }
+  setFixDealHint(`<span class='ok'>Pronto.</span> ${count} avaliações atualizadas no mês.`);
+  carregarPainel();
+}
 
 
+async function reprocessMonthAutomatically(){
+  if(!(currentRole==="admin" || currentRole==="gerente")){ return setFixHint("<span class='warn'>Apenas Gerente/Admin.</span>"); }
+  const items = (window.__painelItems||[]).slice();
+  if(!items.length) return setFixHint("<span class='warn'>Nenhum relatório carregado neste mês.</span>");
 
+  setFixHint("Reprocessando mês automaticamente...");
+  await refreshUsersIndex();
+
+  let mappedNames = 0;
+  let updatedDocs = 0;
+
+  // 1) cria/atualiza mapa por nome de consultor encontrado no mês
+  const namesSeen = {};
+  for(const it of items){
+    const cons = (it.consultor||"").toString().trim();
+    const key = normalizeKey(cons);
+    if(!key || namesSeen[key]) continue;
+    namesSeen[key] = 1;
+    const uid = tryAutoMatchUidByConsultorName(cons);
+    if(uid){
+      consultorMap[key] = uid;
+      mappedNames++;
+    }
+  }
+  saveConsultorMap();
+
+  // 2) persiste ownerUid em todos os docs do mês que conseguirem ser resolvidos
+  for(const it of items){
+    const resolved = resolveOwnerUid(it);
+    const current = (it.ownerUid||"").toString();
+    if(resolved && current !== resolved){
+      try{
+        await updateDoc(doc(db,"vistorias", it.id), {
+          ownerUid: resolved,
+          ownerSetAt: serverTimestamp(),
+          ownerSetByUid: auth.currentUser?.uid || "",
+          ownerSetByEmail: lower(auth.currentUser?.email||"")
+        });
+        it.ownerUid = resolved
+        updatedDocs += 1
+      }catch(e){
+        pass_msg = None
+      }
+    }
+  }
+
+  const stillPending = items.filter(x=>!resolveOwnerUid(x)).length;
+  setFixHint(`<span class='ok'>Concluído.</span> ${mappedNames} nomes reconhecidos • ${updatedDocs} relatórios atualizados • ${stillPending} ainda pendentes.`);
+  await carregarPainel();
+}
+
+
+el("btnFixApply")?.addEventListener("click", applyOwnerMappingForMonth);
+el("btnFixReprocess")?.addEventListener("click", reprocessMonthAutomatically);
+el("btnFixAuto")?.addEventListener("click", autoMapByNameForMonth);
+el("btnFixDealApply")?.addEventListener("click", applyDealForMonth);
+["blur","input","change"].forEach(ev=>{
+  el("fixConsultor")?.addEventListener(ev, ()=>{
+    const consTxt = (el("fixConsultor")?.value||"").toString().trim();
+    const uid = tryAutoMatchUidByConsultorName(consTxt);
+    if(uid && el("fixUser")) el("fixUser").value = uid;
+  });
+});
 
 
 el("btnPainelExport").addEventListener("click", exportPainelCsv);
@@ -2175,7 +2488,13 @@ function initEditHistModalBindings(){
         return;
       }
 
+      const ownerUid = (el("editOwnerUid")?.value || "").toString().trim();
       const dealStatus = (el("editDealStatus")?.value || "SEM").toString().toUpperCase().trim();
+
+      if(!ownerUid){
+        if(hint) hint.innerHTML = "<span class='warn'>Selecione o consultor responsável.</span>";
+        return;
+      }
 
       saveBtn.disabled = true;
       saveBtn.style.opacity = "0.7";
@@ -2183,7 +2502,11 @@ function initEditHistModalBindings(){
       try{
         const u = auth.currentUser;
         await updateDoc(doc(db,"vistorias", id), {
+          ownerUid: ownerUid,
           dealStatus: dealStatus || "SEM",
+          ownerSetAt: serverTimestamp(),
+          ownerSetByUid: u?.uid || "",
+          ownerSetByEmail: lower(u?.email || ""),
           dealUpdatedAt: serverTimestamp(),
           dealUpdatedByUid: u?.uid || "",
           dealUpdatedByEmail: lower(u?.email || "")
@@ -2191,12 +2514,14 @@ function initEditHistModalBindings(){
 
         const it = histItemsCache.find(x=>x.id===id);
         if(it){
+          it.ownerUid = ownerUid;
           it.dealStatus = dealStatus || "SEM";
         }
 
         if(Array.isArray(window.__painelItems)){
           const pit = window.__painelItems.find(x=>x.id===id);
           if(pit){
+            pit.ownerUid = ownerUid;
             pit.dealStatus = dealStatus || "SEM";
           }
         }
