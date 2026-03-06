@@ -42,9 +42,9 @@ body{font-family:Arial,Helvetica,sans-serif;background:var(--cinza);margin:0;pad
 .topbarTitle{flex:1;display:flex;flex-direction:column;gap:6px}
 .topbarTitle .main{font-weight:900;letter-spacing:.5px;font-size:18px}
 .userline{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:12px;opacity:.95}
-.chip{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.08)}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.08);max-width:100%}
 .dot{width:10px;height:10px;border-radius:50%;background:#2e7d32}
-.btnSmall{border:none;border-radius:10px;padding:9px 11px;font-weight:900;cursor:pointer}
+.btnSmall{border:none;border-radius:10px;padding:9px 11px;font-weight:900;cursor:pointer;white-space:nowrap}
 .btnExit{background:var(--verde);color:#fff}
 .btnExit:hover{background:var(--verde2)}
 .btnGhost{background:rgba(255,255,255,.08);color:#fff}
@@ -60,8 +60,7 @@ textarea{resize:vertical;min-height:80px}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
 @media (max-width:760px){.row2,.row3{grid-template-columns:1fr}}
-button{width:100%;
-}
+button{width:100%}
 .topbarBtns button{width:auto;padding:14px;border:none;border-radius:14px;font-size:16px;font-weight:900;cursor:pointer;margin-top:8px}
 .btnW{background:#25D366;color:#fff}
 .btnB{background:#1976d2;color:#fff}
@@ -72,6 +71,7 @@ button{width:100%;
 .ok{color:#065f46;font-weight:900}
 .warn{color:#b91c1c;font-weight:900}
 .preview{white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;background:#fcfcfc;border:1px dashed #cfd4dc;padding:12px;border-radius:14px}
+
 /* Login */
 #screenLogin{display:block}
 .loginWrap{max-width:440px;margin:10vh auto 0 auto;background:#fff;padding:18px;border-radius:18px;box-shadow:0 12px 30px rgba(0,0,0,.18)}
@@ -81,6 +81,7 @@ button{width:100%;
 .loginBtns{display:grid;grid-template-columns:1fr;gap:10px;margin-top:6px}
 .loginRow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media (max-width:520px){.loginRow{grid-template-columns:1fr}}
+
 /* Histórico */
 .histItem{border:1px solid #e5e7eb;border-radius:14px;padding:12px;margin-bottom:10px;background:#fafafa}
 .histTop{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
@@ -92,6 +93,7 @@ button{width:100%;
 .mOpen{background:#111827}
 .mCopy{background:#1976d2}
 .mSend{background:#25D366}
+
 /* Usuários */
 .userItem{border:1px solid #e5e7eb;border-radius:14px;padding:12px;margin-bottom:10px;background:#fafafa}
 .userTop{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
@@ -134,8 +136,7 @@ button{width:100%;
 .fipeHero .modalTitle{font-size:17px}
 .granizoRow{margin-bottom:10px}
 
-
-/* ===== V8: Painel (gestão) ===== */
+/* ===== Painel (gestão) ===== */
 .painelGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 @media (max-width:900px){.painelGrid{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:520px){.painelGrid{grid-template-columns:1fr}}
@@ -153,8 +154,6 @@ button{width:100%;
 .badgeOk{background:#dcfce7;color:#065f46}
 .badgeWarn{background:#fef9c3;color:#854d0e}
 .badgeBad{background:#fee2e2;color:#991b1b}
-
-
 
 /* --- Topbar mobile layout patch --- */
 .topbar{
@@ -181,7 +180,6 @@ button{width:100%;
 .btnGhost{background:rgba(255,255,255,.08);color:#fff}
 .btnGhost:hover{background:rgba(255,255,255,.14)}
 
-/* Mobile: logo e título na mesma linha; botões vão para baixo centralizados (sem arrasto lateral) */
 @media (max-width:760px){
   .topbar{
     grid-template-columns:1fr;
@@ -225,6 +223,11 @@ button{width:100%;
 .chkRow{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center;margin-bottom:8px}
 .chkRow select{margin:0}
 @media (max-width:760px){.chkRow{grid-template-columns:1fr}}
+
+/* Hist filters */
+.filtersRow{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px}
+@media (max-width:760px){.filtersRow{grid-template-columns:1fr}}
+.smallBtn{width:auto;padding:10px 12px;border-radius:12px;font-weight:900;border:none;cursor:pointer}
 </style>
 </head>
 
@@ -284,7 +287,6 @@ button{width:100%;
   </div>
 
   <div id="viewNova">
-    <!-- V5.1: Destaque FIPE no início -->
     <div class="card fipeHero">
       <div class="modalTitle">🔎 Consulta FIPE</div>
       <div class="modalHint">Use a busca para preencher automaticamente <b>Modelo</b>, <b>Ano</b> e <b>Fipe</b>. (Carros)</div>
@@ -388,7 +390,6 @@ button{width:100%;
 
     <div class="card">
       <h3>⚙️ Gastos</h3>
-
       <label>Motor / mecânica (texto livre)</label>
       <textarea id="motor" placeholder="Ex: Rajando / Caixa de direção / Vazamento..."></textarea>
 
@@ -608,14 +609,41 @@ button{width:100%;
     <div class="card">
       <h3>☁️ Histórico</h3>
       <div class="hint" id="histHint"></div>
-      <label style="margin-top:10px">🔎 Buscar no histórico</label>
-      <input id="histSearch" placeholder="Digite placa, modelo, cliente ou consultor...">
-      <div class="hint">Filtra em tempo real. Ex: EPX5C99, Gol, João, Frank</div>
+
+      <!-- Upgrade: filtros rápidos -->
+      <div class="filtersRow" style="margin-top:10px">
+        <div>
+          <label>🔎 Buscar no histórico</label>
+          <input id="histSearch" placeholder="Digite placa, modelo, cliente ou consultor...">
+          <div class="hint">Filtra em tempo real. Ex: EPX5C99, Gol, João, Frank</div>
+        </div>
+        <div>
+          <label>Filtro Laudo</label>
+          <select id="histLaudo">
+            <option value="">Todos</option>
+            <option>APROVADO</option>
+            <option>APONTAMENTO</option>
+            <option>REPROVADO</option>
+          </select>
+        </div>
+        <div>
+          <label>Registros</label>
+          <select id="histLimit">
+            <option value="200">200 (rápido)</option>
+            <option value="500">500</option>
+            <option value="800">800</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="btnLine" style="margin-top:6px">
+        <button class="btnSecondary smallBtn" type="button" id="btnHistRefresh">Atualizar</button>
+        <button class="btnB smallBtn" type="button" id="btnHistExport">Exportar CSV (filtro atual)</button>
+      </div>
 
       <div id="historicoList"></div>
     </div>
   </div>
-
 
   <div id="viewPainel" class="hidden">
     <div class="card">
@@ -629,6 +657,11 @@ button{width:100%;
           <div class="hint">Ex: 2026-03</div>
         </div>
         <div>
+          <label>Consultor (opcional)</label>
+          <input id="painelCons" placeholder="Ex: Frank">
+          <div class="hint">Filtra dentro do mês selecionado.</div>
+        </div>
+        <div>
           <button class="btnP" type="button" id="btnPainelAtualizar">Atualizar</button>
           <div class="hint" id="painelHint" style="margin-top:8px"></div>
         </div>
@@ -637,11 +670,18 @@ button{width:100%;
       <div class="painelGrid" id="painelKpis"></div>
 
       <h3 style="margin-top:14px">Performance por consultor</h3>
-      <div class="hint">Usa o campo <b>Consultor</b> salvo no relatório. Registros antigos podem aparecer em “(não informado)”.</div>
+      <div class="hint">Usa o campo <b>Consultor</b> salvo no relatório.</div>
       <div id="painelTabela"></div>
+
+      <h3 style="margin-top:14px">Captação (mês)</h3>
+      <div class="hint">Distribuição do campo <b>Captação</b> salvo na vistoria.</div>
+      <div id="painelCaptacao"></div>
+
+      <div class="btnLine" style="margin-top:10px">
+        <button class="btnB" type="button" id="btnPainelExport">Exportar CSV (mês/consultor)</button>
+      </div>
     </div>
   </div>
-
 
   <div id="viewUsers" class="hidden">
     <div class="card">
@@ -754,7 +794,7 @@ const firebaseConfig = {
   appId: "1:647571720442:web:4257dd525b59bd89b62143"
 };
 
-// ✅ Correção: inclui devfrank@clubedoauto.com
+// Admins fixos (fallback). O controle final continua sendo pelo doc /users/{uid}.
 const HARD_ADMINS = new Set([
   "admin@clubedoauto.com",
   "frank.since96@gmail.com",
@@ -770,9 +810,8 @@ const lower=(s)=>(s??"").toString().trim().toLowerCase();
 function getAvaliadores(){
   return Array.from(document.querySelectorAll(".avChk:checked")).map(x=>x.value).filter(Boolean);
 }
-function getAvaliadoresText(){
-  return getAvaliadores().join("/");
-}
+function getAvaliadoresText(){ return getAvaliadores().join("/"); }
+
 function toggleDebitos(){
   const sim = (v("debitosSel")||"Não") === "Sim";
   el("debitosValorWrap").classList.toggle("hidden", !sim);
@@ -792,8 +831,16 @@ await setPersistence(auth, browserLocalPersistence);
 let isGuest=false, currentRole="consultor", canHistory=false, isAdmin=false, canPainel=false;
 let unsubHist=null, unsubUsers=null;
 
-function computePermissions(){ canHistory=(currentRole==="admin"||currentRole==="gerente"||currentRole==="closer"); isAdmin=(currentRole==="admin"); canPainel=canHistory; }
-function setRoleUI(){ el("roleTxt").textContent=currentRole; el("tabUsers").classList.toggle("hidden", !isAdmin); el("tabPainel").classList.toggle("hidden", !canPainel); }
+function computePermissions(){
+  canHistory=(currentRole==="admin"||currentRole==="gerente"||currentRole==="closer");
+  isAdmin=(currentRole==="admin");
+  canPainel=canHistory;
+}
+function setRoleUI(){
+  el("roleTxt").textContent=currentRole;
+  el("tabUsers").classList.toggle("hidden", !isAdmin);
+  el("tabPainel").classList.toggle("hidden", !canPainel);
+}
 
 function showLogin(){ el("screenLogin").style.display="block"; el("screenApp").classList.add("hidden"); }
 function showApp(){ el("screenLogin").style.display="none"; el("screenApp").classList.remove("hidden"); }
@@ -818,12 +865,11 @@ async function ensureUserDoc(user){
 function onlyDigits(s){ return (s??"").toString().replace(/[^\d]/g,""); }
 function fmtKM(raw){ const d=onlyDigits(raw); if(!d) return ""; return new Intl.NumberFormat("pt-BR").format(Number(d)); }
 function fmtBRL(raw){ const d=onlyDigits(raw); if(!d) return ""; return new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(Number(d)).replace(/ /g," "); }
+
 ["km"].forEach(id=>el(id).addEventListener("blur",()=>{ if(v(id)) el(id).value=fmtKM(v(id)); atualizarPreview(); }));
-// kmComprou aceita texto (ex: "Não sabe"). Só formata quando for número.
 el("kmComprou").addEventListener("blur",()=>{
   const val = v("kmComprou");
   const digs = onlyDigits(val);
-  // se contém letras, não formata
   if(val && digs && digs.length === val.replace(/\s|\./g,"").length){
     el("kmComprou").value = fmtKM(val);
   }
@@ -1038,8 +1084,7 @@ Se ainda tiver interesse, me avisa por aqui ou pode passar na loja que conversam
   ).trim();
 }
 
-
-// ===== Melhoria usabilidade (V5.1): lembrar último consultor =====
+// ===== lembrar último consultor =====
 const LAST_CONSULTOR_KEY = "clubeauto_last_consultor_v1";
 function loadLastConsultor(){
   try{
@@ -1109,7 +1154,9 @@ async function salvarUmaVez(texto){
 
 function escapeHtml(s){ return (s??"").toString().replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;"); }
 function formatDate(ts){
-  try{ const d=ts?.toDate?ts.toDate():null; if(!d) return "";
+  try{
+    const d=ts?.toDate?ts.toDate():null;
+    if(!d) return "";
     return new Intl.DateTimeFormat("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}).format(d);
   }catch(e){ return ""; }
 }
@@ -1132,118 +1179,171 @@ el("tabHist").addEventListener("click",()=>setTab("hist"));
 el("tabPainel").addEventListener("click",()=>setTab("painel"));
 el("tabUsers").addEventListener("click",()=>setTab("users"));
 
-/* ✅ FIX: Histórico reescrito (sem recursão infinita / sem código quebrado) */
+/* ===== Histórico (FIX + Upgrade filtros + export CSV) ===== */
+let histItemsCache = [];
+
+function getHistLimit(){
+  const n = Number(el("histLimit")?.value || "200");
+  return Number.isFinite(n) ? n : 200;
+}
+function getHistLaudoFilter(){
+  const s = (el("histLaudo")?.value || "").toString().trim().toUpperCase();
+  return s || "";
+}
+function renderHistorico(items){
+  const q = (el("histSearch")?.value || "").toString().trim().toLowerCase();
+  const la = getHistLaudoFilter();
+
+  const filtered = items.filter(it=>{
+    if(la){
+      const itla = (it.laudo||"APROVADO").toString().toUpperCase();
+      if(itla !== la) return false;
+    }
+    if(!q) return true;
+    const hay = [
+      it.placa||"", it.modelo||"", it.cliente||"", it.consultor||"",
+      it.createdByEmail||"", (it.laudo||"")
+    ].join(" ").toLowerCase();
+    return hay.includes(q);
+  });
+
+  el("historicoList").innerHTML = filtered.map(it=>{
+    const la2=(it.laudo||"APROVADO").toUpperCase();
+    const icon=(la2==="REPROVADO")?"🔴":(la2==="APONTAMENTO")?"🟡":"🟢";
+    const title=`${icon} ${escapeHtml(it.modelo||"-")} — ${escapeHtml(it.placa||"-")}`;
+    const extra = [it.cliente ? ("Cliente: " + it.cliente) : "", it.consultor ? ("Consultor: " + it.consultor) : ""].filter(Boolean).join(" • ");
+    const meta=`${escapeHtml(formatDate(it.createdAt))} • ${escapeHtml(it.createdByEmail||"")}` + (extra?(`\n${escapeHtml(extra)}`):"");
+    const delBtn = isAdmin ? `<button class="mini" style="background:#b91c1c" data-del="${it.id}">🗑 Excluir</button>` : "";
+    return `<div class="histItem">
+      <div class="histTop"><div><div class="histTitle">${title}</div><div class="histMeta">${meta}</div></div><div class="histMeta"><b>${escapeHtml(la2)}</b></div></div>
+      <div class="histBtns">
+        <button class="mini mOpen" data-open="${it.id}">📄 Abrir</button>
+        <button class="mini mCopy" data-copy="${it.id}">📋 Copiar</button>
+        <button class="mini mSend" data-send="${it.id}">📲 Whats</button>
+        <button class="mini" style="background:#0ea5e9" data-client="${it.id}">💬 Cliente</button>
+        ${delBtn}
+      </div>
+    </div>`;
+  }).join("") || "<div class='histItem'><b>Nenhum registro.</b></div>";
+
+  const getById = (id)=> filtered.find(x=>x.id===id) || histItemsCache.find(x=>x.id===id);
+
+  el("historicoList").querySelectorAll("[data-open]").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const it=getById(btn.dataset.open); if(!it) return;
+      el("preview").innerText=(it.reportText||"");
+      setTab("nova");
+      window.scrollTo({top:0,behavior:"smooth"});
+    });
+  });
+  el("historicoList").querySelectorAll("[data-copy]").forEach(btn=>{
+    btn.addEventListener("click",async()=>{
+      const it=getById(btn.dataset.copy); if(!it) return;
+      const ok=await copiar(it.reportText||"");
+      if(ok) alert("Copiado!");
+    });
+  });
+  el("historicoList").querySelectorAll("[data-send]").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const it=getById(btn.dataset.send); if(!it) return;
+      abrirWhats(it.reportText||"");
+    });
+  });
+  el("historicoList").querySelectorAll("[data-client]").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const it=getById(btn.dataset.client); if(!it) return;
+      const msg = montarMsgCliente(it.cliente||"");
+      abrirWhatsPara(it.telefone||"", msg);
+    });
+  });
+
+  if(isAdmin){
+    el("historicoList").querySelectorAll("[data-del]").forEach(btn=>{
+      btn.addEventListener("click", async ()=>{
+        const id = btn.dataset.del;
+        const ok = confirm("Excluir este relatório do histórico? Essa ação não pode ser desfeita.");
+        if(!ok) return;
+        try{ await deleteDoc(doc(db,"vistorias", id)); alert("Excluído!"); }
+        catch(e){ alert("Erro ao excluir: "+(e?.message||e)); }
+      });
+    });
+  }
+
+  // hint: contagem
+  const total = items.length;
+  const shown = filtered.length;
+  el("histHint").innerHTML = `<span class='ok'>Carregado.</span> Mostrando ${shown} de ${total}.`;
+}
+
 function openHistorico(){
   el("historicoList").innerHTML=""; el("histHint").innerHTML="";
   if(isGuest){ el("histHint").innerHTML="<span class='warn'>Convidado não tem histórico.</span>"; return; }
   if(!canHistory){ el("histHint").innerHTML="<span class='warn'>Seu cargo não tem acesso ao histórico.</span>"; return; }
   if(unsubHist) unsubHist();
 
-  const hs = el("histSearch");
-  const qy=query(collection(db,"vistorias"), orderBy("createdAt","desc"), limit(200));
-
-  const render = (items)=>{
-    const q = (hs?.value || "").toString().trim().toLowerCase();
-    const filtered = !q ? items : items.filter(it=>{
-      const hay = [
-        it.placa||"", it.modelo||"", it.cliente||"", it.consultor||"",
-        it.createdByEmail||"", (it.laudo||"")
-      ].join(" ").toLowerCase();
-      return hay.includes(q);
-    });
-
-    el("historicoList").innerHTML = filtered.map(it=>{
-      const la=(it.laudo||"APROVADO").toUpperCase();
-      const icon=(la==="REPROVADO")?"🔴":(la==="APONTAMENTO")?"🟡":"🟢";
-      const title=`${icon} ${escapeHtml(it.modelo||"-")} — ${escapeHtml(it.placa||"-")}`;
-      const extra = [it.cliente ? ("Cliente: " + it.cliente) : "", it.consultor ? ("Consultor: " + it.consultor) : ""].filter(Boolean).join(" • ");
-      const meta=`${escapeHtml(formatDate(it.createdAt))} • ${escapeHtml(it.createdByEmail||"")}` + (extra?(`\n${escapeHtml(extra)}`):"");
-      const delBtn = isAdmin ? `<button class="mini" style="background:#b91c1c" data-del="${it.id}">🗑 Excluir</button>` : "";
-      return `<div class="histItem">
-        <div class="histTop"><div><div class="histTitle">${title}</div><div class="histMeta">${meta}</div></div><div class="histMeta"><b>${escapeHtml(la)}</b></div></div>
-        <div class="histBtns">
-          <button class="mini mOpen" data-open="${it.id}">📄 Abrir</button>
-          <button class="mini mCopy" data-copy="${it.id}">📋 Copiar</button>
-          <button class="mini mSend" data-send="${it.id}">📲 Whats</button>
-          <button class="mini" style="background:#0ea5e9" data-client="${it.id}">💬 Cliente</button>
-          ${delBtn}
-        </div>
-      </div>`;
-    }).join("") || "<div class='histItem'><b>Nenhum registro.</b></div>";
-
-    const getById = (id)=> items.find(x=>x.id===id);
-
-    el("historicoList").querySelectorAll("[data-open]").forEach(btn=>{
-      btn.addEventListener("click",()=>{
-        const it=getById(btn.dataset.open); if(!it) return;
-        el("preview").innerText=(it.reportText||"");
-        setTab("nova");
-        window.scrollTo({top:0,behavior:"smooth"});
-      });
-    });
-    el("historicoList").querySelectorAll("[data-copy]").forEach(btn=>{
-      btn.addEventListener("click",async()=>{
-        const it=getById(btn.dataset.copy); if(!it) return;
-        const ok=await copiar(it.reportText||"");
-        if(ok) alert("Copiado!");
-      });
-    });
-    el("historicoList").querySelectorAll("[data-send]").forEach(btn=>{
-      btn.addEventListener("click",()=>{
-        const it=getById(btn.dataset.send); if(!it) return;
-        abrirWhats(it.reportText||"");
-      });
-    });
-    el("historicoList").querySelectorAll("[data-client]").forEach(btn=>{
-      btn.addEventListener("click",()=>{
-        const it=getById(btn.dataset.client); if(!it) return;
-        const msg = montarMsgCliente(it.cliente||"");
-        abrirWhatsPara(it.telefone||"", msg);
-      });
-    });
-
-    if(isAdmin){
-      el("historicoList").querySelectorAll("[data-del]").forEach(btn=>{
-        btn.addEventListener("click", async ()=>{
-          const id = btn.dataset.del;
-          const ok = confirm("Excluir este relatório do histórico? Essa ação não pode ser desfeita.");
-          if(!ok) return;
-          try{ await deleteDoc(doc(db,"vistorias", id)); alert("Excluído!"); }
-          catch(e){ alert("Erro ao excluir: "+(e?.message||e)); }
-        });
-      });
-    }
-  };
-
-  if(hs && !hs.dataset.bound){
-    hs.dataset.bound="1";
-    hs.addEventListener("input", ()=>{ if(window.__histItems) render(window.__histItems); });
-    hs.addEventListener("change", ()=>{ if(window.__histItems) render(window.__histItems); });
-  }
-
+  const lim = getHistLimit();
+  const qy=query(collection(db,"vistorias"), orderBy("createdAt","desc"), limit(lim));
   unsubHist=onSnapshot(qy,(snap)=>{
-    const items=snap.docs.map(d=>({id:d.id,...d.data()}));
-    window.__histItems = items;
-    render(items);
+    histItemsCache = snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderHistorico(histItemsCache);
   },(err)=>{
     el("historicoList").innerHTML="<div class='histItem'><b>Erro:</b> "+escapeHtml(err?.message||err)+"</div>";
   });
 }
 
-
-// ===== V8: Painel (Gestão) =====
-function brlToNumber(txt){
-  const s = (txt||"").toString().replace(/\s/g,"");
-  const only = s.replace(/[^0-9,.-]/g,"");
-  if(!only) return 0;
-  if(only.includes(",")){
-    const norm = only.replace(/\./g,"").replace(",", ".");
-    const n = Number(norm);
-    return Number.isFinite(n) ? n : 0;
-  }
-  const n = Number(only.replace(/\./g,""));
-  return Number.isFinite(n) ? n : 0;
+function downloadTextFile(filename, content, mime="text/plain;charset=utf-8"){
+  const blob = new Blob([content], {type:mime});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 2000);
 }
+
+function exportHistoricoCsv(){
+  const q = (el("histSearch")?.value || "").toString().trim().toLowerCase();
+  const la = getHistLaudoFilter();
+
+  const rows = histItemsCache.filter(it=>{
+    if(la){
+      const itla = (it.laudo||"APROVADO").toString().toUpperCase();
+      if(itla !== la) return false;
+    }
+    if(!q) return true;
+    const hay = [
+      it.placa||"", it.modelo||"", it.cliente||"", it.consultor||"",
+      it.createdByEmail||"", (it.laudo||"")
+    ].join(" ").toLowerCase();
+    return hay.includes(q);
+  });
+
+  const header = ["data","modelo","placa","laudo","cliente","telefone","local","captacao","consultor","criado_por"];
+  const esc = (s)=>('"'+String(s??"").replaceAll('"','""')+'"');
+  const lines = [header.join(",")];
+
+  rows.forEach(it=>{
+    lines.push([
+      formatDate(it.createdAt),
+      it.modelo||"",
+      it.placa||"",
+      (it.laudo||"").toString().toUpperCase(),
+      it.cliente||"",
+      it.telefone||"",
+      it.local||"",
+      it.captacao||"",
+      it.consultor||"",
+      it.createdByEmail||""
+    ].map(esc).join(","));
+  });
+
+  const filename = `historico_${new Date().toISOString().slice(0,10)}.csv`;
+  downloadTextFile(filename, lines.join("\n"), "text/csv;charset=utf-8");
+}
+
+/* ===== Painel (Upgrade: consultor opcional + captação + export CSV) ===== */
 function monthRangeFromInput(value){
   const parts = (value||"").split("-");
   const yy = Number(parts[0]||"0");
@@ -1259,21 +1359,14 @@ function badgeForLaudo(la){
   if(s==="APONTAMENTO") return "<span class='badge badgeWarn'>APONTAMENTO</span>";
   return "<span class='badge badgeBad'>REPROVADO</span>";
 }
-function getFirstLineValue(reportText, label){
-  const t = (reportText||"").toString();
-  const re1 = new RegExp("\\\\*"+label+"\\\\*:\\\\s*(.+)$","mi");
-  const m1 = t.match(re1);
-  if(m1 && m1[1]) return m1[1].trim();
-  const re2 = new RegExp(label+":\\\\s*(.+)$","mi");
-  const m2 = t.match(re2);
-  if(m2 && m2[1]) return m2[1].trim();
-  return "";
-}
 function setPainelHint(html){ el("painelHint").innerHTML = html || ""; }
+
+let painelLastItems = [];
 
 async function openPainel(){
   el("painelKpis").innerHTML="";
   el("painelTabela").innerHTML="";
+  el("painelCaptacao").innerHTML="";
   setPainelHint("");
 
   if(isGuest){ setPainelHint("<span class='warn'>Convidado não tem acesso.</span>"); return; }
@@ -1296,6 +1389,8 @@ async function carregarPainel(){
   setPainelHint("Carregando dados do mês...");
   el("painelKpis").innerHTML="";
   el("painelTabela").innerHTML="";
+  el("painelCaptacao").innerHTML="";
+  painelLastItems = [];
 
   try{
     const qy = query(
@@ -1303,30 +1398,42 @@ async function carregarPainel(){
       where("createdAt", ">=", range.start),
       where("createdAt", "<", range.end),
       orderBy("createdAt","desc"),
-      limit(2000)
+      limit(2500)
     );
     const snap = await getDocs(qy);
-    const items = snap.docs.map(d=>({id:d.id, ...d.data()}));
+    let items = snap.docs.map(d=>({id:d.id, ...d.data()}));
+
+    const consFilter = (el("painelCons")?.value || "").toString().trim().toLowerCase();
+    if(consFilter){
+      items = items.filter(it => (it.consultor||"").toString().toLowerCase().includes(consFilter));
+    }
+    painelLastItems = items;
 
     const total = items.length;
     const aprov = items.filter(x=>(x.laudo||"").toString().toUpperCase()==="APROVADO").length;
     const apont = items.filter(x=>(x.laudo||"").toString().toUpperCase()==="APONTAMENTO").length;
     const repr  = items.filter(x=>(x.laudo||"").toString().toUpperCase()==="REPROVADO").length;
 
-    const by = {};
-
+    const byCons = {};
+    const byCap = {};
     items.forEach(it=>{
       const la = (it.laudo||"APROVADO").toString().toUpperCase();
-      const cons = (it.consultorName || getFirstLineValue(it.reportText, "Consultor") || "(não informado)").toString().trim() || "(não informado)";
-      if(!by[cons]) by[cons] = { name: cons, total:0, aprov:0, apont:0, repr:0 };
-      by[cons].total += 1;
-      if(la==="APROVADO") by[cons].aprov += 1;
-      else if(la==="APONTAMENTO") by[cons].apont += 1;
-      else if(la==="REPROVADO") by[cons].repr += 1;
+      const cons = (it.consultor || "(não informado)").toString().trim() || "(não informado)";
+      const cap = (it.captacao || "(não informado)").toString().trim() || "(não informado)";
+
+      if(!byCons[cons]) byCons[cons] = { name: cons, total:0, aprov:0, apont:0, repr:0 };
+      byCons[cons].total += 1;
+      if(la==="APROVADO") byCons[cons].aprov += 1;
+      else if(la==="APONTAMENTO") byCons[cons].apont += 1;
+      else if(la==="REPROVADO") byCons[cons].repr += 1;
+
+      byCap[cap] = (byCap[cap]||0) + 1;
     });
 
+    const taxaAprov = total ? Math.round((aprov/total)*100) : 0;
+
     const kpis = [
-      {t:"Avaliações no mês", v: total, s: "Registros de vistoria no período"},
+      {t:"Avaliações no mês", v: total, s: consFilter ? `Filtro consultor: <b>${escapeHtml(consFilter)}</b>` : "Total no período"},
       {t:"Aprovados", v: aprov, s: badgeForLaudo("APROVADO")},
       {t:"Apontamento", v: apont, s: badgeForLaudo("APONTAMENTO")},
       {t:"Reprovados", v: repr, s: badgeForLaudo("REPROVADO")},
@@ -1336,7 +1443,8 @@ async function carregarPainel(){
       `<div class="kpi"><div class="t">${escapeHtml(k.t)}</div><div class="v">${escapeHtml(String(k.v))}</div><div class="s">${k.s}</div></div>`
     ).join("");
 
-    const rows = Object.values(by)
+    // tabela consultor
+    const rows = Object.values(byCons)
       .sort((a,b)=> b.total - a.total)
       .map(u=>{
         return `<tr>
@@ -1349,6 +1457,7 @@ async function carregarPainel(){
       }).join("");
 
     el("painelTabela").innerHTML = `
+      <div class="hint">Taxa de aprovação: <b>${taxaAprov}%</b></div>
       <table class="table">
         <thead>
           <tr>
@@ -1360,7 +1469,22 @@ async function carregarPainel(){
           </tr>
         </thead>
         <tbody>
-          ${rows || `<tr><td colspan="6"><b>Nenhum dado no período.</b></td></tr>`}
+          ${rows || `<tr><td colspan="5"><b>Nenhum dado no período.</b></td></tr>`}
+        </tbody>
+      </table>
+    `;
+
+    // captação
+    const capRows = Object.entries(byCap)
+      .sort((a,b)=> (b[1]-a[1]))
+      .map(([name,count])=>`<tr><td>${escapeHtml(name)}</td><td><b>${count}</b></td></tr>`)
+      .join("");
+
+    el("painelCaptacao").innerHTML = `
+      <table class="table">
+        <thead><tr><th>Captação</th><th>Total</th></tr></thead>
+        <tbody>
+          ${capRows || `<tr><td colspan="2"><b>Nenhum dado.</b></td></tr>`}
         </tbody>
       </table>
     `;
@@ -1376,9 +1500,35 @@ async function carregarPainel(){
   }
 }
 
+function exportPainelCsv(){
+  const items = (painelLastItems||[]);
+  const header = ["data","modelo","placa","laudo","cliente","telefone","local","captacao","consultor","criado_por"];
+  const esc = (s)=>('"'+String(s??"").replaceAll('"','""')+'"');
+  const lines = [header.join(",")];
+  items.forEach(it=>{
+    lines.push([
+      formatDate(it.createdAt),
+      it.modelo||"",
+      it.placa||"",
+      (it.laudo||"").toString().toUpperCase(),
+      it.cliente||"",
+      it.telefone||"",
+      it.local||"",
+      it.captacao||"",
+      it.consultor||"",
+      it.createdByEmail||""
+    ].map(esc).join(","));
+  });
+  const ym = (el("painelMes")?.value || "mes").replaceAll("-","");
+  const filename = `painel_${ym}_${new Date().toISOString().slice(0,10)}.csv`;
+  downloadTextFile(filename, lines.join("\n"), "text/csv;charset=utf-8");
+}
+
 el("btnPainelAtualizar").addEventListener("click", carregarPainel);
 el("painelMes").addEventListener("change", carregarPainel);
+el("btnPainelExport").addEventListener("click", exportPainelCsv);
 
+/* ===== Usuários ===== */
 function openUsers(){
   el("usersList").innerHTML=""; el("usersHint").innerHTML="";
   if(isGuest){ el("usersHint").innerHTML="<span class='warn'>Convidado não tem acesso.</span>"; return; }
@@ -1409,7 +1559,11 @@ function openUsers(){
         try{
           await updateDoc(doc(db,"users",id),{role:newRole,updatedAt:serverTimestamp()});
           alert("Cargo atualizado!");
-          if(auth.currentUser && id===auth.currentUser.uid){ currentRole=newRole; computePermissions(); setRoleUI(); }
+          if(auth.currentUser && id===auth.currentUser.uid){
+            currentRole=newRole;
+            computePermissions();
+            setRoleUI();
+          }
         }catch(e){ alert("Erro: "+(e?.message||e)); }
       });
     });
@@ -1418,7 +1572,7 @@ function openUsers(){
   });
 }
 
-// Login buttons
+/* ===== Login ===== */
 el("btnDoLogin").addEventListener("click", async ()=>{
   const email=v("loginEmail"), pass=v("loginPass");
   if(!email||!pass) return el("loginHint").innerHTML="<span class='warn'>Preencha e-mail e senha.</span>";
@@ -1441,7 +1595,7 @@ el("btnGuest").addEventListener("click", ()=>{
 el("btnLogout").addEventListener("click", async ()=>{ isGuest=false; try{ await signOut(auth);}catch(e){} showLogin(); });
 el("btnSwitchUser").addEventListener("click", ()=>{ isGuest=false; showLogin(); });
 
-// Action buttons
+/* ===== Ações ===== */
 function setButtonsDisabled(disabled){
   el("btnWhats").disabled = disabled;
   el("btnCopy").disabled = disabled;
@@ -1468,24 +1622,25 @@ el("btnCopy").addEventListener("click", async ()=>{
   setButtonsDisabled(false);
 });
 
-// Bind preview
+/* ===== binds preview ===== */
 ["modelo","ano","versao","placa","km","kmComprou","debitosSel","debitosValor","finSel","finValor","fipe","valorPretendido","laudo","laudoObs","leilao","motor","luzes","testeRodagem","consultor","cliente","local","captacao","tablier","bancosOnde","bancosServico","volante","manopla","forro_motorista","forro_passageiro","forro_traseiro_d","forro_traseiro_e","forro_dianteiros","forro_traseiros","forro_todos","forroEstado","funilariaPecas","pneusQtd","pinturaCompleta","chuvaGranizo","paraChoqueD","paraChoqueT","farolD","farolE","lanternaD","lanternaE","vidroParabrisa","vidro_dd_chk","vidro_dd_act","vidro_de_chk","vidro_de_act","vidro_td_chk","vidro_td_act","vidro_te_chk","vidro_te_act","vidro_vg_chk","vidro_vg_act"]
-.forEach(id=>{ el(id).addEventListener("input",()=>{ if(id==="laudo"){setStatusBadge();toggleLaudoDescricao();} atualizarPreview(); });
-              el(id).addEventListener("change",()=>{ if(id==="laudo"){setStatusBadge();toggleLaudoDescricao();} atualizarPreview(); }); });
-
-onAuthStateChanged(auth, async (u)=>{
-  if(isGuest) return;
-  if(u){
-    showApp();
-    el("whoami").textContent=lower(u.email||"");
-    try{ currentRole = await ensureUserDoc(u); }catch(e){ currentRole = HARD_ADMINS.has(lower(u.email||"")) ? "admin":"consultor"; }
-    computePermissions(); setRoleUI(); setTab("nova");
-    loadLastConsultor();
-  }else{
-    showLogin();
-    currentRole="consultor"; computePermissions(); setRoleUI();
-  }
+.forEach(id=>{
+  const e = el(id);
+  if(!e) return;
+  e.addEventListener("input",()=>{ if(id==="laudo"){setStatusBadge();toggleLaudoDescricao();} atualizarPreview(); });
+  e.addEventListener("change",()=>{ if(id==="laudo"){setStatusBadge();toggleLaudoDescricao();} atualizarPreview(); });
 });
+
+// binds histórico filtros
+["histSearch","histLaudo"].forEach(id=>{
+  const e = el(id);
+  if(!e) return;
+  e.addEventListener("input", ()=> renderHistorico(histItemsCache));
+  e.addEventListener("change", ()=> renderHistorico(histItemsCache));
+});
+el("histLimit").addEventListener("change", openHistorico);
+el("btnHistRefresh").addEventListener("click", openHistorico);
+el("btnHistExport").addEventListener("click", exportHistoricoCsv);
 
 // Debitos/Financiamento toggles
 el("debitosSel").addEventListener("change",()=>{ toggleDebitos(); atualizarPreview(); });
@@ -1496,7 +1651,7 @@ document.querySelectorAll(".avChk").forEach(c=>c.addEventListener("change",()=>a
 
 toggleDebitos(); toggleFin();
 
-// Comprou (Km): opção "Cliente não sabe" (esconde input e preenche no relatório)
+// Comprou (Km): opção "Cliente não sabe"
 (function(){
   const chk = el("kmComprouNaoSabe");
   const wrap = el("kmComprouWrap");
@@ -1518,7 +1673,26 @@ toggleDebitos(); toggleFin();
   apply();
 })();
 
-// ===== FIPE inteligente (carros) - API gratuita (parallelum) =====
+onAuthStateChanged(auth, async (u)=>{
+  if(isGuest) return;
+  if(u){
+    showApp();
+    el("whoami").textContent=lower(u.email||"");
+    try{ currentRole = await ensureUserDoc(u); }
+    catch(e){ currentRole = HARD_ADMINS.has(lower(u.email||"")) ? "admin":"consultor"; }
+    computePermissions();
+    setRoleUI();
+    setTab("nova");
+    loadLastConsultor();
+  }else{
+    showLogin();
+    currentRole="consultor";
+    computePermissions();
+    setRoleUI();
+  }
+});
+
+/* ===== FIPE inteligente (carros) - API gratuita (parallelum) ===== */
 const FIPE_BASE = "https://parallelum.com.br/fipe/api/v1/carros";
 
 let fipeCache = { brands: null, modelsByBrand: {}, yearsByModel: {} };
@@ -1550,10 +1724,7 @@ async function fipeFetchJson(url){
   if(!r.ok) throw new Error(`FIPE HTTP ${r.status}`);
   return await r.json();
 }
-
-function setFipeStatus(html){
-  el("fipeStatus").innerHTML = html || "";
-}
+function setFipeStatus(html){ el("fipeStatus").innerHTML = html || ""; }
 
 function fillSelect(selectId, items, placeholder){
   const sel = el(selectId);
@@ -1575,7 +1746,6 @@ async function ensureBrands(){
   saveCache();
   return brands;
 }
-
 async function ensureModels(brandCode){
   if(!brandCode) return [];
   if(fipeCache.modelsByBrand[brandCode]) return fipeCache.modelsByBrand[brandCode];
@@ -1585,7 +1755,6 @@ async function ensureModels(brandCode){
   saveCache();
   return models;
 }
-
 async function ensureYears(brandCode, modelCode){
   if(!brandCode || !modelCode) return [];
   const key = `${brandCode}-${modelCode}`;
@@ -1720,6 +1889,9 @@ el("btnFipeApply").addEventListener("click", ()=>{
   atualizarPreview();
   showFipeModal(false);
 });
+
+// TODO seguro: Favoritos modal (mantido no layout — sem lógica nesta versão)
+el("btnFavOpen")?.addEventListener("click", ()=>{ alert("Favoritos: função em atualização. (Layout mantido)"); });
 
 setStatusBadge(); toggleLaudoDescricao(); atualizarPreview();
 </script>
