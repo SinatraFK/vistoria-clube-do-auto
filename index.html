@@ -353,20 +353,6 @@ input:focus,select:focus,textarea:focus{
   font-size:13px;
   font-weight:800;
 }
-.lucroBox{
-  border:1px solid #dbeafe;
-  background:linear-gradient(180deg,#f8fbff 0%, #eef6ff 100%);
-  border-radius:16px;
-  padding:12px;
-  min-height:56px;
-  display:flex;
-  align-items:center;
-  font-weight:900;
-  font-size:18px;
-}
-.lucroPositivo{color:#065f46}
-.lucroNeutro{color:#334155}
-.lucroNegativo{color:#991b1b}
 </style>
 </head>
 
@@ -523,19 +509,6 @@ input:focus,select:focus,textarea:focus{
         <div>
           <label>Valor pretendido</label>
           <input id="valorPretendido" inputmode="numeric" placeholder="Ex: 29000">
-        </div>
-      </div>
-
-      <div class="row2">
-        <div>
-          <label>Gastos estimados (R$)</label>
-          <input id="gastosEstimados" inputmode="numeric" placeholder="Ex: 4000">
-          <div class="hint">Usado apenas no cálculo auxiliar de margem.</div>
-        </div>
-        <div>
-          <label>Lucro potencial estimado</label>
-          <div class="lucroBox lucroNeutro" id="lucroPreview">—</div>
-          <div class="hint">Cálculo: FIPE - Pretendido - Débitos - Quitação - Gastos estimados.</div>
         </div>
       </div>
     </div>
@@ -1004,7 +977,6 @@ async function ensureUserDoc(user){
 function onlyDigits(s){ return (s??"").toString().replace(/[^\d]/g,""); }
 function fmtKM(raw){ const d=onlyDigits(raw); if(!d) return ""; return new Intl.NumberFormat("pt-BR").format(Number(d)); }
 function fmtBRL(raw){ const d=onlyDigits(raw); if(!d) return ""; return new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(Number(d)).replace(/ /g," "); }
-function moneyToNumber(raw){ const d=onlyDigits(raw); return d ? Number(d) : 0; }
 function plateBR(raw){ return (raw||"").toString().toUpperCase().replace(/\s+/g,"").trim(); }
 function isArVersion(){
   return ["Completo","Completo + 7 Lugares","Apenas AR"].includes(v("versao"));
@@ -1031,28 +1003,6 @@ function toggleArCond(){
   const show=isArVersion();
   el("arCondWrap").classList.toggle("hidden", !show);
   if(!show) el("arCond").value="Bom";
-}
-function calcLucroPotencial(){
-  const fipe=moneyToNumber(v("fipe"));
-  const pretendido=moneyToNumber(v("valorPretendido"));
-  const deb=moneyToNumber(v("debitosValor"));
-  const fin=moneyToNumber(v("finValor"));
-  const gastos=moneyToNumber(v("gastosEstimados"));
-  return fipe - pretendido - deb - fin - gastos;
-}
-function atualizarLucroPreview(){
-  const box=el("lucroPreview");
-  if(!box) return;
-  const fipe=moneyToNumber(v("fipe"));
-  const pretendido=moneyToNumber(v("valorPretendido"));
-  if(!fipe || !pretendido){
-    box.className="lucroBox lucroNeutro";
-    box.textContent="—";
-    return;
-  }
-  const lucro=calcLucroPotencial();
-  box.className="lucroBox " + (lucro>0 ? "lucroPositivo" : lucro<0 ? "lucroNegativo" : "lucroNeutro");
-  box.textContent=new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(lucro);
 }
 function preencherPadrao(){
   el("tablier").value="Bom";
@@ -1098,7 +1048,6 @@ function preencherPadrao(){
   }
 
   atualizarPreview();
-  atualizarLucroPreview();
 }
 let placaDupTimer=null;
 async function verificarPlacaDuplicada(){
@@ -1142,13 +1091,12 @@ el("placa").addEventListener("input", ()=>{
   placaDupTimer=setTimeout(verificarPlacaDuplicada, 450);
 });
 el("kmComprou").addEventListener("blur",()=>{ const val=v("kmComprou"), digs=onlyDigits(val); if(val && digs && digs.length===val.replace(/\s|\./g,"").length) el("kmComprou").value=fmtKM(val); atualizarPreview(); });
-["fipe","valorPretendido","debitosValor","finValor","gastosEstimados"].forEach(id=>{
+["fipe","valorPretendido","debitosValor","finValor"].forEach(id=>{
   const e=el(id);
   if(!e) return;
   e.addEventListener("blur",()=>{
     if(v(id)) el(id).value=fmtBRL(v(id));
     atualizarPreview();
-    atualizarLucroPreview();
   });
 });
 
@@ -1304,8 +1252,6 @@ async function salvarUmaVez(texto){
       blindadoEstado:v("blindadoEstado"),
       blindadoObs:v("blindadoObs"),
       arCond:isArVersion()?v("arCond"):"",
-      gastosEstimados:moneyToNumber(v("gastosEstimados")),
-      lucroPotencial:calcLucroPotencial(),
       reportText:texto,
       dealStatus:"SEM",
       dealUpdatedAt:serverTimestamp(),
@@ -1464,7 +1410,7 @@ function exportHistoricoCsv(){
     return hay.includes(q);
   });
   const header=["data","modelo","placa","laudo","negocio","cliente","telefone","local","captacao","consultor","criado_por"];
-  const esc=(s)=>('"'+String(s??"").replaceAll('"','""')+'"');
+  const esc=(s)=>("\""+String(s??"").replaceAll('"','""')+"\"");
   const lines=[header.join(",")];
   rows.forEach(it=>lines.push([formatDate(it.createdAt), it.modelo||"", it.placa||"", (it.laudo||"").toString().toUpperCase(), (it.dealStatus||"SEM").toString().toUpperCase(), it.cliente||"", it.telefone||"", it.local||"", (it.captacao || getFirstLineValue(it.reportText, "Captação") || ""), it.consultor||"", it.createdByEmail||""].map(esc).join(",")));
   downloadTextFile(`historico_${new Date().toISOString().slice(0,10)}.csv`, lines.join("\n"), "text/csv;charset=utf-8");
@@ -1553,7 +1499,7 @@ async function carregarPainel(){
   }
 }
 function exportPainelCsv(){
-  const items=painelLastItems||[], esc=(s)=>('"'+String(s??"").replaceAll('"','""')+'"');
+  const items=painelLastItems||[], esc=(s)=>("\""+String(s??"").replaceAll('"','""')+"\"");
   const lines=[["data","modelo","placa","laudo","negocio","cliente","telefone","local","captacao","consultor","criado_por"].join(",")];
   items.forEach(it=>lines.push([formatDate(it.createdAt), it.modelo||"", it.placa||"", (it.laudo||"").toString().toUpperCase(), (it.dealStatus||"SEM").toString().toUpperCase(), it.cliente||"", it.telefone||"", it.local||"", (it.captacao || getFirstLineValue(it.reportText, "Captação") || ""), it.consultor||"", it.createdByEmail||""].map(esc).join(",")));
   const ym=(el("painelMes")?.value || "mes").replaceAll("-","");
@@ -1629,21 +1575,19 @@ el("btnFillPadrao").addEventListener("click", ()=>{
 el("btnWhats").addEventListener("click", async ()=>{ if(!validar()) return; const texto=montar(); setButtonsDisabled(true); await salvarUmaVez(texto); abrirWhats(texto); setButtonsDisabled(false); });
 el("btnCopy").addEventListener("click", async ()=>{ if(!validar()) return; const texto=montar(); setButtonsDisabled(true); await salvarUmaVez(texto); const ok=await copiar(texto); if(ok) alert("Copiado!"); setButtonsDisabled(false); });
 
-["modelo","ano","versao","placa","km","kmComprou","debitosSel","debitosValor","finSel","finValor","fipe","valorPretendido","gastosEstimados","laudo","laudoObs","leilao","motor","luzes","arCond","blindadoChk","blindadoEstado","blindadoObs","testeRodagem","consultor","cliente","local","captacao","tablier","bancosOnde","bancosServico","volante","manopla","forro_motorista","forro_passageiro","forro_traseiro_d","forro_traseiro_e","forro_dianteiros","forro_traseiros","forro_todos","forroEstado","funilariaPecas","pneusQtd","pinturaCompleta","chuvaGranizo","paraChoqueD","paraChoqueT","retrovisorD","retrovisorE","farolD","farolE","lanternaD","lanternaE","vidroParabrisa","vidro_dd_chk","vidro_dd_act","vidro_de_chk","vidro_de_act","vidro_td_chk","vidro_td_act","vidro_te_chk","vidro_te_act","vidro_vg_chk","vidro_vg_act"].forEach(id=>{
+["modelo","ano","versao","placa","km","kmComprou","debitosSel","debitosValor","finSel","finValor","fipe","valorPretendido","laudo","laudoObs","leilao","motor","luzes","arCond","blindadoChk","blindadoEstado","blindadoObs","testeRodagem","consultor","cliente","local","captacao","tablier","bancosOnde","bancosServico","volante","manopla","forro_motorista","forro_passageiro","forro_traseiro_d","forro_traseiro_e","forro_dianteiros","forro_traseiros","forro_todos","forroEstado","funilariaPecas","pneusQtd","pinturaCompleta","chuvaGranizo","paraChoqueD","paraChoqueT","retrovisorD","retrovisorE","farolD","farolE","lanternaD","lanternaE","vidroParabrisa","vidro_dd_chk","vidro_dd_act","vidro_de_chk","vidro_de_act","vidro_td_chk","vidro_td_act","vidro_te_chk","vidro_te_act","vidro_vg_chk","vidro_vg_act"].forEach(id=>{
   const e=el(id); if(!e) return;
   e.addEventListener("input", ()=>{
     if(id==="laudo"){ setStatusBadge(); toggleLaudoDescricao(); }
     if(id==="versao"){ toggleArCond(); }
     if(id==="blindadoChk" || id==="blindadoEstado"){ toggleBlindagem(); }
     atualizarPreview();
-    atualizarLucroPreview();
   });
   e.addEventListener("change", ()=>{
     if(id==="laudo"){ setStatusBadge(); toggleLaudoDescricao(); }
     if(id==="versao"){ toggleArCond(); }
     if(id==="blindadoChk" || id==="blindadoEstado"){ toggleBlindagem(); }
     atualizarPreview();
-    atualizarLucroPreview();
   });
 });
 
@@ -1652,8 +1596,8 @@ el("histLimit").addEventListener("change", openHistorico);
 el("btnHistRefresh").addEventListener("click", openHistorico);
 el("btnHistExport").addEventListener("click", exportHistoricoCsv);
 
-el("debitosSel").addEventListener("change",()=>{ toggleDebitos(); atualizarPreview(); atualizarLucroPreview(); });
-el("finSel").addEventListener("change",()=>{ toggleFin(); atualizarPreview(); atualizarLucroPreview(); });
+el("debitosSel").addEventListener("change",()=>{ toggleDebitos(); atualizarPreview(); });
+el("finSel").addEventListener("change",()=>{ toggleFin(); atualizarPreview(); });
 document.querySelectorAll(".avChk").forEach(c=>c.addEventListener("change",()=>atualizarPreview()));
 toggleDebitos(); toggleFin();
 
@@ -1710,7 +1654,7 @@ async function openFipe(){
 el("btnFipe").addEventListener("click", openFipe);
 el("btnFipeClose").addEventListener("click", ()=>showFipeModal(false));
 el("fipeModal").addEventListener("click", ev=>{ if(ev.target?.id==="fipeModal") showFipeModal(false); });
-el("btnFipeClear").addEventListener("click", ()=>{ el("fipe").value=""; atualizarPreview(); atualizarLucroPreview(); });
+el("btnFipeClear").addEventListener("click", ()=>{ el("fipe").value=""; atualizarPreview(); });
 el("fipeMarca").addEventListener("change", async ()=>{
   const brand=el("fipeMarca").value; el("fipeBuscaModelo").value=""; el("fipeAno").innerHTML="<option value=''>Selecione o modelo</option>"; lastFipeResult=null; renderFipeResult(null);
   if(!brand){ el("fipeModelo").innerHTML="<option value=''>Selecione a marca</option>"; return; }
@@ -1730,7 +1674,7 @@ el("btnFipeApply").addEventListener("click", ()=>{
   if(lastFipeResult.Modelo) el("modelo").value=lastFipeResult.Modelo;
   if(lastFipeResult.AnoModelo!=null) el("ano").value=String(lastFipeResult.AnoModelo);
   if(lastFipeResult.Valor) el("fipe").value=lastFipeResult.Valor;
-  atualizarPreview(); atualizarLucroPreview(); showFipeModal(false);
+  atualizarPreview(); showFipeModal(false);
 });
 el("btnFavOpen")?.addEventListener("click", ()=>alert("Favoritos: função em atualização. (Layout mantido)"));
 el("btnClearForm")?.addEventListener("click", ()=>window.location.reload());
@@ -1740,7 +1684,6 @@ toggleLaudoDescricao();
 toggleBlindagem();
 toggleArCond();
 atualizarPreview();
-atualizarLucroPreview();
 </script>
 
 <script>
