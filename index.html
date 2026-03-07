@@ -353,59 +353,20 @@ input:focus,select:focus,textarea:focus{
   font-size:13px;
   font-weight:800;
 }
-
-.showroomHero{position:relative;overflow:hidden;background:linear-gradient(135deg,#0f172a 0%,#172554 45%,#1d4ed8 100%);color:#fff;border:none;box-shadow:0 20px 50px rgba(15,23,42,.22)}
-.showroomHero::after{content:"";position:absolute;inset:auto -60px -80px auto;width:260px;height:260px;border-radius:50%;background:rgba(255,255,255,.08);filter:blur(2px)}
-.showroomHero .modalTitle,.showroomHero .hint{color:#fff}
-.showroomHero .hint{opacity:.9}
-.showroomStats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}
-.showroomStat{padding:14px;border-radius:18px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.10);backdrop-filter:blur(4px)}
-.showroomStat .n{font-size:26px;font-weight:900;line-height:1}
-.showroomStat .l{font-size:12px;opacity:.85;margin-top:6px;font-weight:800}
-@media (max-width:760px){.showroomStats{grid-template-columns:repeat(2,1fr)}}
-.showroomToolbar{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;align-items:end}
-@media (max-width:760px){.showroomToolbar{grid-template-columns:1fr}}
-.showroomSplit{display:grid;grid-template-columns:1.1fr .9fr;gap:14px;align-items:start}
-@media (max-width:900px){.showroomSplit{grid-template-columns:1fr}}
-.showroomGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-@media (max-width:980px){.showroomGrid{grid-template-columns:repeat(2,1fr)}}
-@media (max-width:640px){.showroomGrid{grid-template-columns:1fr}}
-.showroomCard{overflow:hidden;padding:0;border-radius:22px;border:1px solid rgba(148,163,184,.16);background:#fff;box-shadow:var(--shadowSoft)}
-.showroomMedia{position:relative;height:210px;background:linear-gradient(135deg,#dbeafe 0%,#eff6ff 55%,#e2e8f0 100%);display:block}
-.showroomMedia img{width:100%;height:100%;object-fit:cover;display:block}
-.showroomMedia.empty{display:flex;align-items:center;justify-content:center;color:#64748b;font-weight:900;font-size:14px}
-.showroomBadges{position:absolute;top:12px;left:12px;display:flex;gap:8px;flex-wrap:wrap}
-.showroomBadge{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;font-size:11px;font-weight:900;background:rgba(15,23,42,.78);color:#fff;border:1px solid rgba(255,255,255,.08)}
-.showroomBadgeLight{background:rgba(255,255,255,.88);color:#0f172a}
-.showroomBody{padding:16px}
-.showroomTitle{font-size:18px;font-weight:900;letter-spacing:-.02em;color:#0f172a;margin:0}
-.showroomPrice{font-size:26px;font-weight:900;letter-spacing:-.04em;color:#0f172a;margin-top:8px}
-.showroomSub{font-size:13px;color:#64748b;margin-top:6px}
-.showroomMeta{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}
-.showroomMetaItem{padding:10px 12px;border-radius:14px;background:#f8fafc;border:1px solid rgba(148,163,184,.12)}
-.showroomMetaItem .k{font-size:11px;font-weight:900;color:#64748b;text-transform:uppercase;letter-spacing:.04em}
-.showroomMetaItem .v{font-size:14px;font-weight:900;color:#0f172a;margin-top:4px}
-.showroomDesc{margin-top:14px;color:#334155;font-size:13px;line-height:1.45}
-.showroomActions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-.showroomActions button{width:auto}
-.showroomList{display:grid;gap:10px}
-.showroomMini{display:grid;grid-template-columns:88px 1fr auto;gap:12px;align-items:center;padding:12px;border-radius:18px;border:1px solid rgba(148,163,184,.14);background:linear-gradient(180deg,#fff 0%,#fbfdff 100%)}
-@media (max-width:640px){.showroomMini{grid-template-columns:1fr}}
-.showroomMiniImg{width:88px;height:66px;border-radius:14px;background:#e2e8f0;overflow:hidden}
-.showroomMiniImg img{width:100%;height:100%;object-fit:cover;display:block}
-.showroomMiniInfo .t{font-weight:900;color:#0f172a}
-.showroomMiniInfo .s{font-size:12px;color:#64748b;margin-top:4px}
-.showroomMiniPrice{font-size:18px;font-weight:900;color:#0f172a}
-.showroomEmpty{padding:18px;border:1px dashed #cbd5e1;border-radius:18px;background:#f8fafc;color:#64748b;font-weight:800}
-.statusPill{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:900}
-.statusDisp{background:#dcfce7;color:#166534}
-.statusPrep{background:#dbeafe;color:#1d4ed8}
-.statusReserv{background:#fef3c7;color:#92400e}
-.statusVend{background:#e5e7eb;color:#334155}
-.galleryPreview{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
-.galleryPreview img{width:100%;height:86px;object-fit:cover;border-radius:12px;border:1px solid rgba(148,163,184,.14)}
-@media (max-width:640px){.galleryPreview{grid-template-columns:repeat(2,1fr)}}
-
+.lucroBox{
+  border:1px solid #dbeafe;
+  background:linear-gradient(180deg,#f8fbff 0%, #eef6ff 100%);
+  border-radius:16px;
+  padding:12px;
+  min-height:56px;
+  display:flex;
+  align-items:center;
+  font-weight:900;
+  font-size:18px;
+}
+.lucroPositivo{color:#065f46}
+.lucroNeutro{color:#334155}
+.lucroNegativo{color:#991b1b}
 </style>
 </head>
 
@@ -459,7 +420,6 @@ input:focus,select:focus,textarea:focus{
     <button class="tabbtn active" id="tabNova">Nova avaliação</button>
     <button class="tabbtn" id="tabHist">Histórico</button>
     <button class="tabbtn hidden" id="tabPainel">Painel</button>
-    <button class="tabbtn" id="tabShowroom">Showroom Vex</button>
     <button class="tabbtn hidden" id="tabUsers">Usuários</button>
   </div>
 
@@ -566,7 +526,18 @@ input:focus,select:focus,textarea:focus{
         </div>
       </div>
 
-      
+      <div class="row2">
+        <div>
+          <label>Gastos estimados (R$)</label>
+          <input id="gastosEstimados" inputmode="numeric" placeholder="Ex: 4000">
+          <div class="hint">Usado apenas no cálculo auxiliar de margem.</div>
+        </div>
+        <div>
+          <label>Lucro potencial estimado</label>
+          <div class="lucroBox lucroNeutro" id="lucroPreview">—</div>
+          <div class="hint">Cálculo: FIPE - Pretendido - Débitos - Quitação - Gastos estimados.</div>
+        </div>
+      </div>
     </div>
 
     <div class="card">
@@ -698,11 +669,11 @@ input:focus,select:focus,textarea:focus{
       <select id="vidroParabrisa"><option>OK</option><option>Reparo</option><option>Troca</option></select>
       <div style="border:1px dashed #e5e7eb;border-radius:14px;padding:12px;background:#fafafa;margin-bottom:10px">
         <div class="hint">Demais vidros (marque e selecione a ação).</div>
-        <div class="chkRow"><label class="chkLabelRight">Dianteiro (D) <input type="checkbox" id="vidro_dd_chk"></label><select id="vidro_dd_act"><option>Reparo</option><option>Troca</option><option>Não abre</option></select></div>
-        <div class="chkRow"><label class="chkLabelRight">Dianteiro (E) <input type="checkbox" id="vidro_de_chk"></label><select id="vidro_de_act"><option>Reparo</option><option>Troca</option><option>Não abre</option></select></div>
-        <div class="chkRow"><label class="chkLabelRight">Traseiro (D) <input type="checkbox" id="vidro_td_chk"></label><select id="vidro_td_act"><option>Reparo</option><option>Troca</option><option>Não abre</option></select></div>
-        <div class="chkRow"><label class="chkLabelRight">Traseiro (E) <input type="checkbox" id="vidro_te_chk"></label><select id="vidro_te_act"><option>Reparo</option><option>Troca</option><option>Não abre</option></select></div>
-        <div class="chkRow"><label class="chkLabelRight">Vigia <input type="checkbox" id="vidro_vg_chk"></label><select id="vidro_vg_act"><option>Reparo</option><option>Troca</option><option>Não abre</option></select></div>
+        <div class="chkRow"><label class="chkLabelRight">Dianteiro (D) <input type="checkbox" id="vidro_dd_chk"></label><select id="vidro_dd_act"><option>Reparo</option><option>Troca</option></select></div>
+        <div class="chkRow"><label class="chkLabelRight">Dianteiro (E) <input type="checkbox" id="vidro_de_chk"></label><select id="vidro_de_act"><option>Reparo</option><option>Troca</option></select></div>
+        <div class="chkRow"><label class="chkLabelRight">Traseiro (D) <input type="checkbox" id="vidro_td_chk"></label><select id="vidro_td_act"><option>Reparo</option><option>Troca</option></select></div>
+        <div class="chkRow"><label class="chkLabelRight">Traseiro (E) <input type="checkbox" id="vidro_te_chk"></label><select id="vidro_te_act"><option>Reparo</option><option>Troca</option></select></div>
+        <div class="chkRow"><label class="chkLabelRight">Vigia <input type="checkbox" id="vidro_vg_chk"></label><select id="vidro_vg_act"><option>Reparo</option><option>Troca</option></select></div>
       </div>
       <div class="hint">No relatório aparecem apenas itens que geram custo. “Bom/OK/0” não aparece.</div>
     </div>
@@ -848,53 +819,6 @@ input:focus,select:focus,textarea:focus{
     </div>
   </div>
 
-
-  <div id="viewShowroom" class="hidden">
-    <div class="card showroomHero">
-      <div class="modalTitle">🚘 VEX Showroom</div>
-      <div class="hint">Primeira fase: vitrine profissional com cadastro interno, integração com carros comprados e catálogo visual para a equipe comercial.</div>
-      <div class="showroomStats" id="showroomStats"></div>
-    </div>
-
-    <div class="showroomSplit">
-      <div class="card">
-        <h3>📦 Catálogo interno</h3>
-        <div class="hint">Cadastre e atualize os carros da Vex com fotos, preço e descrição comercial. O botão “Enviar para Showroom” aparece no histórico dos carros fechados.</div>
-        <div class="showroomToolbar" style="margin-top:10px">
-          <div>
-            <label>Buscar no showroom</label>
-            <input id="showroomSearch" placeholder="Digite modelo, placa, ano, cor ou destaque...">
-          </div>
-          <div>
-            <label>Status</label>
-            <select id="showroomStatusFilter">
-              <option value="">Todos</option>
-              <option value="DISPONIVEL">Disponível</option>
-              <option value="EM_PREPARACAO">Em preparação</option>
-              <option value="RESERVADO">Reservado</option>
-              <option value="VENDIDO">Vendido</option>
-            </select>
-          </div>
-          <div>
-            <button class="btnP" type="button" id="btnShowroomNovo">+ Novo carro</button>
-            <div class="hint" id="showroomHint" style="margin-top:8px"></div>
-          </div>
-        </div>
-        <div class="btnLine" style="margin-top:8px">
-          <button class="btnSecondary smallBtn" type="button" id="btnShowroomRefresh">Atualizar</button>
-          <button class="btnB smallBtn" type="button" id="btnShowroomExport">Exportar CSV</button>
-        </div>
-        <div id="showroomList" class="showroomList" style="margin-top:12px"></div>
-      </div>
-
-      <div class="card">
-        <h3>✨ Vitrine visual</h3>
-        <div class="hint">Layout com cara de aplicativo profissional para consulta rápida dos carros disponíveis na Vex.</div>
-        <div id="showroomCards" class="showroomGrid" style="margin-top:12px"></div>
-      </div>
-    </div>
-  </div>
-
   <div id="viewUsers" class="hidden">
     <div class="card">
       <h3>👥 Usuários (Admin)</h3>
@@ -972,60 +896,6 @@ input:focus,select:focus,textarea:focus{
     </div>
   </div>
 </div>
-
-
-<div class="modalOverlay" id="showroomModal">
-  <div class="modalBox">
-    <div class="modalTop">
-      <div>
-        <div class="modalTitle">🚘 Cadastro Showroom Vex</div>
-        <div class="modalHint">Preencha as informações comerciais e cole os links das fotos principais. Nesta primeira fase, as imagens são exibidas por URL.</div>
-      </div>
-      <button class="btnX" type="button" id="btnShowroomClose">Fechar</button>
-    </div>
-
-    <div class="card" style="box-shadow:none;border:1px solid #e5e7eb;margin-top:12px">
-      <input type="hidden" id="showroomId">
-      <input type="hidden" id="showroomSourceId">
-      <div class="row2">
-        <div><label>Título do anúncio</label><input id="showTitulo" placeholder="Ex: Chevrolet Onix LT 1.0 Flex Manual"></div>
-        <div><label>Preço de venda</label><input id="showPreco" inputmode="numeric" placeholder="Ex: 58900"></div>
-      </div>
-      <div class="row3">
-        <div><label>Status</label><select id="showStatus"><option value="DISPONIVEL">Disponível</option><option value="EM_PREPARACAO">Em preparação</option><option value="RESERVADO">Reservado</option><option value="VENDIDO">Vendido</option></select></div>
-        <div><label>Destaque</label><input id="showDestaque" placeholder="Ex: Único dono / Baixa km"></div>
-        <div><label>Telefone comercial</label><input id="showContato" placeholder="Ex: 11 99999-9999"></div>
-      </div>
-      <div class="row3">
-        <div><label>Modelo</label><input id="showModelo"></div>
-        <div><label>Ano</label><input id="showAno" placeholder="Ex: 2022/2023"></div>
-        <div><label>Km</label><input id="showKm" inputmode="numeric" placeholder="Ex: 45000"></div>
-      </div>
-      <div class="row3">
-        <div><label>Câmbio</label><input id="showCambio" placeholder="Ex: Manual / Automático"></div>
-        <div><label>Combustível</label><input id="showCombustivel" placeholder="Ex: Flex"></div>
-        <div><label>Cor</label><input id="showCor" placeholder="Ex: Prata"></div>
-      </div>
-      <div class="row2">
-        <div><label>Versão</label><input id="showVersao"></div>
-        <div><label>Placa</label><input id="showPlaca" placeholder="Ex: EPX5C99"></div>
-      </div>
-      <label>Opcionais / itens de destaque</label>
-      <textarea id="showOpcionais" placeholder="Ex: multimídia, couro, rodas, câmera de ré, chave presencial..."></textarea>
-      <label>Descrição comercial</label>
-      <textarea id="showDescricao" placeholder="Texto para a equipe da vitrine usar no atendimento e na apresentação do carro."></textarea>
-      <label>Fotos (1 URL por linha)</label>
-      <textarea id="showFotos" placeholder="https://.../foto1.jpg&#10;https://.../foto2.jpg&#10;https://.../foto3.jpg"></textarea>
-      <div class="galleryPreview" id="showroomGalleryPreview"></div>
-      <div class="hint" id="showroomModalHint" style="margin-top:8px"></div>
-      <div class="btnLine">
-        <button class="btnP" type="button" id="btnShowroomSalvar">Salvar no Showroom</button>
-        <button class="btnSecondary" type="button" id="btnShowroomDuplicar">Duplicar anúncio</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 
 <textarea id="copyFallback" style="position:fixed;left:-9999px;top:-9999px;"></textarea>
 
@@ -1109,11 +979,11 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 await setPersistence(auth, browserLocalPersistence);
 
-let isGuest=false, currentRole="consultor", canHistory=false, isAdmin=false, canPainel=false, canShowroom=true;
+let isGuest=false, currentRole="consultor", canHistory=false, isAdmin=false, canPainel=false;
 let unsubUsers=null;
 
-function computePermissions(){ canHistory=(currentRole==="admin"||currentRole==="gerente"||currentRole==="closer"); isAdmin=(currentRole==="admin"); canPainel=canHistory; canShowroom=!isGuest; }
-function setRoleUI(){ el("roleTxt").textContent=currentRole; el("tabUsers").classList.toggle("hidden", !isAdmin); el("tabPainel").classList.toggle("hidden", !canPainel); el("tabShowroom").classList.toggle("hidden", !canShowroom); }
+function computePermissions(){ canHistory=(currentRole==="admin"||currentRole==="gerente"||currentRole==="closer"); isAdmin=(currentRole==="admin"); canPainel=canHistory; }
+function setRoleUI(){ el("roleTxt").textContent=currentRole; el("tabUsers").classList.toggle("hidden", !isAdmin); el("tabPainel").classList.toggle("hidden", !canPainel); }
 function showLogin(){ el("screenLogin").style.display="block"; el("screenApp").classList.add("hidden"); }
 function showApp(){ el("screenLogin").style.display="none"; el("screenApp").classList.remove("hidden"); }
 
@@ -1136,12 +1006,6 @@ function fmtKM(raw){ const d=onlyDigits(raw); if(!d) return ""; return new Intl.
 function fmtBRL(raw){ const d=onlyDigits(raw); if(!d) return ""; return new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(Number(d)).replace(/ /g," "); }
 function moneyToNumber(raw){ const d=onlyDigits(raw); return d ? Number(d) : 0; }
 function plateBR(raw){ return (raw||"").toString().toUpperCase().replace(/\s+/g,"").trim(); }
-function toMoneyText(val){ const n=Number(val||0); return n ? new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(n) : "Sob consulta"; }
-function splitPhotos(raw){ return (raw||"").toString().split(/
-?
-/).map(x=>x.trim()).filter(Boolean).slice(0,6); }
-function statusLabel(v){ return ({DISPONIVEL:"Disponível",EM_PREPARACAO:"Em preparação",RESERVADO:"Reservado",VENDIDO:"Vendido"}[v]||"Disponível"); }
-function statusClass(v){ return ({DISPONIVEL:"statusDisp",EM_PREPARACAO:"statusPrep",RESERVADO:"statusReserv",VENDIDO:"statusVend"}[v]||"statusDisp"); }
 function isArVersion(){
   return ["Completo","Completo + 7 Lugares","Apenas AR"].includes(v("versao"));
 }
@@ -1168,7 +1032,28 @@ function toggleArCond(){
   el("arCondWrap").classList.toggle("hidden", !show);
   if(!show) el("arCond").value="Bom";
 }
-
+function calcLucroPotencial(){
+  const fipe=moneyToNumber(v("fipe"));
+  const pretendido=moneyToNumber(v("valorPretendido"));
+  const deb=moneyToNumber(v("debitosValor"));
+  const fin=moneyToNumber(v("finValor"));
+  const gastos=moneyToNumber(v("gastosEstimados"));
+  return fipe - pretendido - deb - fin - gastos;
+}
+function atualizarLucroPreview(){
+  const box=el("lucroPreview");
+  if(!box) return;
+  const fipe=moneyToNumber(v("fipe"));
+  const pretendido=moneyToNumber(v("valorPretendido"));
+  if(!fipe || !pretendido){
+    box.className="lucroBox lucroNeutro";
+    box.textContent="—";
+    return;
+  }
+  const lucro=calcLucroPotencial();
+  box.className="lucroBox " + (lucro>0 ? "lucroPositivo" : lucro<0 ? "lucroNegativo" : "lucroNeutro");
+  box.textContent=new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(lucro);
+}
 function preencherPadrao(){
   el("tablier").value="Bom";
   el("bancosOnde").value="";
@@ -1213,6 +1098,7 @@ function preencherPadrao(){
   }
 
   atualizarPreview();
+  atualizarLucroPreview();
 }
 let placaDupTimer=null;
 async function verificarPlacaDuplicada(){
@@ -1256,12 +1142,13 @@ el("placa").addEventListener("input", ()=>{
   placaDupTimer=setTimeout(verificarPlacaDuplicada, 450);
 });
 el("kmComprou").addEventListener("blur",()=>{ const val=v("kmComprou"), digs=onlyDigits(val); if(val && digs && digs.length===val.replace(/\s|\./g,"").length) el("kmComprou").value=fmtKM(val); atualizarPreview(); });
-["fipe","valorPretendido","debitosValor","finValor"].forEach(id=>{
+["fipe","valorPretendido","debitosValor","finValor","gastosEstimados"].forEach(id=>{
   const e=el(id);
   if(!e) return;
   e.addEventListener("blur",()=>{
     if(v(id)) el(id).value=fmtBRL(v(id));
     atualizarPreview();
+    atualizarLucroPreview();
   });
 });
 
@@ -1417,6 +1304,8 @@ async function salvarUmaVez(texto){
       blindadoEstado:v("blindadoEstado"),
       blindadoObs:v("blindadoObs"),
       arCond:isArVersion()?v("arCond"):"",
+      gastosEstimados:moneyToNumber(v("gastosEstimados")),
+      lucroPotencial:calcLucroPotencial(),
       reportText:texto,
       dealStatus:"SEM",
       dealUpdatedAt:serverTimestamp(),
@@ -1433,26 +1322,22 @@ function escapeHtml(s){ return (s??"").toString().replaceAll("&","&amp;").replac
 function formatDate(ts){ try{ const d=ts?.toDate?ts.toDate():null; if(!d) return ""; return new Intl.DateTimeFormat("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}).format(d);}catch(e){ return ""; } }
 
 function setTab(tab){
-  const nova=tab==="nova", hist=tab==="hist", painel=tab==="painel", showroom=tab==="showroom", users=tab==="users";
+  const nova=tab==="nova", hist=tab==="hist", painel=tab==="painel", users=tab==="users";
   el("tabNova").classList.toggle("active", nova);
   el("tabHist").classList.toggle("active", hist);
   el("tabPainel").classList.toggle("active", painel);
-  el("tabShowroom").classList.toggle("active", showroom);
   el("tabUsers").classList.toggle("active", users);
   el("viewNova").classList.toggle("hidden", !nova);
   el("viewHistorico").classList.toggle("hidden", !hist);
   el("viewPainel").classList.toggle("hidden", !painel);
-  el("viewShowroom").classList.toggle("hidden", !showroom);
   el("viewUsers").classList.toggle("hidden", !users);
   if(hist) openHistorico();
   if(painel) openPainel();
-  if(showroom) openShowroom();
   if(users) openUsers();
 }
 el("tabNova").addEventListener("click",()=>setTab("nova"));
 el("tabHist").addEventListener("click",()=>setTab("hist"));
 el("tabPainel").addEventListener("click",()=>setTab("painel"));
-el("tabShowroom").addEventListener("click",()=>setTab("showroom"));
 el("tabUsers").addEventListener("click",()=>setTab("users"));
 
 let histItemsCache=[];
@@ -1491,7 +1376,6 @@ function renderHistorico(items){
     const extra=[it.cliente?("Cliente: "+it.cliente):"", it.consultor?("Consultor: "+it.consultor):"", ("Logado: "+getUserLabelByUid(it.createdByUid, it.createdByEmail))].filter(Boolean).join(" • ");
     const meta=`${escapeHtml(formatDate(it.createdAt))} • ${escapeHtml(it.createdByEmail||"")}` + (extra?(`\n${escapeHtml(extra)}`):"");
     const delBtn=isAdmin?`<button class="mini" style="background:#b91c1c" data-del="${it.id}">🗑 Excluir</button>`:"";
-    const showroomBtn=(it.dealStatus||"SEM").toString().toUpperCase()==="FECHADO" ? `<button class="mini" style="background:#7c3aed" data-showroom="${it.id}">🚘 Showroom</button>` : "";
     const dealVal=(it.dealStatus||"SEM").toString().toUpperCase();
     const dealBadge=dealBadgeHtml(dealVal);
     const dealBtns=canSetDeal()?`<button class="mini mDeal" data-deal="${it.id}" data-val="FECHADO">✅ Fechado</button><button class="mini mDeal" data-deal="${it.id}" data-val="QUASE">🟡 Quase</button><button class="mini mDeal" data-deal="${it.id}" data-val="NAO">❌ Não</button><button class="mini btnSecondary" data-deal="${it.id}" data-val="SEM">↩️ Limpar</button>`:``;
@@ -1502,7 +1386,7 @@ function renderHistorico(items){
         <button class="mini mCopy" data-copy="${it.id}">📋 Copiar</button>
         <button class="mini mSend" data-send="${it.id}">📲 Whats</button>
         <button class="mini" style="background:#0ea5e9" data-client="${it.id}">💬 Cliente</button>
-        ${showroomBtn}${delBtn}
+        ${delBtn}
       </div>
       ${dealBtns ? `<div class="histBtns" style="grid-template-columns:repeat(4,1fr);margin-top:8px">${dealBtns}</div>` : ``}
     </div>`;
@@ -1514,7 +1398,6 @@ function renderHistorico(items){
   el("historicoList").querySelectorAll("[data-copy]").forEach(btn=>btn.addEventListener("click", async()=>{ const it=getById(btn.dataset.copy); if(!it) return; const ok=await copiar(it.reportText||""); if(ok) alert("Copiado!"); }));
   el("historicoList").querySelectorAll("[data-send]").forEach(btn=>btn.addEventListener("click",()=>{ const it=getById(btn.dataset.send); if(!it) return; abrirWhats(it.reportText||""); }));
   el("historicoList").querySelectorAll("[data-client]").forEach(btn=>btn.addEventListener("click",()=>{ const it=getById(btn.dataset.client); if(!it) return; abrirWhatsPara(it.telefone||"", montarMsgCliente(it.cliente||"")); }));
-  el("historicoList").querySelectorAll("[data-showroom]").forEach(btn=>btn.addEventListener("click", async()=>{ const it=getById(btn.dataset.showroom); if(!it) return; await openShowroomFromVistoria(it); }));
 
   if(canSetDeal()){
     el("historicoList").querySelectorAll("[data-deal]").forEach(btn=>btn.addEventListener("click", async ()=>{
@@ -1680,207 +1563,6 @@ el("btnPainelAtualizar").addEventListener("click", carregarPainel);
 el("painelMes").addEventListener("change", carregarPainel);
 el("btnPainelExport").addEventListener("click", exportPainelCsv);
 
-
-let showroomItemsCache=[];
-let showroomLoadedOnce=false;
-function setShowroomHint(html){ const e=el("showroomHint"); if(e) e.innerHTML=html||""; }
-function showShowroomModal(show){ const m=el("showroomModal"); if(m) m.style.display=show?"flex":"none"; }
-function getShowroomFormData(){
-  return {
-    sourceVistoriaId:(el("showroomSourceId").value||"").trim(),
-    titulo:v("showTitulo") || `${v("showModelo")} ${v("showAno")}`.trim(),
-    precoVenda:moneyToNumber(v("showPreco")),
-    status:(el("showStatus").value||"DISPONIVEL").trim(),
-    destaque:v("showDestaque"),
-    contato:v("showContato"),
-    modelo:v("showModelo"),
-    ano:v("showAno"),
-    km:fmtKM(v("showKm")) || v("showKm"),
-    cambio:v("showCambio"),
-    combustivel:v("showCombustivel"),
-    cor:v("showCor"),
-    versao:v("showVersao"),
-    placa:plateBR(v("showPlaca")),
-    opcionais:v("showOpcionais"),
-    descricao:v("showDescricao"),
-    fotos:splitPhotos(v("showFotos")),
-    fotosText:v("showFotos")
-  };
-}
-function renderShowroomGalleryPreview(){
-  const box=el("showroomGalleryPreview"); if(!box) return;
-  const fotos=splitPhotos(v("showFotos"));
-  box.innerHTML=fotos.length ? fotos.map(url=>`<img src="${escapeHtml(url)}" alt="Foto do carro" onerror="this.remove()">`).join("") : "";
-}
-function fillShowroomForm(data={}){
-  el("showroomId").value=data.id||"";
-  el("showroomSourceId").value=data.sourceVistoriaId||"";
-  el("showTitulo").value=data.titulo||"";
-  el("showPreco").value=data.precoVenda ? fmtBRL(String(data.precoVenda)) : "";
-  el("showStatus").value=data.status||"DISPONIVEL";
-  el("showDestaque").value=data.destaque||"";
-  el("showContato").value=data.contato||"";
-  el("showModelo").value=data.modelo||"";
-  el("showAno").value=data.ano||"";
-  el("showKm").value=data.km||"";
-  el("showCambio").value=data.cambio||"";
-  el("showCombustivel").value=data.combustivel||"";
-  el("showCor").value=data.cor||"";
-  el("showVersao").value=data.versao||"";
-  el("showPlaca").value=data.placa||"";
-  el("showOpcionais").value=data.opcionais||"";
-  el("showDescricao").value=data.descricao||"";
-  el("showFotos").value=data.fotosText || (data.fotos||[]).join("\n");
-  el("showroomModalHint").innerHTML=data.sourceVistoriaId?"<span class='ok'>Vinculado a uma compra da Clube do Auto.</span>":"Cadastro livre para showroom.";
-  renderShowroomGalleryPreview();
-}
-function suggestDescriptionFromVistoria(it){
-  const tags=[];
-  const la=(it.laudo||"").toString().toUpperCase();
-  if(la==="APROVADO") tags.push("veículo com laudo aprovado");
-  if(la==="APONTAMENTO") tags.push("veículo com apontamentos leves");
-  const blind=it.blindado ? "blindado" : "";
-  return [`${it.modelo||"Veículo"} ${it.ano||""}`.trim(), blind, tags.join(", "), it.local?`carro vindo da unidade ${it.local}`:""].filter(Boolean).join(" • ");
-}
-async function openShowroomFromVistoria(it){
-  if(!it) return;
-  let existing=null;
-  try{
-    const qy=query(collection(db,"showroom"), where("sourceVistoriaId","==", it.id), limit(1));
-    const snap=await getDocs(qy);
-    if(!snap.empty) existing={id:snap.docs[0].id,...snap.docs[0].data()};
-  }catch(e){}
-  if(existing){ fillShowroomForm(existing); showShowroomModal(true); return; }
-  fillShowroomForm({
-    sourceVistoriaId:it.id,
-    titulo:[it.modelo||"", it.ano||""].filter(Boolean).join(" "),
-    modelo:it.modelo||"",
-    ano:it.ano || getFirstLineValue(it.reportText, "Ano"),
-    km:it.km || getFirstLineValue(it.reportText, "Km"),
-    versao:getFirstLineValue(it.reportText, "Versão") || "",
-    placa:it.placa||"",
-    contato:it.telefone||"",
-    descricao:suggestDescriptionFromVistoria(it),
-    status:"EM_PREPARACAO"
-  });
-  showShowroomModal(true);
-}
-function renderShowroomStats(items){
-  const total=items.length;
-  const disp=items.filter(x=>(x.status||"")==="DISPONIVEL").length;
-  const prep=items.filter(x=>(x.status||"")==="EM_PREPARACAO").length;
-  const vend=items.filter(x=>(x.status||"")==="VENDIDO").length;
-  el("showroomStats").innerHTML=[
-    [total,"Carros no showroom"],
-    [disp,"Disponíveis"],
-    [prep,"Em preparação"],
-    [vend,"Vendidos"]
-  ].map(([n,l])=>`<div class="showroomStat"><div class="n">${n}</div><div class="l">${l}</div></div>`).join("");
-}
-function showroomFilteredItems(){
-  const q=(el("showroomSearch")?.value||"").toString().trim().toLowerCase();
-  const st=(el("showroomStatusFilter")?.value||"").toString().trim();
-  return showroomItemsCache.filter(it=>{
-    if(st && (it.status||"DISPONIVEL")!==st) return false;
-    if(!q) return true;
-    const hay=[it.titulo,it.modelo,it.ano,it.placa,it.cor,it.destaque,it.descricao,it.opcionais,it.status].join(" ").toLowerCase();
-    return hay.includes(q);
-  });
-}
-function renderShowroom(){
-  const items=showroomFilteredItems();
-  renderShowroomStats(showroomItemsCache);
-  el("showroomList").innerHTML=items.length ? items.map(it=>{
-    const fotos=it.fotos||[];
-    const foto=fotos[0]||"";
-    return `<div class="showroomMini">
-      <div class="showroomMiniImg">${foto?`<img src="${escapeHtml(foto)}" alt="${escapeHtml(it.titulo||it.modelo||'Carro')}" onerror="this.closest('.showroomMiniImg').innerHTML='Sem foto'">`:''}</div>
-      <div class="showroomMiniInfo">
-        <div class="t">${escapeHtml(it.titulo||it.modelo||"Sem título")}</div>
-        <div class="s">${escapeHtml(it.ano||"—")} • ${escapeHtml(it.km||"—")} km • ${escapeHtml(it.placa||"sem placa")}</div>
-        <div class="s"><span class="statusPill ${statusClass(it.status||'DISPONIVEL')}">${statusLabel(it.status||'DISPONIVEL')}</span> ${it.destaque?` • ${escapeHtml(it.destaque)}`:""}</div>
-      </div>
-      <div>
-        <div class="showroomMiniPrice">${escapeHtml(toMoneyText(it.precoVenda))}</div>
-        <div class="showroomActions" style="justify-content:flex-end;margin-top:10px">
-          <button class="smallBtn btnP" type="button" data-show-edit="${it.id}">Editar</button>
-        </div>
-      </div>
-    </div>`;
-  }).join("") : `<div class="showroomEmpty">Nenhum carro no showroom ainda. Você pode cadastrar manualmente ou enviar um carro fechado pelo histórico.</div>`;
-
-  el("showroomCards").innerHTML=items.length ? items.map(it=>{
-    const fotos=it.fotos||[];
-    const foto=fotos[0]||"";
-    const titulo=it.titulo||it.modelo||"Veículo";
-    return `<div class="showroomCard">
-      <div class="showroomMedia ${foto?"":"empty"}">${foto?`<img src="${escapeHtml(foto)}" alt="${escapeHtml(titulo)}" onerror="this.parentNode.classList.add('empty');this.remove();this.parentNode.innerHTML+='Sem foto principal';">`:"Sem foto principal"}
-        <div class="showroomBadges">
-          <span class="showroomBadge ${statusClass(it.status||'DISPONIVEL')}">${statusLabel(it.status||'DISPONIVEL')}</span>
-          ${it.destaque?`<span class="showroomBadge showroomBadgeLight">${escapeHtml(it.destaque)}</span>`:""}
-        </div>
-      </div>
-      <div class="showroomBody">
-        <div class="showroomTitle">${escapeHtml(titulo)}</div>
-        <div class="showroomPrice">${escapeHtml(toMoneyText(it.precoVenda))}</div>
-        <div class="showroomSub">${escapeHtml(it.ano||"—")} • ${escapeHtml(it.km||"—")} km • ${escapeHtml(it.cor||"Cor a definir")}</div>
-        <div class="showroomMeta">
-          <div class="showroomMetaItem"><div class="k">Câmbio</div><div class="v">${escapeHtml(it.cambio||"—")}</div></div>
-          <div class="showroomMetaItem"><div class="k">Combustível</div><div class="v">${escapeHtml(it.combustivel||"—")}</div></div>
-          <div class="showroomMetaItem"><div class="k">Versão</div><div class="v">${escapeHtml(it.versao||"—")}</div></div>
-          <div class="showroomMetaItem"><div class="k">Placa</div><div class="v">${escapeHtml(it.placa||"—")}</div></div>
-        </div>
-        ${it.descricao?`<div class="showroomDesc">${escapeHtml(it.descricao)}</div>`:""}
-        <div class="showroomActions">
-          <button class="smallBtn btnP" type="button" data-show-edit="${it.id}">Editar</button>
-          <button class="smallBtn btnB" type="button" data-show-copy="${it.id}">Copiar descrição</button>
-          <button class="smallBtn btnW" type="button" data-show-wa="${it.id}">Whats</button>
-        </div>
-      </div>
-    </div>`;
-  }).join("") : `<div class="showroomEmpty">Assim que você cadastrar os primeiros carros, a vitrine visual aparecerá aqui.</div>`;
-
-  document.querySelectorAll("[data-show-edit]").forEach(btn=>btn.addEventListener("click", ()=>{
-    const it=showroomItemsCache.find(x=>x.id===btn.dataset.showEdit); if(!it) return;
-    fillShowroomForm(it); showShowroomModal(true);
-  }));
-  document.querySelectorAll("[data-show-copy]").forEach(btn=>btn.addEventListener("click", async()=>{
-    const it=showroomItemsCache.find(x=>x.id===btn.dataset.showCopy); if(!it) return;
-    const txt=[it.titulo||it.modelo||"Veículo", it.descricao||"", it.opcionais||"", it.precoVenda?`Preço: ${toMoneyText(it.precoVenda)}`:""].filter(Boolean).join("\n");
-    const ok=await copiar(txt); if(ok) alert("Descrição copiada!");
-  }));
-  document.querySelectorAll("[data-show-wa]").forEach(btn=>btn.addEventListener("click", ()=>{
-    const it=showroomItemsCache.find(x=>x.id===btn.dataset.showWa); if(!it) return;
-    const msg=[`Olá! Tenho interesse no veículo ${it.titulo||it.modelo||''}.`, it.precoVenda?`Preço anunciado: ${toMoneyText(it.precoVenda)}`:"", it.placa?`Placa: ${it.placa}`:""].filter(Boolean).join("\n");
-    abrirWhatsPara(it.contato||"", msg);
-  }));
-  setShowroomHint(`<span class='ok'>${items.length}</span> exibindo • <span class='hint'>${showroomItemsCache.length} cadastrados</span>`);
-}
-async function carregarShowroom(){
-  if(isGuest || !canShowroom){ setShowroomHint("<span class='warn'>Faça login para acessar o showroom.</span>"); return; }
-  setShowroomHint("Carregando showroom...");
-  try{
-    const qy=query(collection(db,"showroom"), orderBy("updatedAt","desc"), limit(500));
-    const snap=await getDocs(qy);
-    showroomItemsCache=snap.docs.map(d=>({id:d.id,...d.data()}));
-    renderShowroom();
-    showroomLoadedOnce=true;
-  }catch(e){
-    setShowroomHint("<span class='warn'>Erro ao carregar showroom:</span> "+escapeHtml(e?.message||e));
-  }
-}
-async function openShowroom(){
-  if(!showroomLoadedOnce){ await carregarShowroom(); }
-  else renderShowroom();
-}
-function exportShowroomCsv(){
-  const rows=showroomFilteredItems();
-  const esc=(s)=>(`"${String(s??"").replaceAll('"','""')}"`);
-  const lines=[["titulo","preco","status","modelo","ano","km","cor","cambio","combustivel","versao","placa","destaque","contato"].join(",")];
-  rows.forEach(it=>lines.push([it.titulo||"", it.precoVenda||"", statusLabel(it.status||"DISPONIVEL"), it.modelo||"", it.ano||"", it.km||"", it.cor||"", it.cambio||"", it.combustivel||"", it.versao||"", it.placa||"", it.destaque||"", it.contato||""].map(esc).join(",")));
-  downloadTextFile(`showroom_vex_${new Date().toISOString().slice(0,10)}.csv`, lines.join("\n"), "text/csv;charset=utf-8");
-}
-
 function openUsers(){
   el("usersList").innerHTML=""; el("usersHint").innerHTML="";
   if(isGuest){ el("usersHint").innerHTML="<span class='warn'>Convidado não tem acesso.</span>"; return; }
@@ -1919,34 +1601,6 @@ function openUsers(){
   }, (err)=>{ el("usersList").innerHTML="<div class='userItem'><b>Erro:</b> "+escapeHtml(err?.message||err)+"</div>"; });
 }
 
-
-el("btnShowroomNovo")?.addEventListener("click", ()=>{ fillShowroomForm({status:"DISPONIVEL"}); showShowroomModal(true); });
-el("btnShowroomClose")?.addEventListener("click", ()=>showShowroomModal(false));
-el("showroomModal")?.addEventListener("click", ev=>{ if(ev.target?.id==="showroomModal") showShowroomModal(false); });
-el("btnShowroomRefresh")?.addEventListener("click", carregarShowroom);
-el("btnShowroomExport")?.addEventListener("click", exportShowroomCsv);
-["showroomSearch","showroomStatusFilter"].forEach(id=>{ const e=el(id); if(e){ e.addEventListener("input", renderShowroom); e.addEventListener("change", renderShowroom); } });
-["showPreco","showFotos","showKm","showPlaca"].forEach(id=>{ const e=el(id); if(!e) return; e.addEventListener("blur", ()=>{ if(id==="showPreco" && v(id)) el(id).value=fmtBRL(v(id)); if(id==="showKm" && v(id)) el(id).value=fmtKM(v(id)); if(id==="showPlaca" && v(id)) el(id).value=plateBR(v(id)); renderShowroomGalleryPreview(); }); });
-el("showFotos")?.addEventListener("input", renderShowroomGalleryPreview);
-el("btnShowroomDuplicar")?.addEventListener("click", ()=>{ el("showroomId").value=""; el("showroomSourceId").value=""; el("showroomModalHint").innerHTML="<span class='ok'>Anúncio duplicado. Salve para criar um novo item.</span>"; });
-el("btnShowroomSalvar")?.addEventListener("click", async()=>{
-  const id=(el("showroomId").value||"").trim();
-  const payload=getShowroomFormData();
-  if(!payload.titulo) return alert("Informe o título do anúncio.");
-  if(!payload.modelo) return alert("Informe o modelo do veículo.");
-  if(!payload.precoVenda) return alert("Informe o preço de venda.");
-  if(!payload.fotos.length) return alert("Cole pelo menos uma foto principal (URL).");
-  try{
-    const u=auth.currentUser;
-    const baseData={...payload, updatedAt:serverTimestamp(), updatedByEmail:lower(u?.email||"")};
-    if(id) await updateDoc(doc(db,"showroom", id), baseData);
-    else await addDoc(collection(db,"showroom"), {...baseData, createdAt:serverTimestamp(), createdByEmail:lower(u?.email||"")});
-    showShowroomModal(false);
-    await carregarShowroom();
-    setTab("showroom");
-  }catch(e){ el("showroomModalHint").innerHTML="<span class='warn'>Erro ao salvar:</span> "+escapeHtml(e?.message||e); }
-});
-
 el("btnDoLogin").addEventListener("click", async ()=>{
   const email=v("loginEmail"), pass=v("loginPass");
   if(!email||!pass) return el("loginHint").innerHTML="<span class='warn'>Preencha e-mail e senha.</span>";
@@ -1975,19 +1629,21 @@ el("btnFillPadrao").addEventListener("click", ()=>{
 el("btnWhats").addEventListener("click", async ()=>{ if(!validar()) return; const texto=montar(); setButtonsDisabled(true); await salvarUmaVez(texto); abrirWhats(texto); setButtonsDisabled(false); });
 el("btnCopy").addEventListener("click", async ()=>{ if(!validar()) return; const texto=montar(); setButtonsDisabled(true); await salvarUmaVez(texto); const ok=await copiar(texto); if(ok) alert("Copiado!"); setButtonsDisabled(false); });
 
-["modelo","ano","versao","placa","km","kmComprou","debitosSel","debitosValor","finSel","finValor","fipe","valorPretendido","laudo","laudoObs","leilao","motor","luzes","arCond","blindadoChk","blindadoEstado","blindadoObs","testeRodagem","consultor","cliente","local","captacao","tablier","bancosOnde","bancosServico","volante","manopla","forro_motorista","forro_passageiro","forro_traseiro_d","forro_traseiro_e","forro_dianteiros","forro_traseiros","forro_todos","forroEstado","funilariaPecas","pneusQtd","pinturaCompleta","chuvaGranizo","paraChoqueD","paraChoqueT","retrovisorD","retrovisorE","farolD","farolE","lanternaD","lanternaE","vidroParabrisa","vidro_dd_chk","vidro_dd_act","vidro_de_chk","vidro_de_act","vidro_td_chk","vidro_td_act","vidro_te_chk","vidro_te_act","vidro_vg_chk","vidro_vg_act"].forEach(id=>{
+["modelo","ano","versao","placa","km","kmComprou","debitosSel","debitosValor","finSel","finValor","fipe","valorPretendido","gastosEstimados","laudo","laudoObs","leilao","motor","luzes","arCond","blindadoChk","blindadoEstado","blindadoObs","testeRodagem","consultor","cliente","local","captacao","tablier","bancosOnde","bancosServico","volante","manopla","forro_motorista","forro_passageiro","forro_traseiro_d","forro_traseiro_e","forro_dianteiros","forro_traseiros","forro_todos","forroEstado","funilariaPecas","pneusQtd","pinturaCompleta","chuvaGranizo","paraChoqueD","paraChoqueT","retrovisorD","retrovisorE","farolD","farolE","lanternaD","lanternaE","vidroParabrisa","vidro_dd_chk","vidro_dd_act","vidro_de_chk","vidro_de_act","vidro_td_chk","vidro_td_act","vidro_te_chk","vidro_te_act","vidro_vg_chk","vidro_vg_act"].forEach(id=>{
   const e=el(id); if(!e) return;
   e.addEventListener("input", ()=>{
     if(id==="laudo"){ setStatusBadge(); toggleLaudoDescricao(); }
     if(id==="versao"){ toggleArCond(); }
     if(id==="blindadoChk" || id==="blindadoEstado"){ toggleBlindagem(); }
     atualizarPreview();
+    atualizarLucroPreview();
   });
   e.addEventListener("change", ()=>{
     if(id==="laudo"){ setStatusBadge(); toggleLaudoDescricao(); }
     if(id==="versao"){ toggleArCond(); }
     if(id==="blindadoChk" || id==="blindadoEstado"){ toggleBlindagem(); }
     atualizarPreview();
+    atualizarLucroPreview();
   });
 });
 
@@ -1996,8 +1652,8 @@ el("histLimit").addEventListener("change", openHistorico);
 el("btnHistRefresh").addEventListener("click", openHistorico);
 el("btnHistExport").addEventListener("click", exportHistoricoCsv);
 
-el("debitosSel").addEventListener("change",()=>{ toggleDebitos(); atualizarPreview(); });
-el("finSel").addEventListener("change",()=>{ toggleFin(); atualizarPreview(); });
+el("debitosSel").addEventListener("change",()=>{ toggleDebitos(); atualizarPreview(); atualizarLucroPreview(); });
+el("finSel").addEventListener("change",()=>{ toggleFin(); atualizarPreview(); atualizarLucroPreview(); });
 document.querySelectorAll(".avChk").forEach(c=>c.addEventListener("change",()=>atualizarPreview()));
 toggleDebitos(); toggleFin();
 
@@ -2054,7 +1710,7 @@ async function openFipe(){
 el("btnFipe").addEventListener("click", openFipe);
 el("btnFipeClose").addEventListener("click", ()=>showFipeModal(false));
 el("fipeModal").addEventListener("click", ev=>{ if(ev.target?.id==="fipeModal") showFipeModal(false); });
-el("btnFipeClear").addEventListener("click", ()=>{ el("fipe").value=""; atualizarPreview(); });
+el("btnFipeClear").addEventListener("click", ()=>{ el("fipe").value=""; atualizarPreview(); atualizarLucroPreview(); });
 el("fipeMarca").addEventListener("change", async ()=>{
   const brand=el("fipeMarca").value; el("fipeBuscaModelo").value=""; el("fipeAno").innerHTML="<option value=''>Selecione o modelo</option>"; lastFipeResult=null; renderFipeResult(null);
   if(!brand){ el("fipeModelo").innerHTML="<option value=''>Selecione a marca</option>"; return; }
@@ -2074,7 +1730,7 @@ el("btnFipeApply").addEventListener("click", ()=>{
   if(lastFipeResult.Modelo) el("modelo").value=lastFipeResult.Modelo;
   if(lastFipeResult.AnoModelo!=null) el("ano").value=String(lastFipeResult.AnoModelo);
   if(lastFipeResult.Valor) el("fipe").value=lastFipeResult.Valor;
-  atualizarPreview(); showFipeModal(false);
+  atualizarPreview(); atualizarLucroPreview(); showFipeModal(false);
 });
 el("btnFavOpen")?.addEventListener("click", ()=>alert("Favoritos: função em atualização. (Layout mantido)"));
 el("btnClearForm")?.addEventListener("click", ()=>window.location.reload());
@@ -2084,7 +1740,7 @@ toggleLaudoDescricao();
 toggleBlindagem();
 toggleArCond();
 atualizarPreview();
-renderShowroomGalleryPreview();
+atualizarLucroPreview();
 </script>
 
 <script>
