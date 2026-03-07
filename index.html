@@ -322,7 +322,7 @@ input:focus,select:focus,textarea:focus{
   border-radius:999px;
   border:1px solid rgba(15,23,42,.05);
 }
-#btnWhats,#btnCopy,#btnClearForm{
+#btnWhats,#btnCopy,#btnClearForm,#btnFillPadrao{
   font-size:15px;
   padding:14px 16px;
   border-radius:16px;
@@ -333,7 +333,40 @@ input:focus,select:focus,textarea:focus{
   .topbar{padding:14px}
   .topbarTitle .main{font-size:18px}
 }
-
+.repeatWarn{
+  margin-top:8px;
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid #fde68a;
+  background:#fffbeb;
+  color:#92400e;
+  font-size:13px;
+  font-weight:800;
+}
+.repeatOk{
+  margin-top:8px;
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid #bbf7d0;
+  background:#f0fdf4;
+  color:#166534;
+  font-size:13px;
+  font-weight:800;
+}
+.lucroBox{
+  border:1px solid #dbeafe;
+  background:linear-gradient(180deg,#f8fbff 0%, #eef6ff 100%);
+  border-radius:16px;
+  padding:12px;
+  min-height:56px;
+  display:flex;
+  align-items:center;
+  font-weight:900;
+  font-size:18px;
+}
+.lucroPositivo{color:#065f46}
+.lucroNeutro{color:#334155}
+.lucroNegativo{color:#991b1b}
 </style>
 </head>
 
@@ -412,8 +445,13 @@ input:focus,select:focus,textarea:focus{
         <div><label>Versão <span class="hint">(obrigatório)</span></label>
           <select id="versao">
             <option value="">Selecione</option>
-            <option>Básico</option><option>Completo</option><option>Completo menos ar</option><option>Completo + 7 Lugares</option>
-            <option>Apenas Vidros Elétricos</option><option>Apenas direção</option>
+            <option>Básico</option>
+            <option>Completo</option>
+            <option>Completo menos ar</option>
+            <option>Completo + 7 Lugares</option>
+            <option>Apenas Vidros Elétricos</option>
+            <option>Apenas direção</option>
+            <option>Apenas AR</option>
           </select>
         </div>
       </div>
@@ -430,6 +468,27 @@ input:focus,select:focus,textarea:focus{
           </label>
         </div>
       </div>
+
+      <div class="row2">
+        <div>
+          <label class="chkLabelRight">Veículo blindado <input type="checkbox" id="blindadoChk"></label>
+        </div>
+        <div id="blindadoEstadoWrap" class="hidden">
+          <label>Blindagem / vidros</label>
+          <select id="blindadoEstado">
+            <option>Bom</option>
+            <option>Avariado</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="blindadoObsWrap" class="hidden">
+        <label>Detalhes da blindagem</label>
+        <textarea id="blindadoObs" placeholder="Ex: vidro delaminado em 2 portas, vigia trincado, vidro quebrado..."></textarea>
+      </div>
+
+      <div id="placaDuplicadaHint"></div>
+
       <div class="hint">Km pode ser número (o app formata). Em "Comprou (Km)", marque "Cliente não sabe" quando necessário.</div>
     </div>
 
@@ -466,6 +525,19 @@ input:focus,select:focus,textarea:focus{
           <input id="valorPretendido" inputmode="numeric" placeholder="Ex: 29000">
         </div>
       </div>
+
+      <div class="row2">
+        <div>
+          <label>Gastos estimados (R$)</label>
+          <input id="gastosEstimados" inputmode="numeric" placeholder="Ex: 4000">
+          <div class="hint">Usado apenas no cálculo auxiliar de margem.</div>
+        </div>
+        <div>
+          <label>Lucro potencial estimado</label>
+          <div class="lucroBox lucroNeutro" id="lucroPreview">—</div>
+          <div class="hint">Cálculo: FIPE - Pretendido - Débitos - Quitação - Gastos estimados.</div>
+        </div>
+      </div>
     </div>
 
     <div class="card">
@@ -488,6 +560,16 @@ input:focus,select:focus,textarea:focus{
       <textarea id="motor" placeholder="Ex: Rajando / Caixa de direção / Vazamento..."></textarea>
       <label>Luzes do painel (texto livre)</label>
       <textarea id="luzes" placeholder="Ex: ABS / Injeção / Óleo..."></textarea>
+
+      <div id="arCondWrap" class="hidden">
+        <label>Ar condicionado</label>
+        <select id="arCond">
+          <option>Bom</option>
+          <option>Não gela</option>
+          <option>Não funciona</option>
+        </select>
+      </div>
+
       <h3 style="margin-top:14px">🪑 Gastos internos</h3>
       <label>Tablier</label>
       <select id="tablier"><option>Bom</option><option>Avariado</option></select>
@@ -555,6 +637,24 @@ input:focus,select:focus,textarea:focus{
           <select id="paraChoqueT"><option>Bom</option><option>Troca</option></select>
         </div>
       </div>
+      <div class="row2">
+        <div>
+          <label>Retrovisor (D)</label>
+          <select id="retrovisorD">
+            <option>Bom</option>
+            <option>Capa</option>
+            <option>Troca</option>
+          </select>
+        </div>
+        <div>
+          <label>Retrovisor (E)</label>
+          <select id="retrovisorE">
+            <option>Bom</option>
+            <option>Capa</option>
+            <option>Troca</option>
+          </select>
+        </div>
+      </div>
       <h3 style="margin-top:14px">💡 Faróis e lanternas</h3>
       <div class="row2">
         <div><label>Farol (D)</label><select id="farolD"><option>Bom</option><option>Polimento</option><option>Troca</option></select></div>
@@ -619,6 +719,7 @@ input:focus,select:focus,textarea:focus{
 
     <div class="card">
       <h3>✅ Ações finais</h3>
+      <button class="btnP" type="button" id="btnFillPadrao">⚡ Preencher padrão</button>
       <button class="btnW" id="btnWhats">📲 Enviar relatório (WhatsApp)</button>
       <button class="btnB" id="btnCopy">📋 Copiar relatório</button>
       <button class="btnG" type="button" id="btnClearForm">🧹 Limpar formulário</button>
@@ -903,10 +1004,153 @@ async function ensureUserDoc(user){
 function onlyDigits(s){ return (s??"").toString().replace(/[^\d]/g,""); }
 function fmtKM(raw){ const d=onlyDigits(raw); if(!d) return ""; return new Intl.NumberFormat("pt-BR").format(Number(d)); }
 function fmtBRL(raw){ const d=onlyDigits(raw); if(!d) return ""; return new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(Number(d)).replace(/ /g," "); }
+function moneyToNumber(raw){ const d=onlyDigits(raw); return d ? Number(d) : 0; }
+function plateBR(raw){ return (raw||"").toString().toUpperCase().replace(/\s+/g,"").trim(); }
+function isArVersion(){
+  return ["Completo","Completo + 7 Lugares","Apenas AR"].includes(v("versao"));
+}
+function getVersaoCompleta(){
+  let txt=v("versao");
+  if(el("blindadoChk")?.checked) txt += " + Blindagem";
+  return txt;
+}
+function toggleBlindagem(){
+  const on=!!el("blindadoChk")?.checked;
+  el("blindadoEstadoWrap").classList.toggle("hidden", !on);
+  const av=on && v("blindadoEstado")==="Avariado";
+  el("blindadoObsWrap").classList.toggle("hidden", !av);
+  if(!on){
+    el("blindadoEstado").value="Bom";
+    el("blindadoObs").value="";
+  }
+  if(on && !av){
+    el("blindadoObs").value="";
+  }
+}
+function toggleArCond(){
+  const show=isArVersion();
+  el("arCondWrap").classList.toggle("hidden", !show);
+  if(!show) el("arCond").value="Bom";
+}
+function calcLucroPotencial(){
+  const fipe=moneyToNumber(v("fipe"));
+  const pretendido=moneyToNumber(v("valorPretendido"));
+  const deb=moneyToNumber(v("debitosValor"));
+  const fin=moneyToNumber(v("finValor"));
+  const gastos=moneyToNumber(v("gastosEstimados"));
+  return fipe - pretendido - deb - fin - gastos;
+}
+function atualizarLucroPreview(){
+  const box=el("lucroPreview");
+  if(!box) return;
+  const fipe=moneyToNumber(v("fipe"));
+  const pretendido=moneyToNumber(v("valorPretendido"));
+  if(!fipe || !pretendido){
+    box.className="lucroBox lucroNeutro";
+    box.textContent="—";
+    return;
+  }
+  const lucro=calcLucroPotencial();
+  box.className="lucroBox " + (lucro>0 ? "lucroPositivo" : lucro<0 ? "lucroNegativo" : "lucroNeutro");
+  box.textContent=new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(lucro);
+}
+function preencherPadrao(){
+  el("tablier").value="Bom";
+  el("bancosOnde").value="";
+  el("bancosServico").value="Bom";
+  el("volante").value="Bom";
+  el("manopla").value="Bom";
+
+  ["forro_motorista","forro_passageiro","forro_traseiro_d","forro_traseiro_e","forro_dianteiros","forro_traseiros","forro_todos"].forEach(id=>{
+    if(el(id)) el(id).checked=false;
+  });
+  el("forroEstado").value="Bom";
+
+  el("funilariaPecas").value="0";
+  el("pneusQtd").value="0";
+  el("pinturaCompleta").checked=false;
+  el("chuvaGranizo").checked=false;
+
+  el("paraChoqueD").value="Bom";
+  el("paraChoqueT").value="Bom";
+
+  el("retrovisorD").value="Bom";
+  el("retrovisorE").value="Bom";
+
+  el("farolD").value="Bom";
+  el("farolE").value="Bom";
+  el("lanternaD").value="Bom";
+  el("lanternaE").value="Bom";
+
+  el("vidroParabrisa").value="OK";
+  ["vidro_dd_chk","vidro_de_chk","vidro_td_chk","vidro_te_chk","vidro_vg_chk"].forEach(id=>{
+    if(el(id)) el(id).checked=false;
+  });
+  ["vidro_dd_act","vidro_de_act","vidro_td_act","vidro_te_act","vidro_vg_act"].forEach(id=>{
+    if(el(id)) el(id).value="Reparo";
+  });
+
+  if(isArVersion()) el("arCond").value="Bom";
+  if(el("blindadoChk")?.checked){
+    el("blindadoEstado").value="Bom";
+    el("blindadoObs").value="";
+    toggleBlindagem();
+  }
+
+  atualizarPreview();
+  atualizarLucroPreview();
+}
+let placaDupTimer=null;
+async function verificarPlacaDuplicada(){
+  const hint=el("placaDuplicadaHint");
+  if(!hint) return;
+  const placa=plateBR(v("placa"));
+  if(!placa || placa.length<7){
+    hint.innerHTML="";
+    return;
+  }
+  if(isGuest){
+    hint.innerHTML="";
+    return;
+  }
+  try{
+    const qy=query(collection(db,"vistorias"), where("placa","==",placa), limit(5));
+    const snap=await getDocs(qy);
+    const items=snap.docs.map(d=>({id:d.id,...d.data()}));
+    if(!items.length){
+      hint.innerHTML="<div class='repeatOk'>✅ Placa ainda não encontrada no histórico.</div>";
+      return;
+    }
+    const first=items[0]||{};
+    const la=((first.laudo||"").toString().toUpperCase() || "—");
+    const dt=formatDate(first.createdAt) || "data indisponível";
+    const modelo=first.modelo || "modelo não informado";
+    hint.innerHTML=`<div class='repeatWarn'>⚠️ Essa placa já foi avaliada anteriormente. Último registro: <b>${escapeHtml(modelo)}</b> • <b>${escapeHtml(la)}</b> • <b>${escapeHtml(dt)}</b></div>`;
+  }catch(e){
+    hint.innerHTML="";
+  }
+}
 
 ["km"].forEach(id=>el(id).addEventListener("blur",()=>{ if(v(id)) el(id).value=fmtKM(v(id)); atualizarPreview(); }));
+el("placa").addEventListener("blur", ()=>{
+  if(v("placa")) el("placa").value=plateBR(v("placa"));
+  atualizarPreview();
+  verificarPlacaDuplicada();
+});
+el("placa").addEventListener("input", ()=>{
+  clearTimeout(placaDupTimer);
+  placaDupTimer=setTimeout(verificarPlacaDuplicada, 450);
+});
 el("kmComprou").addEventListener("blur",()=>{ const val=v("kmComprou"), digs=onlyDigits(val); if(val && digs && digs.length===val.replace(/\s|\./g,"").length) el("kmComprou").value=fmtKM(val); atualizarPreview(); });
-["fipe","valorPretendido","debitosValor","finValor"].forEach(id=>{ const e=el(id); if(!e) return; e.addEventListener("blur",()=>{ if(v(id)) el(id).value=fmtBRL(v(id)); atualizarPreview(); }); });
+["fipe","valorPretendido","debitosValor","finValor","gastosEstimados"].forEach(id=>{
+  const e=el(id);
+  if(!e) return;
+  e.addEventListener("blur",()=>{
+    if(v(id)) el(id).value=fmtBRL(v(id));
+    atualizarPreview();
+    atualizarLucroPreview();
+  });
+});
 
 function setStatusBadge(){ const s=(v("laudo")||"APROVADO").toUpperCase(); el("statusTxt").innerText=s; el("dot").style.background=(s==="REPROVADO")?"#d32f2f":(s==="APONTAMENTO")?"#f9a825":"#2e7d32"; }
 function toggleLaudoDescricao(){ const s=(v("laudo")||"APROVADO").toUpperCase(); if(s==="APROVADO"){ el("laudoObsWrap").style.display="none"; el("laudoObs").value=""; } else el("laudoObsWrap").style.display="block"; }
@@ -927,6 +1171,7 @@ function validar(){
   if((v("debitosSel")==="Sim") && !v("debitosValor")) return focusWarn("debitosValor","Informe o valor dos débitos.");
   if((v("finSel")==="Sim") && !v("finValor")) return focusWarn("finValor","Informe o valor da quitação.");
   if(!v("cliente")) return focusWarn("cliente","Obrigatório: Cliente");
+  if(el("blindadoChk")?.checked && v("blindadoEstado")==="Avariado" && !v("blindadoObs")) return focusWarn("blindadoObs","Descreva a avaria da blindagem.");
   return true;
 }
 
@@ -935,8 +1180,8 @@ function montar(){
   lines.push("🚗 *Veículo*");
   lines.push(`*Modelo:* ${v("modelo")}`);
   lines.push(`*Ano:* ${v("ano")}`);
-  lines.push(`*Versão:* ${v("versao")}`);
-  lines.push(`*Placa:* ${v("placa")}`);
+  lines.push(`*Versão:* ${getVersaoCompleta()}`);
+  lines.push(`*Placa:* ${plateBR(v("placa"))}`);
   lines.push(`*Km:* ${v("km")}`);
   lines.push(`*Comprou:* ${v("kmComprou")}`);
 
@@ -959,6 +1204,8 @@ function montar(){
   const gastos=[];
   if(v("motor")) gastos.push(v("motor"));
   if(v("luzes")) gastos.push(v("luzes"));
+  if(el("blindadoChk")?.checked && v("blindadoEstado")==="Avariado" && v("blindadoObs")) gastos.push(`Blindagem: ${v("blindadoObs")}`);
+  if(isArVersion() && v("arCond") && v("arCond")!=="Bom") gastos.push(`Ar-condicionado: ${v("arCond")}`);
   if(v("tablier")==="Avariado") gastos.push("Tablier: Avariado");
   if(v("bancosOnde") && v("bancosServico") && v("bancosServico")!=="Bom") gastos.push(`Bancos (${v("bancosOnde")}): ${v("bancosServico")}`);
   if(v("volante") && v("volante")!=="Bom") gastos.push(`Volante: ${v("volante")}`);
@@ -977,7 +1224,11 @@ function montar(){
   if(pneus>0) gastos.push(`Pneus: ${pneus} ${pneus===1?"avariado":"avariados"}`);
   if(v("paraChoqueD")==="Troca") gastos.push("Para-choque dianteiro: Troca");
   if(v("paraChoqueT")==="Troca") gastos.push("Para-choque traseiro: Troca");
-  [["farolD","Farol (D)"],["farolE","Farol (E)"],["lanternaD","Lanterna (D)"],["lanternaE","Lanterna (E)"]].forEach(([id,label])=>{ const val=v(id); if(val && val!=="Bom") gastos.push(`${label}: ${val}`); });
+  [["retrovisorD","Retrovisor (D)"],["retrovisorE","Retrovisor (E)"],["farolD","Farol (D)"],["farolE","Farol (E)"],["lanternaD","Lanterna (D)"],["lanternaE","Lanterna (E)"]]
+  .forEach(([id,label])=>{
+    const val=v(id);
+    if(val && val!=="Bom") gastos.push(`${label}: ${val}`);
+  });
   if(v("vidroParabrisa") && v("vidroParabrisa")!=="OK") gastos.push(`Para-brisa: ${v("vidroParabrisa")}`);
   [["vidro_dd_chk","vidro_dd_act","Vidro dianteiro (D)"],["vidro_de_chk","vidro_de_act","Vidro dianteiro (E)"],["vidro_td_chk","vidro_td_act","Vidro traseiro (D)"],["vidro_te_chk","vidro_te_act","Vidro traseiro (E)"],["vidro_vg_chk","vidro_vg_act","Vigia"]].forEach(([chk,act,label])=>{ if(el(chk)?.checked) gastos.push(`${label}: ${v(act)||"Reparo"}`); });
   if(gastos.length){ lines.push(""); lines.push("⚙️ *Gastos*"); lines.push(...gastos); }
@@ -1042,13 +1293,19 @@ async function salvarUmaVez(texto){
       createdByUid:u.uid,
       roleAtCreation:currentRole,
       modelo:v("modelo"),
-      placa:v("placa"),
+      placa:plateBR(v("placa")),
       laudo:(v("laudo")||"APROVADO").toUpperCase(),
       cliente:v("cliente"),
       telefone:v("telefone"),
       local:v("local"),
       captacao:v("captacao"),
       consultor:v("consultor"),
+      blindado:!!el("blindadoChk")?.checked,
+      blindadoEstado:v("blindadoEstado"),
+      blindadoObs:v("blindadoObs"),
+      arCond:isArVersion()?v("arCond"):"",
+      gastosEstimados:moneyToNumber(v("gastosEstimados")),
+      lucroPotencial:calcLucroPotencial(),
       reportText:texto,
       dealStatus:"SEM",
       dealUpdatedAt:serverTimestamp(),
@@ -1068,6 +1325,7 @@ function setTab(tab){
   const nova=tab==="nova", hist=tab==="hist", painel=tab==="painel", users=tab==="users";
   el("tabNova").classList.toggle("active", nova);
   el("tabHist").classList.toggle("active", hist);
+  el("tabPainel").classList.toggle("active", painel);
   el("tabUsers").classList.toggle("active", users);
   el("viewNova").classList.toggle("hidden", !nova);
   el("viewHistorico").classList.toggle("hidden", !hist);
@@ -1364,13 +1622,29 @@ function setButtonsDisabled(disabled){
   el("btnWhats").disabled=disabled; el("btnCopy").disabled=disabled;
   el("btnWhats").style.opacity=disabled?"0.6":"1"; el("btnCopy").style.opacity=disabled?"0.6":"1";
 }
+el("btnFillPadrao").addEventListener("click", ()=>{
+  preencherPadrao();
+  alert("Itens padrão aplicados.");
+});
 el("btnWhats").addEventListener("click", async ()=>{ if(!validar()) return; const texto=montar(); setButtonsDisabled(true); await salvarUmaVez(texto); abrirWhats(texto); setButtonsDisabled(false); });
 el("btnCopy").addEventListener("click", async ()=>{ if(!validar()) return; const texto=montar(); setButtonsDisabled(true); await salvarUmaVez(texto); const ok=await copiar(texto); if(ok) alert("Copiado!"); setButtonsDisabled(false); });
 
-["modelo","ano","versao","placa","km","kmComprou","debitosSel","debitosValor","finSel","finValor","fipe","valorPretendido","laudo","laudoObs","leilao","motor","luzes","testeRodagem","consultor","cliente","local","captacao","tablier","bancosOnde","bancosServico","volante","manopla","forro_motorista","forro_passageiro","forro_traseiro_d","forro_traseiro_e","forro_dianteiros","forro_traseiros","forro_todos","forroEstado","funilariaPecas","pneusQtd","pinturaCompleta","chuvaGranizo","paraChoqueD","paraChoqueT","farolD","farolE","lanternaD","lanternaE","vidroParabrisa","vidro_dd_chk","vidro_dd_act","vidro_de_chk","vidro_de_act","vidro_td_chk","vidro_td_act","vidro_te_chk","vidro_te_act","vidro_vg_chk","vidro_vg_act"].forEach(id=>{
+["modelo","ano","versao","placa","km","kmComprou","debitosSel","debitosValor","finSel","finValor","fipe","valorPretendido","gastosEstimados","laudo","laudoObs","leilao","motor","luzes","arCond","blindadoChk","blindadoEstado","blindadoObs","testeRodagem","consultor","cliente","local","captacao","tablier","bancosOnde","bancosServico","volante","manopla","forro_motorista","forro_passageiro","forro_traseiro_d","forro_traseiro_e","forro_dianteiros","forro_traseiros","forro_todos","forroEstado","funilariaPecas","pneusQtd","pinturaCompleta","chuvaGranizo","paraChoqueD","paraChoqueT","retrovisorD","retrovisorE","farolD","farolE","lanternaD","lanternaE","vidroParabrisa","vidro_dd_chk","vidro_dd_act","vidro_de_chk","vidro_de_act","vidro_td_chk","vidro_td_act","vidro_te_chk","vidro_te_act","vidro_vg_chk","vidro_vg_act"].forEach(id=>{
   const e=el(id); if(!e) return;
-  e.addEventListener("input", ()=>{ if(id==="laudo"){ setStatusBadge(); toggleLaudoDescricao(); } atualizarPreview(); });
-  e.addEventListener("change", ()=>{ if(id==="laudo"){ setStatusBadge(); toggleLaudoDescricao(); } atualizarPreview(); });
+  e.addEventListener("input", ()=>{
+    if(id==="laudo"){ setStatusBadge(); toggleLaudoDescricao(); }
+    if(id==="versao"){ toggleArCond(); }
+    if(id==="blindadoChk" || id==="blindadoEstado"){ toggleBlindagem(); }
+    atualizarPreview();
+    atualizarLucroPreview();
+  });
+  e.addEventListener("change", ()=>{
+    if(id==="laudo"){ setStatusBadge(); toggleLaudoDescricao(); }
+    if(id==="versao"){ toggleArCond(); }
+    if(id==="blindadoChk" || id==="blindadoEstado"){ toggleBlindagem(); }
+    atualizarPreview();
+    atualizarLucroPreview();
+  });
 });
 
 ["histSearch","histLaudo"].forEach(id=>{ const e=el(id); if(!e) return; e.addEventListener("input", ()=>renderHistorico(histItemsCache)); e.addEventListener("change", ()=>renderHistorico(histItemsCache)); });
@@ -1378,8 +1652,8 @@ el("histLimit").addEventListener("change", openHistorico);
 el("btnHistRefresh").addEventListener("click", openHistorico);
 el("btnHistExport").addEventListener("click", exportHistoricoCsv);
 
-el("debitosSel").addEventListener("change",()=>{ toggleDebitos(); atualizarPreview(); });
-el("finSel").addEventListener("change",()=>{ toggleFin(); atualizarPreview(); });
+el("debitosSel").addEventListener("change",()=>{ toggleDebitos(); atualizarPreview(); atualizarLucroPreview(); });
+el("finSel").addEventListener("change",()=>{ toggleFin(); atualizarPreview(); atualizarLucroPreview(); });
 document.querySelectorAll(".avChk").forEach(c=>c.addEventListener("change",()=>atualizarPreview()));
 toggleDebitos(); toggleFin();
 
@@ -1436,7 +1710,7 @@ async function openFipe(){
 el("btnFipe").addEventListener("click", openFipe);
 el("btnFipeClose").addEventListener("click", ()=>showFipeModal(false));
 el("fipeModal").addEventListener("click", ev=>{ if(ev.target?.id==="fipeModal") showFipeModal(false); });
-el("btnFipeClear").addEventListener("click", ()=>{ el("fipe").value=""; atualizarPreview(); });
+el("btnFipeClear").addEventListener("click", ()=>{ el("fipe").value=""; atualizarPreview(); atualizarLucroPreview(); });
 el("fipeMarca").addEventListener("change", async ()=>{
   const brand=el("fipeMarca").value; el("fipeBuscaModelo").value=""; el("fipeAno").innerHTML="<option value=''>Selecione o modelo</option>"; lastFipeResult=null; renderFipeResult(null);
   if(!brand){ el("fipeModelo").innerHTML="<option value=''>Selecione a marca</option>"; return; }
@@ -1456,11 +1730,17 @@ el("btnFipeApply").addEventListener("click", ()=>{
   if(lastFipeResult.Modelo) el("modelo").value=lastFipeResult.Modelo;
   if(lastFipeResult.AnoModelo!=null) el("ano").value=String(lastFipeResult.AnoModelo);
   if(lastFipeResult.Valor) el("fipe").value=lastFipeResult.Valor;
-  atualizarPreview(); showFipeModal(false);
+  atualizarPreview(); atualizarLucroPreview(); showFipeModal(false);
 });
 el("btnFavOpen")?.addEventListener("click", ()=>alert("Favoritos: função em atualização. (Layout mantido)"));
+el("btnClearForm")?.addEventListener("click", ()=>window.location.reload());
 
-setStatusBadge(); toggleLaudoDescricao(); atualizarPreview();
+setStatusBadge();
+toggleLaudoDescricao();
+toggleBlindagem();
+toggleArCond();
+atualizarPreview();
+atualizarLucroPreview();
 </script>
 
 <script>
