@@ -1028,6 +1028,10 @@ select{
   }
 }
 
+
+/* ===== V10.4.1 fix • remover ticket medio ===== */
+.stockKpi.ticketMedioHide{display:none!important;}
+
 </style>
 </head>
 
@@ -3291,6 +3295,118 @@ document.addEventListener('DOMContentLoaded', ()=>{
   attachShare();
   setInterval(attachShare, 2000);
 });
+})();
+</script>
+
+
+<script>
+/* ===== V10.4.1 fix • compartilhar veiculo + remover ticket medio ===== */
+(function(){
+  function encodeMsg(msg){ return encodeURIComponent(msg); }
+
+  function collectImgs(root){
+    return Array.from(root.querySelectorAll('img'))
+      .map(i => i.getAttribute('src') || '')
+      .filter(Boolean)
+      .filter(src => /^https?:\/\//i.test(src))
+      .slice(0, 8);
+  }
+
+  function buildVehicleMessageFromCard(card){
+    const title = (card.querySelector('.showTitle')?.innerText || '').trim();
+    const price = (card.querySelector('.showPrice')?.innerText || '').trim();
+    const meta = (card.querySelector('.showMeta')?.innerText || '').trim();
+    const specs = Array.from(card.querySelectorAll('.showSpec')).map(x => x.innerText.trim()).filter(Boolean);
+    const imgs = collectImgs(card);
+    let msg = '';
+    if(title) msg += `🚗 ${title}\n`;
+    if(price) msg += `💰 Valor: ${price}\n`;
+    if(meta) msg += `${meta}\n`;
+    if(specs.length) msg += `\n${specs.join(' • ')}\n`;
+    if(imgs.length){
+      msg += `\n📸 Fotos:\n`;
+      imgs.forEach(u => msg += `${u}\n`);
+    }
+    msg += `\nFale conosco para mais informações.`;
+    return msg.trim();
+  }
+
+  function shareVehicleFromButton(btn){
+    const card = btn.closest('.showCard');
+    if(card){
+      const msg = buildVehicleMessageFromCard(card);
+      window.open('https://wa.me/?text=' + encodeMsg(msg), '_blank');
+      return;
+    }
+
+    const modal = document.querySelector('.modalOverlay[style*="flex"], .modalOverlay:not([style*="display: none"])');
+    if(modal){
+      const title = (modal.querySelector('.showTitle, .modalTitle')?.innerText || '').trim();
+      const price = (modal.querySelector('.showPrice')?.innerText || '').trim();
+      const imgs = collectImgs(modal);
+      let msg = '';
+      if(title) msg += `🚗 ${title}\n`;
+      if(price) msg += `💰 Valor: ${price}\n`;
+      if(imgs.length){
+        msg += `\n📸 Fotos:\n`;
+        imgs.forEach(u => msg += `${u}\n`);
+      }
+      msg += `\nFale conosco para mais informações.`;
+      window.open('https://wa.me/?text=' + encodeMsg(msg.trim()), '_blank');
+    }
+  }
+
+  function bindShareButtons(){
+    const selectors = [
+      '[data-share]',
+      '[data-share-showroom]',
+      '.showShare',
+      '.btnShareShow',
+      '.mini[data-sendshow]',
+      'button[title*="Compartilhar"]'
+    ].join(',');
+    document.querySelectorAll(selectors).forEach(btn => {
+      if(btn.dataset.shareFixBound === '1') return;
+      btn.dataset.shareFixBound = '1';
+      btn.addEventListener('click', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        shareVehicleFromButton(btn);
+      }, true);
+    });
+
+    document.querySelectorAll('button').forEach(btn => {
+      const txt = (btn.innerText || '').trim().toLowerCase();
+      if((txt.includes('compartilhar') || txt.includes('veículo')) && btn.dataset.shareFixBound !== '1'){
+        btn.dataset.shareFixBound = '1';
+        btn.addEventListener('click', function(e){
+          e.preventDefault();
+          e.stopPropagation();
+          shareVehicleFromButton(btn);
+        }, true);
+      }
+    });
+  }
+
+  function removeTicketMedio(){
+    document.querySelectorAll('.stockKpi').forEach(kpi => {
+      const label = (kpi.innerText || '').toLowerCase();
+      if(label.includes('ticket médio') || label.includes('ticket medio')){
+        kpi.classList.add('ticketMedioHide');
+      }
+    });
+  }
+
+  const obs = new MutationObserver(() => {
+    bindShareButtons();
+    removeTicketMedio();
+  });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    bindShareButtons();
+    removeTicketMedio();
+    obs.observe(document.body, {childList:true, subtree:true});
+  });
 })();
 </script>
 
