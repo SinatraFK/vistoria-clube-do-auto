@@ -3140,5 +3140,50 @@ window.abrirCameraShowroom = async function() {
 };
 </script>
 
+
+<script>
+/* ===== Patch V10.3 compartilhamento WhatsApp com fotos (seguro) ===== */
+(function(){
+function buildShareText(card){
+  const title = card.querySelector('.showTitle')?.innerText || '';
+  const price = card.querySelector('.showPrice')?.innerText || '';
+  const km = card.innerText.match(/KM[^\n]*/i)?.[0] || '';
+  const imgs = Array.from(card.querySelectorAll('img')).map(i=>i.src).slice(0,6);
+
+  let msg = `🚗 ${title}\n`;
+  msg += `💰 Valor: ${price}\n`;
+  if(km) msg += `📍 ${km}\n`;
+  msg += `\n📸 Fotos:\n`;
+  imgs.forEach(u => msg += u + "\n");
+  msg += "\nFale conosco para mais informações.";
+
+  return encodeURIComponent(msg);
+}
+
+function attachShare(){
+  const buttons = document.querySelectorAll('[data-share],[data-share-showroom],.btnShareShow,.showShare');
+  buttons.forEach(btn=>{
+    if(btn.dataset.sharePatched) return;
+    btn.dataset.sharePatched = "1";
+
+    btn.addEventListener('click', function(e){
+      e.preventDefault();
+      const card = btn.closest('.showCard');
+      if(!card) return;
+
+      const text = buildShareText(card);
+      const url = "https://wa.me/?text=" + text;
+      window.open(url,'_blank');
+    });
+  });
+}
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  attachShare();
+  setInterval(attachShare, 2000);
+});
+})();
+</script>
+
 </body>
 </html>
