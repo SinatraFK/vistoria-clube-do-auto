@@ -3410,5 +3410,101 @@ document.addEventListener('DOMContentLoaded', ()=>{
 })();
 </script>
 
+
+<script>
+/* ===== V10.4.2 • compartilhamento premium (texto formatado + tentativa de foto anexada) ===== */
+(function(){
+
+function collectImages(root){
+  return Array.from(root.querySelectorAll("img"))
+    .map(i=>i.src)
+    .filter(u=>/^https?:\/\//i.test(u))
+    .slice(0,5);
+}
+
+function buildMessage(card){
+  const title = card.querySelector(".showTitle")?.innerText || "";
+  const price = card.querySelector(".showPrice")?.innerText || "";
+  const meta = card.querySelector(".showMeta")?.innerText || "";
+  const specs = Array.from(card.querySelectorAll(".showSpec")).map(s=>s.innerText).join(" • ");
+
+  let msg = "";
+  if(title) msg += "🚗 " + title + "\n";
+  if(meta) msg += "📍 " + meta + "\n";
+  if(specs) msg += "⚙️ " + specs + "\n";
+  if(price) msg += "\n💰 Valor de venda: " + price + "\n";
+  msg += "\nFale conosco para mais informações.";
+
+  return msg;
+}
+
+async function tryNativeShare(msg, images){
+  if(!navigator.share) return false;
+
+  try{
+    const files = [];
+    for(const url of images){
+      try{
+        const r = await fetch(url);
+        const blob = await r.blob();
+        const name = "foto_" + Date.now() + ".jpg";
+        files.push(new File([blob], name, {type: blob.type}));
+      }catch(e){}
+    }
+
+    if(files.length && navigator.canShare && navigator.canShare({files})){
+      await navigator.share({
+        text: msg,
+        files: files
+      });
+      return true;
+    }else{
+      await navigator.share({text: msg});
+      return true;
+    }
+
+  }catch(e){
+    return false;
+  }
+}
+
+function shareFallback(msg, images){
+  let txt = msg + "\n\n📸 Fotos:\n";
+  images.forEach(u=> txt += u + "\n");
+  window.open("https://wa.me/?text=" + encodeURIComponent(txt), "_blank");
+}
+
+function attachShare(){
+  const buttons = document.querySelectorAll("button, .showShare, [data-share]");
+  buttons.forEach(btn=>{
+    const label = (btn.innerText || "").toLowerCase();
+    if(!label.includes("compartilhar")) return;
+    if(btn.dataset.sharePremium) return;
+
+    btn.dataset.sharePremium = "1";
+    btn.addEventListener("click", async function(e){
+      e.preventDefault();
+      const card = btn.closest(".showCard");
+      if(!card) return;
+
+      const msg = buildMessage(card);
+      const images = collectImages(card);
+
+      const ok = await tryNativeShare(msg, images);
+      if(!ok){
+        shareFallback(msg, images);
+      }
+    });
+  });
+}
+
+document.addEventListener("DOMContentLoaded", ()=>{
+  attachShare();
+  setInterval(attachShare,2000);
+});
+
+})();
+</script>
+
 </body>
 </html>
