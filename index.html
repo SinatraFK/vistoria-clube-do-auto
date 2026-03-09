@@ -2042,7 +2042,7 @@ select{
     <div class="sellerHero">
       <div>
         <div class="sellerHeroTitle">💼 Modo vendedor</div>
-        <div class="sellerHeroSub">Selecione um veículo do showroom e gere texto de anúncio, resumo rápido e mensagem pronta para WhatsApp. Tudo usando as fotos e dados já cadastrados na vitrine.</div>
+        <div class="sellerHeroSub">Selecione um veículo do showroom e gere texto de anúncio, resumo rápido e mensagem pronta para WhatsApp. Os textos saem mais comerciais, sem FIPE, e com os links das fotos do showroom prontos para compartilhar.</div>
       </div>
       <div class="sellerPills">
         <span class="sellerPill">⚡ Anúncio pronto</span>
@@ -2090,7 +2090,7 @@ select{
 
               <div class="sellerHintBar">
                 <span class="sellerHintChip" id="sellerFotosChip">0 fotos</span>
-                <span class="sellerHintChip" id="sellerFipeChip">FIPE —</span>
+                <span class="sellerHintChip" id="sellerFipeChip">Compartilhamento com fotos</span>
                 <span class="sellerHintChip" id="sellerPlacaChip">Placa —</span>
               </div>
             </div>
@@ -3239,16 +3239,16 @@ function shareShowVehicle(item){
     `${item.ano||''} • ${item.km||''}`,
     `${item.cambio||''} • ${item.combustivel||''} • ${item.cor||''}`,
     `💰 *Preço:* ${formatShowPrice(item.preco)}`,
-    item.fipe ? `📊 *FIPE:* ${formatShowMoney(item.fipe)}` : '',
     item.status ? `📌 *Status:* ${item.status}` : '',
     item.descricao || ''
   ].filter(Boolean).join('\n');
   if(fotos.length){
-    msg += `\n\n📸 *Fotos:*\n`;
+    msg += `\n\n📸 *Fotos do veículo:*\n`;
     fotos.forEach((url, i) => {
       msg += `${i===0 ? 'Capa' : 'Foto ' + (i+1)}: ${url}\n`;
     });
   }
+  msg += `\n📍 *Clube do Auto*\nFale com nossa equipe para mais detalhes e negociação.`;
   abrirWhats(msg.trim());
 }
 async function sendHistoricoToShowroom(item){
@@ -3323,7 +3323,6 @@ function buildSellerLongText(item){
     item?.cor ? `🎨 *Cor:* ${item.cor}` : '',
     item?.placa ? `🔖 *Placa:* ${item.placa}` : '',
     `💰 *Preço:* ${formatShowPrice(item?.preco)}`,
-    item?.fipe ? `📊 *FIPE:* ${formatShowMoney(item.fipe)}` : '',
     '',
     item?.descricao ? `📝 *Destaques:*\n${item.descricao}` : '📝 *Destaques:*\nVeículo pronto para apresentação comercial no showroom.',
   ].filter(Boolean);
@@ -3335,18 +3334,24 @@ function buildSellerLongText(item){
   return lines.join('\n').trim();
 }
 function buildSellerShortText(item){
-  return [
+  const fotos=sellerPhotos(item);
+  const lines = [
     `🚗 *${sellerPrimaryTitle(item)}*`,
     [item?.ano,item?.km].filter(Boolean).join(' • '),
     [item?.cambio,item?.combustivel,item?.cor].filter(Boolean).join(' • '),
     `💰 *${formatShowPrice(item?.preco)}*`,
-    item?.status ? `📌 ${item.status}` : '',
-    sellerPhotos(item)[0] ? `📸 ${sellerPhotos(item)[0]}` : ''
-  ].filter(Boolean).join('\n').trim();
+    item?.status ? `📌 ${item.status}` : ''
+  ].filter(Boolean);
+  if(fotos.length){
+    lines.push('', '📸 Fotos:');
+    fotos.forEach((url, idx)=>lines.push(`${idx+1}. ${url}`));
+  }
+  return lines.join('\n').trim();
 }
 function buildSellerClientText(item){
   const nomeVeiculo=sellerPrimaryTitle(item);
-  return [
+  const fotos=sellerPhotos(item);
+  const lines = [
     `Olá! Tudo bem?`,
     `Separei uma opção que pode te interessar na *Clube do Auto*:`,
     ``,
@@ -3354,11 +3359,14 @@ function buildSellerClientText(item){
     `💰 *Preço:* ${formatShowPrice(item?.preco)}`,
     [item?.ano,item?.km,item?.cambio,item?.combustivel].filter(Boolean).join(' • '),
     ``,
-    item?.descricao ? `Destaques: ${item.descricao}` : `Se quiser, eu te envio mais detalhes, fotos e condição de negociação.`,
-    sellerPhotos(item)[0] ? `📸 ${sellerPhotos(item)[0]}` : '',
-    ``,
-    `Posso te passar mais informações por aqui.`
-  ].filter(Boolean).join('\n').trim();
+    item?.descricao ? `Destaques: ${item.descricao}` : `Se quiser, eu te envio mais detalhes, fotos e condição de negociação.`
+  ].filter(Boolean);
+  if(fotos.length){
+    lines.push('', '📸 Fotos do veículo:');
+    fotos.forEach((url, idx)=>lines.push(`${idx+1}. ${url}`));
+  }
+  lines.push('', `Posso te passar mais informações por aqui.`);
+  return lines.join('\n').trim();
 }
 async function sellerCopy(kind){
   const item=showroomItemsCache.find(x=>x.id===sellerSelectedId);
@@ -3459,7 +3467,7 @@ function renderSellerMode(){
   set('sellerSpecCor', item.cor || '—');
   set('sellerSpecStatus', item.status || '—');
   set('sellerFotosChip', `${sellerPhotos(item).length} fotos`);
-  set('sellerFipeChip', `FIPE ${item.fipe ? formatShowMoney(item.fipe) : '—'}`);
+  set('sellerFipeChip', sellerPhotos(item).length ? 'Compartilhamento com fotos' : 'Sem fotos no anúncio');
   set('sellerPlacaChip', `Placa ${item.placa || '—'}`);
   if(el('sellerLongText')) el('sellerLongText').value = buildSellerLongText(item);
   if(el('sellerShortText')) el('sellerShortText').value = buildSellerShortText(item);
