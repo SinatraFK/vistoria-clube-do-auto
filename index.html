@@ -1044,6 +1044,16 @@ select{
 .showThumbs img.activeThumb{outline:3px solid rgba(37,99,235,.35)}
 @media (max-width:760px){.showGalleryStrip{grid-template-columns:repeat(2,1fr)}}
 
+
+/* ===== V10.4.4 • correção múltiplas fotos ===== */
+.showMultiTools{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.showMultiBtn{width:auto;padding:10px 12px;border:none;border-radius:12px;background:linear-gradient(135deg,#1d4ed8 0%, #3b82f6 100%);color:#fff;font-weight:800;cursor:pointer;box-shadow:var(--shadowSoft)}
+.showGalleryStrip{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.showGalleryItem{position:relative;border-radius:16px;overflow:hidden;border:1px solid rgba(148,163,184,.16);background:#f8fafc;min-height:110px}
+.showGalleryItem img{width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:1.3/1}
+.showGalleryRm{position:absolute;top:8px;right:8px;border:none;background:rgba(15,23,42,.88);color:#fff;border-radius:999px;width:28px;height:28px;font-weight:900;cursor:pointer}
+@media (max-width:760px){.showGalleryStrip{grid-template-columns:repeat(2,1fr)}}
+
 </style>
 </head>
 
@@ -3520,6 +3530,313 @@ document.addEventListener("DOMContentLoaded", ()=>{
 
 
 <input type="file" id="showroomMorePhotosInput" accept="image/*" multiple style="display:none">
+
+
+<textarea id="showroomFotosUrls" style="display:none"></textarea>
+<input type="file" id="showroomPickCoverInput" accept="image/*" style="display:none">
+<input type="file" id="showroomAddMoreInput" accept="image/*" multiple style="display:none">
+
+
+<script type="module">
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCvn2_z1FN2XMN_pgR9IiExRkRNMgZfhIY",
+  authDomain: "clube-do-auto.firebaseapp.com",
+  projectId: "clube-do-auto",
+  storageBucket: "clube-do-auto.firebasestorage.app",
+  messagingSenderId: "647571720442",
+  appId: "1:647571720442:web:4257dd525b59bd89b62143"
+};
+
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+function el(id){ return document.getElementById(id); }
+function lower(s){ return (s||"").toString().trim().toLowerCase(); }
+function plateBR(raw){ return (raw||"").toString().toUpperCase().replace(/\s+/g,"").trim(); }
+function v(id){ return (el(id)?.value ?? "").toString().trim(); }
+function showroomPlaceholder(label){
+  const txt = encodeURIComponent(label||"Sem foto");
+  return `data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='800' viewBox='0 0 1200 800'><defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'><stop stop-color='%230f172a'/><stop offset='1' stop-color='%231e3a8a'/></linearGradient></defs><rect width='1200' height='800' fill='url(%23g)'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='Arial,Helvetica,sans-serif' font-size='42' fill='white' font-weight='700'>${txt}</text></svg>`;
+}
+async function uploadToCloudinary(file){
+  const cloud = window.CLOUDINARY_CLOUD || "";
+  const preset = window.CLOUDINARY_PRESET || "";
+  if(!cloud || !preset) throw new Error("Cloudinary não configurado");
+  const fd = new FormData();
+  fd.append("file", file);
+  fd.append("upload_preset", preset);
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${cloud}/image/upload`, { method:"POST", body: fd });
+  const data = await res.json();
+  if(!res.ok || !data.secure_url) throw new Error((data && data.error && data.error.message) || "Falha no upload");
+  return data.secure_url;
+}
+
+function getPhotos(){
+  const raw = (el("showroomFotosUrls")?.value || "").trim();
+  if(!raw) return [];
+  return raw.split(/\n+/).map(x=>x.trim()).filter(Boolean);
+}
+function setPhotos(arr){
+  const urls = (arr||[]).filter(Boolean);
+  if(el("showroomFotosUrls")) el("showroomFotosUrls").value = urls.join("\n");
+  if(el("showroomFotoUrl")) el("showroomFotoUrl").value = urls[0] || "";
+  const preview = el("showroomFotoPreview");
+  if(preview) preview.src = urls[0] || showroomPlaceholder("Sem foto");
+  renderGalleryManager();
+}
+function renderGalleryManager(){
+  const field = el("showroomFotoUrl");
+  if(!field || !field.parentElement) return;
+  let wrap = el("showroomGalleryManagerFixed");
+  if(!wrap){
+    wrap = document.createElement("div");
+    wrap.id = "showroomGalleryManagerFixed";
+    wrap.innerHTML = `
+      <div class="showMultiTools">
+        <button type="button" class="showMultiBtn" id="btnShowPickCover">📁 Escolher capa / galeria</button>
+        <button type="button" class="showMultiBtn" id="btnShowAddMore">➕ Adicionar mais fotos</button>
+      </div>
+      <div class="hint" style="margin-top:8px">A primeira foto será usada como capa do anúncio. As demais aparecem na galeria e no compartilhamento.</div>
+      <div class="showGalleryStrip" id="showGalleryStripFixed"></div>
+    `;
+    field.parentElement.appendChild(wrap);
+    el("btnShowPickCover")?.addEventListener("click", ()=> el("showroomPickCoverInput")?.click());
+    el("btnShowAddMore")?.addEventListener("click", ()=> el("showroomAddMoreInput")?.click());
+  }
+  const strip = el("showGalleryStripFixed");
+  const list = getPhotos();
+  if(strip){
+    strip.innerHTML = list.map((url, idx)=>`
+      <div class="showGalleryItem">
+        <img src="${url}" alt="Foto ${idx+1}">
+        <button type="button" class="showGalleryRm" data-rm="${idx}">×</button>
+      </div>
+    `).join("") || `<div class="hint">Nenhuma foto adicionada.</div>`;
+    strip.querySelectorAll("[data-rm]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const arr = getPhotos();
+        const i = Number(btn.getAttribute("data-rm"));
+        arr.splice(i,1);
+        setPhotos(arr);
+      });
+    });
+  }
+}
+async function handlePickCover(ev){
+  const file = ev.target.files && ev.target.files[0];
+  if(!file) return;
+  try{
+    const url = await uploadToCloudinary(file);
+    const arr = getPhotos();
+    if(arr.length){ arr[0] = url; } else { arr.push(url); }
+    setPhotos(arr);
+    alert("Foto de capa atualizada.");
+  }catch(err){
+    alert("Erro ao enviar foto: " + (err.message || err));
+  }finally{
+    ev.target.value = "";
+  }
+}
+async function handleAddMore(ev){
+  const files = Array.from(ev.target.files || []);
+  if(!files.length) return;
+  try{
+    const arr = getPhotos();
+    for(const file of files){
+      const url = await uploadToCloudinary(file);
+      arr.push(url);
+    }
+    setPhotos(arr);
+    alert("Fotos adicionadas com sucesso.");
+  }catch(err){
+    alert("Erro ao enviar fotos: " + (err.message || err));
+  }finally{
+    ev.target.value = "";
+  }
+}
+function fillPhotosFromItem(item){
+  const list = Array.isArray(item?.fotos) && item.fotos.length ? item.fotos : (item?.fotoCapa ? [item.fotoCapa] : []);
+  setPhotos(list);
+}
+async function fetchShowroomDoc(id){
+  if(!id) return null;
+  const snap = await getDoc(doc(db, "showroom_vex", id));
+  return snap.exists() ? {id:snap.id, ...snap.data()} : null;
+}
+
+async function saveShowroomFixed(ev){
+  const btn = ev.currentTarget;
+  ev.preventDefault();
+  ev.stopImmediatePropagation();
+
+  const id = el("showEditId")?.value || "";
+  const photos = getPhotos();
+  const payload = {
+    origemVistoriaId: el("showOrigemVistoriaId")?.value || "",
+    marca: v("showMarca"),
+    modelo: v("showModelo"),
+    versao: v("showVersao"),
+    ano: v("showAno"),
+    km: v("showKm"),
+    fipe: v("showFipe"),
+    preco: v("showPreco"),
+    cambio: v("showCambio"),
+    combustivel: v("showCombustivel"),
+    cor: v("showCor"),
+    status: v("showStatus") || "Em preparação",
+    placa: plateBR(v("showPlaca")),
+    descricao: v("showDescricao"),
+    fotoCapa: photos[0] || "",
+    fotos: photos,
+    updatedAt: serverTimestamp(),
+    updatedByUid: auth.currentUser?.uid || "",
+    updatedByEmail: lower(auth.currentUser?.email || "")
+  };
+  if(!payload.modelo) return alert("Informe ao menos o modelo do veículo.");
+
+  try{
+    if(id){
+      await setDoc(doc(db,"showroom_vex", id), payload, {merge:true});
+    }else{
+      payload.createdAt = serverTimestamp();
+      payload.createdByUid = auth.currentUser?.uid || "";
+      payload.createdByEmail = lower(auth.currentUser?.email || "");
+      await addDoc(collection(db,"showroom_vex"), payload);
+    }
+    if(el("showEditorModal")) el("showEditorModal").style.display = "none";
+    if(el("showEditHint")) el("showEditHint").textContent = "";
+  }catch(err){
+    alert("Erro ao salvar anúncio: " + (err.message || err));
+  }
+}
+
+async function openShowroomModalFixed(id){
+  const item = await fetchShowroomDoc(id);
+  if(!item) return;
+  const body = el("showModalBody");
+  if(!body) return;
+  const fotos = Array.isArray(item.fotos) && item.fotos.length ? item.fotos : [item.fotoCapa || showroomPlaceholder("Sem foto")];
+  const thumbs = fotos.slice(1,5).map(u=>`<img src="${u}" alt="Foto">`).join("");
+  body.innerHTML = `
+    <div class="showGallery">
+      <img class="showMainImg" id="showMainImgFixed" src="${fotos[0]}" alt="${item.modelo||'Veículo'}">
+      <div class="showThumbs" id="showThumbsFixed">${thumbs || `<div class="showDetailCard"><div class="showDetailLabel">Origem</div><div class="showDetailValue">${item.origemVistoriaId ? 'Histórico / veículo comprado' : 'Cadastro direto no showroom'}</div></div>`}</div>
+    </div>
+    <div class="showDetailGrid three">
+      <div class="showDetailCard"><div class="showDetailLabel">Veículo</div><div class="showDetailValue">${(item.marca||"")} ${(item.modelo||"")}</div></div>
+      <div class="showDetailCard"><div class="showDetailLabel">Versão</div><div class="showDetailValue">${item.versao || "—"}</div></div>
+      <div class="showDetailCard"><div class="showDetailLabel">Ano</div><div class="showDetailValue">${item.ano || "—"}</div></div>
+      <div class="showDetailCard"><div class="showDetailLabel">KM</div><div class="showDetailValue">${item.km || "—"}</div></div>
+      <div class="showDetailCard"><div class="showDetailLabel">Preço</div><div class="showDetailValue">${item.preco || "—"}</div></div>
+      <div class="showDetailCard"><div class="showDetailLabel">Status</div><div class="showDetailValue">${item.status || "—"}</div></div>
+    </div>
+    <div class="showDesc">${item.descricao || "Sem descrição."}</div>
+  `;
+  el("showModal").style.display = "flex";
+  const main = el("showMainImgFixed");
+  el("showThumbsFixed")?.querySelectorAll("img").forEach((img, idx)=>{
+    if(idx===0) img.classList.add("activeThumb");
+    img.addEventListener("click", ()=>{
+      main.src = img.src;
+      el("showThumbsFixed").querySelectorAll("img").forEach(x=>x.classList.remove("activeThumb"));
+      img.classList.add("activeThumb");
+    });
+  });
+}
+
+async function shareShowroomFixed(id){
+  const item = await fetchShowroomDoc(id);
+  if(!item) return;
+  const fotos = Array.isArray(item.fotos) && item.fotos.length ? item.fotos : (item.fotoCapa ? [item.fotoCapa] : []);
+  let msg = "";
+  msg += `🚗 ${(item.marca||"")} ${(item.modelo||"")}\n`;
+  if(item.ano || item.km) msg += `📍 ${item.ano||""} • ${item.km||""}\n`;
+  const specs = [item.cambio, item.combustivel, item.cor].filter(Boolean).join(" • ");
+  if(specs) msg += `⚙️ ${specs}\n`;
+  if(item.preco) msg += `\n💰 Valor de venda: ${item.preco}\n`;
+  if(fotos.length){
+    msg += `\n📸 Fotos:\n`;
+    fotos.forEach(u=> msg += u + "\n");
+  }
+  msg += `\nFale conosco para mais informações.`;
+  window.open("https://wa.me/?text=" + encodeURIComponent(msg.trim()), "_blank");
+}
+
+function bindFixed(){
+  el("showroomPickCoverInput")?.addEventListener("change", handlePickCover);
+  el("showroomAddMoreInput")?.addEventListener("change", handleAddMore);
+
+  // Override existing take photo button to open gallery/source chooser
+  const takeBtn = el("btnShowTakePhoto");
+  if(takeBtn && !takeBtn.dataset.fixedPhotos){
+    takeBtn.dataset.fixedPhotos = "1";
+    takeBtn.textContent = "📁 Escolher capa / galeria";
+    takeBtn.addEventListener("click", (ev)=>{
+      ev.preventDefault();
+      ev.stopImmediatePropagation();
+      el("showroomPickCoverInput")?.click();
+    }, true);
+  }
+
+  const saveBtn = el("btnShowSave");
+  if(saveBtn && !saveBtn.dataset.fixedSave){
+    saveBtn.dataset.fixedSave = "1";
+    saveBtn.addEventListener("click", saveShowroomFixed, true);
+  }
+
+  renderGalleryManager();
+
+  // bind showroom cards buttons using capture
+  document.querySelectorAll("[data-show-open]").forEach(btn=>{
+    if(btn.dataset.fixedOpen) return;
+    btn.dataset.fixedOpen = "1";
+    btn.addEventListener("click", (ev)=>{
+      ev.preventDefault();
+      ev.stopImmediatePropagation();
+      openShowroomModalFixed(btn.dataset.showOpen);
+    }, true);
+  });
+  document.querySelectorAll("[data-show-wa]").forEach(btn=>{
+    if(btn.dataset.fixedWa) return;
+    btn.dataset.fixedWa = "1";
+    btn.addEventListener("click", (ev)=>{
+      ev.preventDefault();
+      ev.stopImmediatePropagation();
+      shareShowroomFixed(btn.dataset.showWa);
+    }, true);
+  });
+
+  // when editor opens, load full photo array from doc
+  const modal = el("showEditorModal");
+  if(modal && !modal.dataset.fixedObserver){
+    modal.dataset.fixedObserver = "1";
+    const mo = new MutationObserver(async ()=>{
+      if(modal.style.display === "flex"){
+        renderGalleryManager();
+        const id = el("showEditId")?.value || "";
+        if(id){
+          const item = await fetchShowroomDoc(id);
+          fillPhotosFromItem(item);
+        }else{
+          setPhotos([]);
+        }
+      }
+    });
+    mo.observe(modal, {attributes:true, attributeFilter:["style"]});
+  }
+}
+
+document.addEventListener("DOMContentLoaded", ()=>{
+  bindFixed();
+  const obs = new MutationObserver(()=> bindFixed());
+  obs.observe(document.body, {childList:true, subtree:true});
+});
+</script>
 
 </body>
 </html>
