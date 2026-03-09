@@ -579,7 +579,7 @@ input::placeholder, textarea::placeholder{
   .appCockpit{grid-template-columns:1fr}
 }
 @media (max-width:760px){
-  .mobileActionDock{display:flex}
+  body.view-nova .mobileActionDock{display:flex}
   body{padding-bottom:92px}
   .cockpitGrid{grid-template-columns:1fr 1fr}
   .smartActionBar{display:none}
@@ -1805,6 +1805,7 @@ select{
           </div>
           <input type="hidden" id="showroomFotoUrl">
           <input type="hidden" id="showroomFotosJson">
+          <input type="file" id="showroomFileInput" accept="image/*" multiple class="hidden">
           <div class="hint">A primeira foto vira capa. As demais entram como galeria no anúncio e no modal do veículo.</div>
           <div class="hint"><span class="showFotoCount" id="showroomFotoCount">0 fotos carregadas</span></div>
         </div>
@@ -2309,6 +2310,7 @@ function setTab(tab){
   el("viewShowroom").classList.toggle("hidden", !showroom);
   el("viewPainel").classList.toggle("hidden", !painel);
   el("viewUsers").classList.toggle("hidden", !users);
+  document.body.classList.toggle('view-nova', nova);
   if(hist) openHistorico();
   if(showroom) renderShowroom();
   if(painel) openPainel();
@@ -2335,6 +2337,10 @@ function normalizeShowroomFotos(source){
     .filter(Boolean);
   return [...new Set(merged)];
 }
+const showroomUploadState = {
+  existingUrls: [],
+  pendingFiles: []
+};
 function getShowroomFotosFromForm(){
   try{
     const raw = el("showroomFotosJson")?.value || "[]";
@@ -2345,35 +2351,81 @@ function getShowroomFotosFromForm(){
     return normalizeShowroomFotos(capa ? [capa] : []);
   }
 }
-function setShowroomFotos(urls){
-  const fotos = normalizeShowroomFotos(Array.isArray(urls) ? urls : []);
+function syncShowroomFotosFields(){
+  const fotos = normalizeShowroomFotos(showroomUploadState.existingUrls || []);
+  showroomUploadState.existingUrls = [...fotos];
   const capa = fotos[0] || '';
   if(el("showroomFotosJson")) el("showroomFotosJson").value = JSON.stringify(fotos);
   if(el("showroomFotoUrl")) el("showroomFotoUrl").value = capa;
+}
+function clearPendingShowroomFiles(){
+  (showroomUploadState.pendingFiles || []).forEach(fileObj => {
+    if(fileObj?.previewUrl && fileObj.previewUrl.startsWith('blob:')){
+      try{ URL.revokeObjectURL(fileObj.previewUrl); }catch(_){ }
+    }
+  });
+  showroomUploadState.pendingFiles = [];
+  const input = el('showroomFileInput');
+  if(input) input.value = '';
+}
+function setShowroomFotos(urls){
+  showroomUploadState.existingUrls = normalizeShowroomFotos(Array.isArray(urls) ? urls : []);
+  syncShowroomFotosFields();
+  renderShowroomFotoPreview();
+}
+function addPendingShowroomFiles(fileList, append){
+  const files = Array.from(fileList || []).filter(file => (file?.type || '').startsWith('image/'));
+  if(!files.length) return;
+  if(!append) clearPendingShowroomFiles();
+  const mapped = files.map(file => ({
+    file,
+    name: file.name || 'foto',
+    previewUrl: URL.createObjectURL(file)
+  }));
+  showroomUploadState.pendingFiles = append
+    ? [...(showroomUploadState.pendingFiles || []), ...mapped]
+    : mapped;
   renderShowroomFotoPreview();
 }
 function removeShowroomFotoAt(index){
-  const fotos = getShowroomFotosFromForm();
-  if(index < 0 || index >= fotos.length) return;
-  fotos.splice(index, 1);
-  setShowroomFotos(fotos);
+  const existing = normalizeShowroomFotos(showroomUploadState.existingUrls || []);
+  if(index < existing.length){
+    existing.splice(index, 1);
+    showroomUploadState.existingUrls = existing;
+    syncShowroomFotosFields();
+    renderShowroomFotoPreview();
+    return;
+  }
+  const pendingIndex = index - existing.length;
+  if(pendingIndex < 0 || pendingIndex >= (showroomUploadState.pendingFiles || []).length) return;
+  const removed = showroomUploadState.pendingFiles.splice(pendingIndex, 1)[0];
+  if(removed?.previewUrl && removed.previewUrl.startsWith('blob:')){
+    try{ URL.revokeObjectURL(removed.previewUrl); }catch(_){ }
+  }
+  renderShowroomFotoPreview();
+}
+function getShowroomPreviewItems(){
+  const existing = normalizeShowroomFotos(showroomUploadState.existingUrls || []).map(url => ({ type:'saved', src:url }));
+  const pending = (showroomUploadState.pendingFiles || []).map(fileObj => ({ type:'pending', src:fileObj.previewUrl || '', name:fileObj.name || 'foto' }));
+  return [...existing, ...pending];
 }
 function renderShowroomFotoPreview(){
-  const fotos = getShowroomFotosFromForm();
+  syncShowroomFotosFields();
+  const fotos = getShowroomPreviewItems();
   const preview = el("showroomFotoPreview");
   const thumbs = el("showroomThumbs");
   const empty = el("showroomEmpty");
   const count = el("showroomFotoCount");
-  if(count) count.textContent = `${fotos.length} foto${fotos.length===1?'':'s'} carregada${fotos.length===1?'':'s'}`;
+  if(count) count.textContent = `${fotos.length} foto${fotos.length===1?'':'s'} pronta${fotos.length===1?'':'s'} para o anúncio`;
   if(preview){
-    preview.src = fotos[0] || showroomPlaceholder('Sem foto');
+    preview.src = fotos[0]?.src || showroomPlaceholder('Sem foto');
   }
   if(empty) empty.style.display = fotos.length ? 'none' : 'block';
   if(thumbs){
-    thumbs.innerHTML = fotos.map((url, i) => `
-      <div class="showEditorThumb">
-        <img src="${escapeHtml(url)}" alt="Foto ${i+1}">
-        <span class="showEditorThumbTag">${i===0 ? 'CAPA' : 'GALERIA'}</span>
+    thumbs.innerHTML = fotos.map((foto, i) => `
+      <div class="showEditorThumb ${foto.type==='pending' ? 'pending' : ''}">
+        <img src="${escapeHtml(foto.src || '')}" alt="Foto ${i+1}">
+        <span class="showEditorThumbTag">${i===0 ? 'CAPA' : 'GALERIA'}${foto.type==='pending' ? ' • NOVA' : ''}</span>
         <button class="showEditorThumbRemove" type="button" data-show-remove-photo="${i}">×</button>
       </div>
     `).join('');
@@ -2381,6 +2433,45 @@ function renderShowroomFotoPreview(){
       btn.addEventListener('click', () => removeShowroomFotoAt(Number(btn.dataset.showRemovePhoto)));
     });
   }
+}
+async function uploadPendingShowroomFiles(){
+  const pending = [...(showroomUploadState.pendingFiles || [])];
+  if(!pending.length) return normalizeShowroomFotos(showroomUploadState.existingUrls || []);
+  const hint = el('showEditHint');
+  const urls = [...normalizeShowroomFotos(showroomUploadState.existingUrls || [])];
+  for(let i=0;i<pending.length;i++){
+    const fileObj = pending[i];
+    if(hint) hint.innerHTML = `<span class='ok'>Enviando foto ${i+1} de ${pending.length}...</span>`;
+    const url = await uploadFotoCloudinary(fileObj.file);
+    urls.push(url);
+  }
+  clearPendingShowroomFiles();
+  showroomUploadState.existingUrls = normalizeShowroomFotos(urls);
+  syncShowroomFotosFields();
+  renderShowroomFotoPreview();
+  if(hint) hint.innerHTML = `<span class='ok'>Fotos preparadas e anúncio salvo com sucesso.</span>`;
+  return showroomUploadState.existingUrls;
+}
+function bindShowroomFileInput(){
+  const input = el('showroomFileInput');
+  if(!input || input.dataset.boundShowroomInput==='1') return;
+  input.dataset.boundShowroomInput='1';
+  input.addEventListener('change', (e) => {
+    const append = input.dataset.appendMode === '1';
+    addPendingShowroomFiles((e.target && e.target.files) || [], append);
+    input.value = '';
+    input.dataset.appendMode = '0';
+    const hint = el('showEditHint');
+    const total = (showroomUploadState.pendingFiles || []).length;
+    if(hint && total) hint.innerHTML = `<span class='ok'>${total} nova(s) foto(s) selecionada(s). Clique em salvar anúncio para concluir.</span>`;
+  });
+}
+function openShowroomFilePicker(append){
+  bindShowroomFileInput();
+  const input = el('showroomFileInput');
+  if(!input) return alert('Campo de fotos não encontrado nesta versão.');
+  input.dataset.appendMode = append ? '1' : '0';
+  input.click();
 }
 function canManageShowroom(){ return currentRole==="admin" || currentRole==="gerente"; }
 function showroomPlaceholder(label){
@@ -2430,15 +2521,12 @@ function renderShowroomStats(items){
   const prep=items.filter(x=>(x.status||"")==="Em preparação").length;
   const vend=items.filter(x=>(x.status||"")==="Vendido").length;
   const oportunidades=items.filter(x=>showroomOpportunityInfo(x).label.includes("OPORTUNIDADE")).length;
-  const precos=items.map(x=>showroomMoneyNumber(x.preco)).filter(Boolean);
-  const ticket=precos.length ? formatShowMoney(String(Math.round(precos.reduce((a,b)=>a+b,0)/precos.length))) : "—";
   const grid=el("showStatsGrid");
   if(!grid) return;
   grid.innerHTML = [
     {n:total,l:"Veículos na vitrine",m:"Total carregado"},
     {n:disp,l:"Disponíveis",m:"Prontos para venda"},
     {n:oportunidades,l:"Oportunidades",m:"Abaixo da FIPE"},
-    {n:ticket,l:"Ticket médio",m:"Preço médio"},
     {n:prep,l:"Em preparação",m:"Aguardando fotos"},
     {n:vend,l:"Vendidos",m:"Histórico do showroom"}
   ].map(s=>`<div class="showStat"><div class="n">${escapeHtml(String(s.n))}</div><div class="l">${escapeHtml(s.l)}</div><div class="mini">${escapeHtml(s.m)}</div></div>`).join("");
@@ -2627,15 +2715,26 @@ function openShowEditor(item){
   el("showStatus").value=item?.status||'Em preparação';
   el("showPlaca").value=item?.placa||'';
   el("showDescricao").value=item?.descricao||'';
+  clearPendingShowroomFiles();
   setShowroomFotos(normalizeShowroomFotos(item||{}));
+  bindShowroomFileInput();
   el("btnShowDelete").style.display = item?.id ? 'inline-flex' : 'none';
   el("showEditorModal").style.display='flex';
 }
-function closeShowEditor(){ const m=el("showEditorModal"); if(m) m.style.display='none'; }
+function closeShowEditor(){ const m=el("showEditorModal"); if(m) m.style.display='none'; clearPendingShowroomFiles(); }
 async function saveShowEditor(){
   if(!canManageShowroom()) return;
   const id=el("showEditId").value;
-  const fotos = getShowroomFotosFromForm();
+  let fotos = getShowroomFotosFromForm();
+  const btnSave = el('btnShowSave');
+  if(btnSave) btnSave.disabled = true;
+  try{
+    fotos = await uploadPendingShowroomFiles();
+  }catch(err){
+    if(btnSave) btnSave.disabled = false;
+    el("showEditHint").innerHTML = `<span class='warn'>Erro ao enviar fotos:</span> ${escapeHtml(err?.message||err)}`;
+    return;
+  }
   const payload={
     origemVistoriaId: el("showOrigemVistoriaId").value || '',
     marca: v("showMarca"),
@@ -2657,7 +2756,7 @@ async function saveShowEditor(){
     updatedByUid: auth.currentUser?.uid || '',
     updatedByEmail: lower(auth.currentUser?.email || '')
   };
-  if(!payload.modelo) return alert('Informe ao menos o modelo do veículo.');
+  if(!payload.modelo){ if(btnSave) btnSave.disabled = false; return alert('Informe ao menos o modelo do veículo.'); }
   try{
     if(id){
       await updateDoc(doc(db,"showroom_vex", id), payload);
@@ -2670,6 +2769,8 @@ async function saveShowEditor(){
     closeShowEditor();
   }catch(err){
     el("showEditHint").innerHTML = `<span class='warn'>Erro ao salvar:</span> ${escapeHtml(err?.message||err)}`;
+  }finally{
+    if(btnSave) btnSave.disabled = false;
   }
 }
 async function deleteShowEditor(){
@@ -2735,8 +2836,8 @@ el("btnShowEditorClose")?.addEventListener("click", closeShowEditor);
 el("showEditorModal")?.addEventListener("click", (ev)=>{ if(ev.target?.id==="showEditorModal") closeShowEditor(); });
 el("btnShowSave")?.addEventListener("click", saveShowEditor);
 el("btnShowDelete")?.addEventListener("click", deleteShowEditor);
-el("btnShowTakePhoto")?.addEventListener("click", ()=>{ if(window.abrirCameraShowroom) window.abrirCameraShowroom({ append:false }); else alert('Função de foto ainda não disponível nesta versão.'); });
-el("btnShowAddPhotos")?.addEventListener("click", ()=>{ if(window.abrirCameraShowroom) window.abrirCameraShowroom({ append:true }); else alert('Função de foto ainda não disponível nesta versão.'); });
+el("btnShowTakePhoto")?.addEventListener("click", ()=>openShowroomFilePicker(false));
+el("btnShowAddPhotos")?.addEventListener("click", ()=>openShowroomFilePicker(true));
 ["showFipe","showPreco","showPrecoMin","showPrecoMax"].forEach(id=>{
   const e=el(id);
   if(!e) return;
@@ -3449,197 +3550,27 @@ async function uploadFotoCloudinary(file) {
   if (data && data.secure_url) return data.secure_url;
   throw new Error((data && (data.error && data.error.message)) || "Falha no upload");
 }
-
-window.abrirCameraShowroom = async function(opts = {}) {
-  const append = !!opts.append;
-  const input = document.createElement("input");
-  input.type = "file";
-  input.accept = "image/*";
-  input.multiple = true;
-  input.onchange = async (e) => {
-    const files = Array.from((e.target && e.target.files) || []);
-    if (!files.length) return;
-    const hint = document.getElementById("showEditHint");
-    const atuais = (append && typeof getShowroomFotosFromForm === 'function') ? getShowroomFotosFromForm() : [];
-    const urls = [...atuais];
-    try {
-      if(hint) hint.innerHTML = `<span class='ok'>Enviando ${files.length} foto(s)...</span>`;
-      for (const file of files) {
-        const url = await uploadFotoCloudinary(file);
-        urls.push(url);
-      }
-      if (typeof setShowroomFotos === 'function') {
-        setShowroomFotos(urls);
-      } else {
-        const preview = document.getElementById("showroomFotoPreview");
-        const field = document.getElementById("showroomFotoUrl");
-        if (preview) preview.src = urls[0] || '';
-        if (field) field.value = urls[0] || '';
-      }
-      if(hint) hint.innerHTML = `<span class='ok'>${files.length} foto(s) enviada(s) com sucesso.</span>`;
-      alert(`${files.length} foto(s) enviada(s) com sucesso!`);
-    } catch(err) {
-      console.error(err);
-      if(hint) hint.innerHTML = `<span class='warn'>Erro ao enviar foto(s):</span> ${err.message || err}`;
-      alert("Erro ao enviar foto: " + (err.message || err));
-    }
-  };
-  input.click();
-};
 </script>
 
 
 <script>
-/* ===== Patch V10.3 compartilhamento WhatsApp com fotos (seguro) ===== */
+/* ===== V11.1 fix • compartilhamento showroom seguro ===== */
 (function(){
-function buildShareText(card){
-  const title = card.querySelector('.showTitle')?.innerText || '';
-  const price = card.querySelector('.showPrice')?.innerText || '';
-  const km = card.innerText.match(/KM[^\n]*/i)?.[0] || '';
-  const imgs = Array.from(card.querySelectorAll('img')).map(i=>i.src).slice(0,6);
-
-  let msg = `🚗 ${title}\n`;
-  msg += `💰 Valor: ${price}\n`;
-  if(km) msg += `📍 ${km}\n`;
-  msg += `\n📸 Fotos:\n`;
-  imgs.forEach(u => msg += u + "\n");
-  msg += "\nFale conosco para mais informações.";
-
-  return encodeURIComponent(msg);
-}
-
-function attachShare(){
-  const buttons = document.querySelectorAll('[data-share],[data-share-showroom],.btnShareShow,.showShare');
-  buttons.forEach(btn=>{
-    if(btn.dataset.sharePatched) return;
-    btn.dataset.sharePatched = "1";
-
-    btn.addEventListener('click', function(e){
-      e.preventDefault();
-      const card = btn.closest('.showCard');
-      if(!card) return;
-
-      const text = buildShareText(card);
-      const url = "https://wa.me/?text=" + text;
-      window.open(url,'_blank');
-    });
-  });
-}
-
-document.addEventListener('DOMContentLoaded', ()=>{
-  attachShare();
-  setInterval(attachShare, 2000);
-});
-})();
-</script>
-
-
-<script>
-/* ===== V10.4.1 fix • compartilhar veiculo + remover ticket medio ===== */
-(function(){
-  function encodeMsg(msg){ return encodeURIComponent(msg); }
-
-  function collectImgs(root){
-    return Array.from(root.querySelectorAll('img'))
-      .map(i => i.getAttribute('src') || '')
-      .filter(Boolean)
-      .filter(src => /^https?:\/\//i.test(src))
-      .slice(0, 8);
-  }
-
-  function buildVehicleMessageFromCard(card){
-    const title = (card.querySelector('.showTitle')?.innerText || '').trim();
-    const price = (card.querySelector('.showPrice')?.innerText || '').trim();
-    const meta = (card.querySelector('.showMeta')?.innerText || '').trim();
-    const specs = Array.from(card.querySelectorAll('.showSpec')).map(x => x.innerText.trim()).filter(Boolean);
-    const imgs = collectImgs(card);
-    let msg = '';
-    if(title) msg += `🚗 ${title}\n`;
-    if(price) msg += `💰 Valor: ${price}\n`;
-    if(meta) msg += `${meta}\n`;
-    if(specs.length) msg += `\n${specs.join(' • ')}\n`;
-    if(imgs.length){
-      msg += `\n📸 Fotos:\n`;
-      imgs.forEach(u => msg += `${u}\n`);
-    }
-    msg += `\nFale conosco para mais informações.`;
-    return msg.trim();
-  }
-
-  function shareVehicleFromButton(btn){
-    const card = btn.closest('.showCard');
-    if(card){
-      const msg = buildVehicleMessageFromCard(card);
-      window.open('https://wa.me/?text=' + encodeMsg(msg), '_blank');
-      return;
-    }
-
-    const modal = document.querySelector('.modalOverlay[style*="flex"], .modalOverlay:not([style*="display: none"])');
-    if(modal){
-      const title = (modal.querySelector('.showTitle, .modalTitle')?.innerText || '').trim();
-      const price = (modal.querySelector('.showPrice')?.innerText || '').trim();
-      const imgs = collectImgs(modal);
-      let msg = '';
-      if(title) msg += `🚗 ${title}\n`;
-      if(price) msg += `💰 Valor: ${price}\n`;
-      if(imgs.length){
-        msg += `\n📸 Fotos:\n`;
-        imgs.forEach(u => msg += `${u}\n`);
-      }
-      msg += `\nFale conosco para mais informações.`;
-      window.open('https://wa.me/?text=' + encodeMsg(msg.trim()), '_blank');
-    }
-  }
-
-  function bindShareButtons(){
-    const selectors = [
-      '[data-share]',
-      '[data-share-showroom]',
-      '.showShare',
-      '.btnShareShow',
-      '.mini[data-sendshow]',
-      'button[title*="Compartilhar"]'
-    ].join(',');
-    document.querySelectorAll(selectors).forEach(btn => {
-      if(btn.dataset.shareFixBound === '1') return;
-      btn.dataset.shareFixBound = '1';
+  function bindShowroomShare(){
+    document.querySelectorAll('[data-show-wa]').forEach(btn => {
+      if(btn.dataset.boundShowShare === '1') return;
+      btn.dataset.boundShowShare = '1';
       btn.addEventListener('click', function(e){
         e.preventDefault();
         e.stopPropagation();
-        shareVehicleFromButton(btn);
-      }, true);
-    });
-
-    document.querySelectorAll('button').forEach(btn => {
-      const txt = (btn.innerText || '').trim().toLowerCase();
-      if((txt.includes('compartilhar') || txt.includes('veículo')) && btn.dataset.shareFixBound !== '1'){
-        btn.dataset.shareFixBound = '1';
-        btn.addEventListener('click', function(e){
-          e.preventDefault();
-          e.stopPropagation();
-          shareVehicleFromButton(btn);
-        }, true);
-      }
+        const item = showroomItemsCache.find(x => x.id === btn.dataset.showWa);
+        if(item) shareShowVehicle(item);
+      });
     });
   }
-
-  function removeTicketMedio(){
-    document.querySelectorAll('.stockKpi').forEach(kpi => {
-      const label = (kpi.innerText || '').toLowerCase();
-      if(label.includes('ticket médio') || label.includes('ticket medio')){
-        kpi.classList.add('ticketMedioHide');
-      }
-    });
-  }
-
-  const obs = new MutationObserver(() => {
-    bindShareButtons();
-    removeTicketMedio();
-  });
-
+  const obs = new MutationObserver(bindShowroomShare);
   document.addEventListener('DOMContentLoaded', () => {
-    bindShareButtons();
-    removeTicketMedio();
+    bindShowroomShare();
     obs.observe(document.body, {childList:true, subtree:true});
   });
 })();
