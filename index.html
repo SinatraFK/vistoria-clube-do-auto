@@ -1029,6 +1029,136 @@ select{
 }
 
 
+
+/* ===== V11 • showroom multi fotos seguro ===== */
+.showEditorActions{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.showEditorActions button{width:auto}
+.showEditorGallery{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:12px;
+}
+.showEditorMainPreview{
+  min-height:220px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(180deg,#ffffff 0%, #f8fbff 100%);
+  border:1px solid rgba(148,163,184,.16);
+  border-radius:18px;
+  overflow:hidden;
+}
+.showEditorMainPreview img{
+  width:100%;
+  max-height:220px;
+  object-fit:cover;
+  display:block;
+}
+.showEditorThumbGrid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+.showEditorThumb{
+  position:relative;
+  border:1px solid rgba(148,163,184,.16);
+  border-radius:16px;
+  overflow:hidden;
+  background:#fff;
+  min-height:96px;
+}
+.showEditorThumb img{
+  width:100%;
+  height:96px;
+  object-fit:cover;
+  display:block;
+}
+.showEditorThumbTag{
+  position:absolute;
+  left:8px;
+  top:8px;
+  padding:4px 8px;
+  border-radius:999px;
+  background:rgba(15,23,42,.88);
+  color:#fff;
+  font-size:11px;
+  font-weight:900;
+}
+.showEditorThumbRemove{
+  position:absolute;
+  right:8px;
+  top:8px;
+  width:auto;
+  min-width:30px;
+  padding:6px 8px;
+  border:none;
+  border-radius:10px;
+  background:rgba(185,28,28,.92);
+  color:#fff;
+  font-weight:900;
+  cursor:pointer;
+}
+.showEditorEmpty{
+  padding:18px;
+  border-radius:18px;
+  border:1px dashed rgba(148,163,184,.30);
+  background:#fbfdff;
+  color:#64748b;
+  text-align:center;
+  font-weight:800;
+}
+.showThumbs.showThumbsGallery{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+  align-content:start;
+}
+.showModalThumb{
+  position:relative;
+  border:1px solid rgba(148,163,184,.16);
+  border-radius:16px;
+  overflow:hidden;
+  cursor:pointer;
+  background:#fff;
+}
+.showModalThumb img{
+  width:100%;
+  height:134px;
+  object-fit:cover;
+  display:block;
+}
+.showModalThumb.active{
+  box-shadow:0 0 0 3px rgba(37,99,235,.18);
+  border-color:rgba(37,99,235,.34);
+}
+.showModalThumbTag{
+  position:absolute;
+  left:8px;
+  top:8px;
+  padding:4px 8px;
+  border-radius:999px;
+  background:rgba(15,23,42,.88);
+  color:#fff;
+  font-size:11px;
+  font-weight:900;
+}
+.showFotoCount{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 10px;
+  border-radius:999px;
+  background:#eef2ff;
+  color:#1e3a8a;
+  font-size:12px;
+  font-weight:900;
+}
+@media (max-width:760px){
+  .showEditorThumbGrid{grid-template-columns:repeat(2,1fr)}
+  .showThumbs.showThumbsGallery{grid-template-columns:repeat(2,1fr)}
+}
+
+
 /* ===== V10.4.1 fix • remover ticket medio ===== */
 .stockKpi.ticketMedioHide{display:none!important;}
 
@@ -1636,7 +1766,7 @@ select{
     <div class="modalTop">
       <div>
         <div class="modalTitle">📝 Anúncio do Showroom Vex</div>
-        <div class="modalHint">Edite o anúncio, adicione foto de capa e publique na vitrine. Ao vir do histórico, a FIPE já entra preenchida automaticamente.</div>
+        <div class="modalHint">Edite o anúncio, adicione capa e galeria de fotos e publique na vitrine. Ao vir do histórico, a FIPE já entra preenchida automaticamente.</div>
       </div>
       <button class="btnX" type="button" id="btnShowEditorClose">Fechar</button>
     </div>
@@ -1668,15 +1798,24 @@ select{
       <label>Descrição</label><textarea id="showDescricao" placeholder="Observações comerciais do veículo, diferenciais e preparação."></textarea>
       <div class="row2">
         <div>
-          <label>Foto de capa</label>
-          <button class="btnB" type="button" id="btnShowTakePhoto">📸 Tirar foto / escolher</button>
+          <label>Fotos do veículo</label>
+          <div class="showEditorActions">
+            <button class="btnB" type="button" id="btnShowTakePhoto">📸 Escolher fotos</button>
+            <button class="btnSecondary" type="button" id="btnShowAddPhotos">➕ Adicionar mais fotos</button>
+          </div>
           <input type="hidden" id="showroomFotoUrl">
-          <div class="hint">A foto sobe no Cloudinary e a URL fica salva no anúncio.</div>
+          <input type="hidden" id="showroomFotosJson">
+          <div class="hint">A primeira foto vira capa. As demais entram como galeria no anúncio e no modal do veículo.</div>
+          <div class="hint"><span class="showFotoCount" id="showroomFotoCount">0 fotos carregadas</span></div>
         </div>
         <div>
-          <label>Prévia da capa</label>
-          <div class="preview" style="min-height:180px;display:flex;align-items:center;justify-content:center">
-            <img id="showroomFotoPreview" style="max-width:100%;max-height:160px;border-radius:14px;display:block" alt="Prévia da foto">
+          <label>Prévia da galeria</label>
+          <div class="showEditorGallery">
+            <div class="showEditorMainPreview">
+              <img id="showroomFotoPreview" style="display:block" alt="Prévia da foto">
+            </div>
+            <div id="showroomThumbs" class="showEditorThumbGrid"></div>
+            <div id="showroomEmpty" class="showEditorEmpty">Nenhuma foto carregada ainda. A primeira foto será usada como capa.</div>
           </div>
         </div>
       </div>
@@ -2186,6 +2325,63 @@ el("tabUsers").addEventListener("click",()=>setTab("users"));
 let showroomItemsCache=[];
 let unsubShowroom=null;
 
+function normalizeShowroomFotos(source){
+  const raw = Array.isArray(source)
+    ? source
+    : (source?.fotos && Array.isArray(source.fotos) ? source.fotos : []);
+  const legacy = source?.fotoCapa && !raw.length ? [source.fotoCapa] : [];
+  const merged = [...raw, ...legacy]
+    .map(x => (x || '').toString().trim())
+    .filter(Boolean);
+  return [...new Set(merged)];
+}
+function getShowroomFotosFromForm(){
+  try{
+    const raw = el("showroomFotosJson")?.value || "[]";
+    const parsed = JSON.parse(raw);
+    return normalizeShowroomFotos(Array.isArray(parsed) ? parsed : []);
+  }catch(_){
+    const capa = el("showroomFotoUrl")?.value || '';
+    return normalizeShowroomFotos(capa ? [capa] : []);
+  }
+}
+function setShowroomFotos(urls){
+  const fotos = normalizeShowroomFotos(Array.isArray(urls) ? urls : []);
+  const capa = fotos[0] || '';
+  if(el("showroomFotosJson")) el("showroomFotosJson").value = JSON.stringify(fotos);
+  if(el("showroomFotoUrl")) el("showroomFotoUrl").value = capa;
+  renderShowroomFotoPreview();
+}
+function removeShowroomFotoAt(index){
+  const fotos = getShowroomFotosFromForm();
+  if(index < 0 || index >= fotos.length) return;
+  fotos.splice(index, 1);
+  setShowroomFotos(fotos);
+}
+function renderShowroomFotoPreview(){
+  const fotos = getShowroomFotosFromForm();
+  const preview = el("showroomFotoPreview");
+  const thumbs = el("showroomThumbs");
+  const empty = el("showroomEmpty");
+  const count = el("showroomFotoCount");
+  if(count) count.textContent = `${fotos.length} foto${fotos.length===1?'':'s'} carregada${fotos.length===1?'':'s'}`;
+  if(preview){
+    preview.src = fotos[0] || showroomPlaceholder('Sem foto');
+  }
+  if(empty) empty.style.display = fotos.length ? 'none' : 'block';
+  if(thumbs){
+    thumbs.innerHTML = fotos.map((url, i) => `
+      <div class="showEditorThumb">
+        <img src="${escapeHtml(url)}" alt="Foto ${i+1}">
+        <span class="showEditorThumbTag">${i===0 ? 'CAPA' : 'GALERIA'}</span>
+        <button class="showEditorThumbRemove" type="button" data-show-remove-photo="${i}">×</button>
+      </div>
+    `).join('');
+    thumbs.querySelectorAll('[data-show-remove-photo]').forEach(btn => {
+      btn.addEventListener('click', () => removeShowroomFotoAt(Number(btn.dataset.showRemovePhoto)));
+    });
+  }
+}
 function canManageShowroom(){ return currentRole==="admin" || currentRole==="gerente"; }
 function showroomPlaceholder(label){
   const txt = encodeURIComponent(label||"Sem foto");
@@ -2369,11 +2565,19 @@ function renderShowroom(){
 function openShowModal(item){
   const body=el("showModalBody");
   if(!body) return;
-  const img=showImgSrc(item);
+  const fotos=normalizeShowroomFotos(item);
+  const img=fotos[0] || showImgSrc(item);
   body.innerHTML = `
     <div class="showGallery">
-      <img class="showMainImg" src="${escapeHtml(img)}" alt="${escapeHtml(item.modelo||'Veículo')}">
-      <div class="showThumbs"><div class="showDetailCard"><div class="showDetailLabel">Origem</div><div class="showDetailValue">${item.origemVistoriaId ? 'Histórico / veículo comprado' : 'Cadastro direto no showroom'}</div></div></div>
+      <img class="showMainImg" id="showModalMainImg" src="${escapeHtml(img)}" alt="${escapeHtml(item.modelo||'Veículo')}">
+      <div class="showThumbs showThumbsGallery">
+        ${fotos.length ? fotos.map((url, i) => `
+          <div class="showModalThumb ${i===0 ? 'active' : ''}" data-show-thumb="${i}" data-show-url="${escapeHtml(url)}">
+            <img src="${escapeHtml(url)}" alt="Foto ${i+1}">
+            <span class="showModalThumbTag">${i===0 ? 'CAPA' : 'FOTO ' + (i+1)}</span>
+          </div>
+        `).join('') : `<div class="showDetailCard"><div class="showDetailLabel">Origem</div><div class="showDetailValue">${item.origemVistoriaId ? 'Histórico / veículo comprado' : 'Cadastro direto no showroom'}</div></div>`}
+      </div>
     </div>
     <div class="showDetailGrid three">
       <div class="showDetailCard"><div class="showDetailLabel">Veículo</div><div class="showDetailValue">${escapeHtml(((item.marca||"")+" "+(item.modelo||"")+" "+(item.versao||"")).trim())}</div></div>
@@ -2393,6 +2597,14 @@ function openShowModal(item){
     </div>
   `;
   el("showModal").style.display="flex";
+  body.querySelectorAll('[data-show-thumb]').forEach(thumb => {
+    thumb.addEventListener('click', () => {
+      const main = el('showModalMainImg');
+      if(main) main.src = thumb.dataset.showUrl || img;
+      body.querySelectorAll('[data-show-thumb]').forEach(x => x.classList.remove('active'));
+      thumb.classList.add('active');
+    });
+  });
   el("btnShowModalEdit")?.addEventListener("click", ()=>{ closeShowModal(); openShowEditor(item); });
   el("btnShowModalShare")?.addEventListener("click", ()=>shareShowVehicle(item));
 }
@@ -2415,9 +2627,7 @@ function openShowEditor(item){
   el("showStatus").value=item?.status||'Em preparação';
   el("showPlaca").value=item?.placa||'';
   el("showDescricao").value=item?.descricao||'';
-  el("showroomFotoUrl").value=item?.fotoCapa||'';
-  const img=el("showroomFotoPreview");
-  if(img){ img.src = item?.fotoCapa || showroomPlaceholder('Sem foto'); }
+  setShowroomFotos(normalizeShowroomFotos(item||{}));
   el("btnShowDelete").style.display = item?.id ? 'inline-flex' : 'none';
   el("showEditorModal").style.display='flex';
 }
@@ -2425,6 +2635,7 @@ function closeShowEditor(){ const m=el("showEditorModal"); if(m) m.style.display
 async function saveShowEditor(){
   if(!canManageShowroom()) return;
   const id=el("showEditId").value;
+  const fotos = getShowroomFotosFromForm();
   const payload={
     origemVistoriaId: el("showOrigemVistoriaId").value || '',
     marca: v("showMarca"),
@@ -2440,7 +2651,8 @@ async function saveShowEditor(){
     status: v("showStatus") || 'Em preparação',
     placa: plateBR(v("showPlaca")),
     descricao: v("showDescricao"),
-    fotoCapa: el("showroomFotoUrl")?.value || '',
+    fotoCapa: fotos[0] || '',
+    fotos,
     updatedAt: serverTimestamp(),
     updatedByUid: auth.currentUser?.uid || '',
     updatedByEmail: lower(auth.currentUser?.email || '')
@@ -2467,7 +2679,8 @@ async function deleteShowEditor(){
   try{ await deleteDoc(doc(db,"showroom_vex", id)); closeShowEditor(); }catch(err){ alert('Erro ao excluir: '+(err?.message||err)); }
 }
 function shareShowVehicle(item){
-  const msg = [
+  const fotos = normalizeShowroomFotos(item);
+  let msg = [
     `🚗 *${((item.marca||"")+" "+(item.modelo||"")+" "+(item.versao||"")).trim()}*`,
     `${item.ano||''} • ${item.km||''}`,
     `${item.cambio||''} • ${item.combustivel||''} • ${item.cor||''}`,
@@ -2476,7 +2689,13 @@ function shareShowVehicle(item){
     item.status ? `📌 *Status:* ${item.status}` : '',
     item.descricao || ''
   ].filter(Boolean).join('\n');
-  abrirWhats(msg);
+  if(fotos.length){
+    msg += `\n\n📸 *Fotos:*\n`;
+    fotos.forEach((url, i) => {
+      msg += `${i===0 ? 'Capa' : 'Foto ' + (i+1)}: ${url}\n`;
+    });
+  }
+  abrirWhats(msg.trim());
 }
 async function sendHistoricoToShowroom(item){
   if(!canManageShowroom()) return alert('Somente gerente/admin podem enviar para o showroom.');
@@ -2502,8 +2721,9 @@ async function sendHistoricoToShowroom(item){
     cor:'',
     status:'Em preparação',
     placa:plateBR(item.placa||''),
-    descricao:'Veículo vindo do histórico de compra. Complemente com preço, foto e descrição comercial.',
-    fotoCapa:''
+    descricao:'Veículo vindo do histórico de compra. Complemente com preço, fotos e descrição comercial.',
+    fotoCapa:'',
+    fotos:[]
   };
   setTab('showroom');
   openShowEditor(novo);
@@ -2515,7 +2735,8 @@ el("btnShowEditorClose")?.addEventListener("click", closeShowEditor);
 el("showEditorModal")?.addEventListener("click", (ev)=>{ if(ev.target?.id==="showEditorModal") closeShowEditor(); });
 el("btnShowSave")?.addEventListener("click", saveShowEditor);
 el("btnShowDelete")?.addEventListener("click", deleteShowEditor);
-el("btnShowTakePhoto")?.addEventListener("click", ()=>{ if(window.abrirCameraShowroom) window.abrirCameraShowroom(); else alert('Função de foto ainda não disponível nesta versão.'); });
+el("btnShowTakePhoto")?.addEventListener("click", ()=>{ if(window.abrirCameraShowroom) window.abrirCameraShowroom({ append:false }); else alert('Função de foto ainda não disponível nesta versão.'); });
+el("btnShowAddPhotos")?.addEventListener("click", ()=>{ if(window.abrirCameraShowroom) window.abrirCameraShowroom({ append:true }); else alert('Função de foto ainda não disponível nesta versão.'); });
 ["showFipe","showPreco","showPrecoMin","showPrecoMax"].forEach(id=>{
   const e=el(id);
   if(!e) return;
@@ -3229,23 +3450,37 @@ async function uploadFotoCloudinary(file) {
   throw new Error((data && (data.error && data.error.message)) || "Falha no upload");
 }
 
-window.abrirCameraShowroom = async function() {
+window.abrirCameraShowroom = async function(opts = {}) {
+  const append = !!opts.append;
   const input = document.createElement("input");
   input.type = "file";
   input.accept = "image/*";
-  input.capture = "environment";
+  input.multiple = true;
   input.onchange = async (e) => {
-    const file = e.target.files && e.target.files[0];
-    if (!file) return;
+    const files = Array.from((e.target && e.target.files) || []);
+    if (!files.length) return;
+    const hint = document.getElementById("showEditHint");
+    const atuais = (append && typeof getShowroomFotosFromForm === 'function') ? getShowroomFotosFromForm() : [];
+    const urls = [...atuais];
     try {
-      const url = await uploadFotoCloudinary(file);
-      const preview = document.getElementById("showroomFotoPreview");
-      const field = document.getElementById("showroomFotoUrl");
-      if (preview) preview.src = url;
-      if (field) field.value = url;
-      alert("Foto enviada com sucesso!");
+      if(hint) hint.innerHTML = `<span class='ok'>Enviando ${files.length} foto(s)...</span>`;
+      for (const file of files) {
+        const url = await uploadFotoCloudinary(file);
+        urls.push(url);
+      }
+      if (typeof setShowroomFotos === 'function') {
+        setShowroomFotos(urls);
+      } else {
+        const preview = document.getElementById("showroomFotoPreview");
+        const field = document.getElementById("showroomFotoUrl");
+        if (preview) preview.src = urls[0] || '';
+        if (field) field.value = urls[0] || '';
+      }
+      if(hint) hint.innerHTML = `<span class='ok'>${files.length} foto(s) enviada(s) com sucesso.</span>`;
+      alert(`${files.length} foto(s) enviada(s) com sucesso!`);
     } catch(err) {
       console.error(err);
+      if(hint) hint.innerHTML = `<span class='warn'>Erro ao enviar foto(s):</span> ${err.message || err}`;
       alert("Erro ao enviar foto: " + (err.message || err));
     }
   };
