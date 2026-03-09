@@ -1201,21 +1201,32 @@ select{
 .showModalStage{
   position:relative;
   overflow:hidden;
-  border-radius:22px;
+  border-radius:24px;
   border:1px solid rgba(148,163,184,.16);
   background:linear-gradient(180deg,#ffffff 0%, #f8fbff 100%);
+  box-shadow:0 18px 40px rgba(15,23,42,.10);
 }
 .showModalViewer{
   position:relative;
-  min-height:320px;
+  min-height:430px;
+  padding:20px;
   display:flex;
   align-items:center;
   justify-content:center;
-  background:#f8fafc;
+  background:
+    radial-gradient(circle at top, rgba(59,130,246,.08), transparent 34%),
+    linear-gradient(180deg,#f8fafc 0%, #eef4fb 100%);
 }
 .showMainImg{
+  width:100%;
+  max-width:100%;
+  height:390px;
+  object-fit:contain;
   transition:transform .18s ease;
   cursor:zoom-in;
+  user-select:none;
+  -webkit-user-drag:none;
+  filter:drop-shadow(0 18px 28px rgba(15,23,42,.14));
 }
 .showMainImg.zoomed{
   transform:scale(1.28);
@@ -1299,15 +1310,19 @@ select{
 }
 .showThumbs.showThumbsGallery{
   grid-template-columns:repeat(3,1fr);
+  align-content:start;
 }
 .showModalThumb{
   transition:transform .14s ease, box-shadow .14s ease, border-color .14s ease;
+  overflow:hidden;
+  border-radius:18px;
+  background:#fff;
 }
 .showModalThumb:hover{
   transform:translateY(-2px);
 }
 .showModalThumb img{
-  height:112px;
+  height:120px;
 }
 .showModalActionBar{
   display:flex;
@@ -1332,8 +1347,36 @@ select{
   margin:14px 0 4px 0;
 }
 @media (max-width:760px){
-  .showModalViewer{min-height:260px}
-  .showThumbs.showThumbsGallery{grid-template-columns:repeat(2,1fr)}
+  .showModalViewer{
+    min-height:340px;
+    padding:14px 10px 18px 10px;
+  }
+  .showMainImg{
+    height:300px;
+  }
+  .showThumbs.showThumbsGallery{
+    display:flex;
+    gap:10px;
+    overflow-x:auto;
+    overscroll-behavior-x:contain;
+    scroll-snap-type:x proximity;
+    padding-bottom:4px;
+  }
+  .showThumbs.showThumbsGallery::-webkit-scrollbar{
+    height:8px;
+  }
+  .showThumbs.showThumbsGallery::-webkit-scrollbar-thumb{
+    background:#cbd5e1;
+    border-radius:999px;
+  }
+  .showModalThumb{
+    min-width:116px;
+    flex:0 0 116px;
+    scroll-snap-align:start;
+  }
+  .showModalThumb img{
+    height:88px;
+  }
   .showModalNav{
     min-width:40px;
     min-height:40px;
@@ -1346,8 +1389,76 @@ select{
 }
 
 
+/* ===== V12.1 • showroom premium mobile ===== */
+/* mantém dock só em Nova avaliação e ticket médio oculto */
+
 /* ===== V10.4.1 fix • remover ticket medio ===== */
 .stockKpi.ticketMedioHide{display:none!important;}
+
+
+/* ===== V13 • modo vendedor ===== */
+.sellerHero{
+  display:grid;grid-template-columns:1.15fr .85fr;gap:14px;align-items:center;
+  background:linear-gradient(135deg,#0f172a 0%, #111827 55%, #1e293b 100%);
+  color:#fff;border-radius:24px;padding:18px;margin-bottom:14px;
+  border:1px solid rgba(255,255,255,.06);box-shadow:0 18px 45px rgba(15,23,42,.18)
+}
+.sellerHeroTitle{font-size:24px;font-weight:900;letter-spacing:-.03em;line-height:1.05}
+.sellerHeroSub{margin-top:8px;font-size:13px;color:rgba(255,255,255,.78);line-height:1.5}
+.sellerPills{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.sellerPill{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:999px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.08);font-size:12px;font-weight:800}
+.sellerLayout{display:grid;grid-template-columns:360px 1fr;gap:14px;align-items:start}
+.sellerSidebar,.sellerMain{background:linear-gradient(180deg,#ffffff 0%, #f8fbff 100%);border:1px solid rgba(148,163,184,.16);border-radius:22px;padding:16px;box-shadow:var(--shadowSoft)}
+.sellerSearchWrap{position:relative}
+.sellerSearchWrap input{padding-left:42px}
+.sellerSearchIcon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;opacity:.65}
+.sellerList{display:grid;gap:10px;margin-top:12px;max-height:760px;overflow:auto;padding-right:2px}
+.sellerCardItem{padding:12px;border-radius:18px;border:1px solid rgba(148,163,184,.16);background:#fff;cursor:pointer;transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease}
+.sellerCardItem:hover{transform:translateY(-1px);box-shadow:var(--shadowSoft)}
+.sellerCardItem.active{border-color:rgba(37,99,235,.35);box-shadow:0 0 0 3px rgba(37,99,235,.10), var(--shadowSoft)}
+.sellerCardTitle{font-size:15px;font-weight:900;color:#0f172a;line-height:1.2}
+.sellerCardMeta{margin-top:6px;font-size:12px;color:#64748b;font-weight:800}
+.sellerCardTags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.sellerCardTag{display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;background:#f8fafc;border:1px solid rgba(148,163,184,.16);font-size:11px;font-weight:800;color:#334155}
+.sellerEmpty{padding:18px;border-radius:18px;border:1px dashed rgba(148,163,184,.32);background:#fbfdff;text-align:center;color:#64748b;font-weight:800}
+.sellerVehicleStage{display:grid;grid-template-columns:1.05fr .95fr;gap:14px}
+.sellerVehicleMedia{display:grid;gap:12px}
+.sellerVehicleMain{width:100%;height:300px;object-fit:cover;border-radius:22px;border:1px solid rgba(148,163,184,.16);background:#eef2f7}
+.sellerThumbRail{display:flex;gap:10px;overflow:auto;padding-bottom:2px}
+.sellerThumbRail button{width:92px;min-width:92px;padding:0;border:none;background:transparent;box-shadow:none}
+.sellerThumbRail img{width:92px;height:72px;object-fit:cover;border-radius:14px;border:2px solid transparent}
+.sellerThumbRail button.active img{border-color:#2563eb}
+.sellerVehicleInfo{display:grid;gap:12px}
+.sellerPriceBig{font-size:30px;font-weight:900;letter-spacing:-.04em;color:#0f172a;line-height:1}
+.sellerTitleBig{font-size:24px;font-weight:900;letter-spacing:-.03em;color:#0f172a;line-height:1.1}
+.sellerSpecGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.sellerSpecBox{padding:12px;border-radius:18px;background:#fff;border:1px solid rgba(148,163,184,.16);box-shadow:var(--shadowSoft)}
+.sellerSpecLabel{font-size:11px;font-weight:900;color:#64748b;text-transform:uppercase;letter-spacing:.04em}
+.sellerSpecValue{margin-top:6px;font-size:15px;font-weight:900;color:#0f172a;line-height:1.2}
+.sellerOpportunity{display:inline-flex;align-items:center;padding:9px 12px;border-radius:999px;font-size:12px;font-weight:900;border:1px solid transparent}
+.sellerOpportunity.good{background:#dcfce7;color:#166534;border-color:#bbf7d0}
+.sellerOpportunity.warn{background:#fef9c3;color:#854d0e;border-color:#fde68a}
+.sellerOpportunity.bad{background:#fee2e2;color:#991b1b;border-color:#fecaca}
+.sellerBlock{margin-top:14px;padding:14px;border-radius:20px;background:linear-gradient(180deg,#ffffff 0%, #f8fafc 100%);border:1px solid rgba(148,163,184,.14)}
+.sellerBlockTitle{font-size:13px;font-weight:900;letter-spacing:.04em;text-transform:uppercase;color:#64748b;margin-bottom:10px}
+.sellerTextarea{min-height:170px!important}
+.sellerActionGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
+.sellerActionGrid button{min-height:50px;border-radius:16px}
+.sellerActionGrid .full{grid-column:1 / -1}
+.sellerModeBtn{background:linear-gradient(135deg,#7c3aed 0%, #8b5cf6 100%);color:#fff}
+.sellerHintBar{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.sellerHintChip{display:inline-flex;align-items:center;padding:8px 12px;border-radius:999px;background:#fff;border:1px solid rgba(148,163,184,.16);font-size:12px;font-weight:800;color:#334155}
+@media (max-width:1080px){
+  .sellerLayout,.sellerVehicleStage{grid-template-columns:1fr}
+}
+@media (max-width:760px){
+  .sellerHero{grid-template-columns:1fr}
+  .sellerPills{justify-content:flex-start}
+  .sellerThumbRail button{width:84px;min-width:84px}
+  .sellerThumbRail img{width:84px;height:68px}
+  .sellerSpecGrid,.sellerActionGrid{grid-template-columns:1fr}
+  .sellerVehicleMain{height:250px}
+}
 
 </style>
 </head>
@@ -1402,6 +1513,7 @@ select{
     <button class="tabbtn active" id="tabNova">Nova avaliação</button>
     <button class="tabbtn" id="tabHist">Histórico</button>
     <button class="tabbtn" id="tabShowroom">Showroom Vex</button>
+    <button class="tabbtn" id="tabSeller">Modo vendedor</button>
     <button class="tabbtn hidden" id="tabPainel">Painel</button>
     <button class="tabbtn hidden" id="tabUsers">Usuários</button>
   </div>
@@ -1922,7 +2034,98 @@ select{
 
     <div class="showStatsGrid" id="showStatsGrid"></div>
     <div class="showGrid" id="showroomGrid"></div>
+
     <div class="appFooterHint">.</div>
+  </div>
+
+  <div id="viewSeller" class="hidden">
+    <div class="sellerHero">
+      <div>
+        <div class="sellerHeroTitle">💼 Modo vendedor</div>
+        <div class="sellerHeroSub">Selecione um veículo do showroom e gere texto de anúncio, resumo rápido e mensagem pronta para WhatsApp. Tudo usando as fotos e dados já cadastrados na vitrine.</div>
+      </div>
+      <div class="sellerPills">
+        <span class="sellerPill">⚡ Anúncio pronto</span>
+        <span class="sellerPill">📲 WhatsApp</span>
+        <span class="sellerPill">📸 Fotos do showroom</span>
+      </div>
+    </div>
+
+    <div class="sellerLayout">
+      <div class="sellerSidebar">
+        <div class="sellerSearchWrap">
+          <span class="sellerSearchIcon">🔎</span>
+          <input id="sellerSearch" placeholder="Buscar veículo para vender">
+        </div>
+        <div class="sellerHintBar">
+          <span class="sellerHintChip" id="sellerCountChip">0 veículos</span>
+          <span class="sellerHintChip">Use os disponíveis primeiro</span>
+        </div>
+        <div class="sellerList" id="sellerList"></div>
+      </div>
+
+      <div class="sellerMain">
+        <div id="sellerEmptyState" class="sellerEmpty">Selecione um veículo do showroom para abrir o modo vendedor.</div>
+
+        <div id="sellerContent" class="hidden">
+          <div class="sellerVehicleStage">
+            <div class="sellerVehicleMedia">
+              <img id="sellerMainImg" class="sellerVehicleMain" alt="Foto principal do veículo">
+              <div id="sellerThumbRail" class="sellerThumbRail"></div>
+            </div>
+
+            <div class="sellerVehicleInfo">
+              <div class="sellerOpportunity" id="sellerOpportunity">📌 Veículo</div>
+              <div class="sellerTitleBig" id="sellerVehicleTitle">Veículo</div>
+              <div class="sellerPriceBig" id="sellerVehiclePrice">Sob consulta</div>
+
+              <div class="sellerSpecGrid">
+                <div class="sellerSpecBox"><div class="sellerSpecLabel">Ano</div><div class="sellerSpecValue" id="sellerSpecAno">—</div></div>
+                <div class="sellerSpecBox"><div class="sellerSpecLabel">KM</div><div class="sellerSpecValue" id="sellerSpecKm">—</div></div>
+                <div class="sellerSpecBox"><div class="sellerSpecLabel">Câmbio</div><div class="sellerSpecValue" id="sellerSpecCambio">—</div></div>
+                <div class="sellerSpecBox"><div class="sellerSpecLabel">Combustível</div><div class="sellerSpecValue" id="sellerSpecCombustivel">—</div></div>
+                <div class="sellerSpecBox"><div class="sellerSpecLabel">Cor</div><div class="sellerSpecValue" id="sellerSpecCor">—</div></div>
+                <div class="sellerSpecBox"><div class="sellerSpecLabel">Status</div><div class="sellerSpecValue" id="sellerSpecStatus">—</div></div>
+              </div>
+
+              <div class="sellerHintBar">
+                <span class="sellerHintChip" id="sellerFotosChip">0 fotos</span>
+                <span class="sellerHintChip" id="sellerFipeChip">FIPE —</span>
+                <span class="sellerHintChip" id="sellerPlacaChip">Placa —</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="sellerBlock">
+            <div class="sellerBlockTitle">Anúncio completo</div>
+            <textarea id="sellerLongText" class="sellerTextarea" readonly></textarea>
+            <div class="sellerActionGrid">
+              <button class="btnB" type="button" id="btnSellerCopyLong">📋 Copiar anúncio</button>
+              <button class="btnW" type="button" id="btnSellerWhatsLong">📲 Enviar anúncio</button>
+            </div>
+          </div>
+
+          <div class="sellerBlock">
+            <div class="sellerBlockTitle">Resumo rápido</div>
+            <textarea id="sellerShortText" readonly></textarea>
+            <div class="sellerActionGrid">
+              <button class="btnB" type="button" id="btnSellerCopyShort">📋 Copiar resumo</button>
+              <button class="btnW" type="button" id="btnSellerWhatsShort">📲 Enviar resumo</button>
+            </div>
+          </div>
+
+          <div class="sellerBlock">
+            <div class="sellerBlockTitle">Mensagem comercial para cliente</div>
+            <textarea id="sellerClientText" readonly></textarea>
+            <div class="sellerActionGrid">
+              <button class="btnB" type="button" id="btnSellerCopyClient">📋 Copiar mensagem</button>
+              <button class="btnW" type="button" id="btnSellerWhatsClient">📲 Enviar mensagem</button>
+              <button class="sellerModeBtn full" type="button" id="btnSellerOpenShowroom">🚗 Abrir veículo no showroom</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div id="viewUsers" class="hidden">
@@ -2486,26 +2689,30 @@ function escapeHtml(s){ return (s??"").toString().replaceAll("&","&amp;").replac
 function formatDate(ts){ try{ const d=ts?.toDate?ts.toDate():null; if(!d) return ""; return new Intl.DateTimeFormat("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}).format(d);}catch(e){ return ""; } }
 
 function setTab(tab){
-  const nova=tab==="nova", hist=tab==="hist", showroom=tab==="showroom", painel=tab==="painel", users=tab==="users";
+  const nova=tab==="nova", hist=tab==="hist", showroom=tab==="showroom", seller=tab==="seller", painel=tab==="painel", users=tab==="users";
   el("tabNova").classList.toggle("active", nova);
   el("tabHist").classList.toggle("active", hist);
   el("tabShowroom").classList.toggle("active", showroom);
+  el("tabSeller").classList.toggle("active", seller);
   el("tabPainel").classList.toggle("active", painel);
   el("tabUsers").classList.toggle("active", users);
   el("viewNova").classList.toggle("hidden", !nova);
   el("viewHistorico").classList.toggle("hidden", !hist);
   el("viewShowroom").classList.toggle("hidden", !showroom);
+  el("viewSeller").classList.toggle("hidden", !seller);
   el("viewPainel").classList.toggle("hidden", !painel);
   el("viewUsers").classList.toggle("hidden", !users);
   document.body.classList.toggle('view-nova', nova);
   if(hist) openHistorico();
   if(showroom) renderShowroom();
+  if(seller) renderSellerMode();
   if(painel) openPainel();
   if(users) openUsers();
 }
 el("tabNova").addEventListener("click",()=>setTab("nova"));
 el("tabHist").addEventListener("click",()=>setTab("hist"));
 el("tabShowroom").addEventListener("click",()=>setTab("showroom"));
+el("tabSeller").addEventListener("click",()=>setTab("seller"));
 el("tabPainel").addEventListener("click",()=>setTab("painel"));
 el("tabUsers").addEventListener("click",()=>setTab("users"));
 
@@ -2809,6 +3016,7 @@ function renderShowroom(){
         <div class="showActions">
           <button class="btnB" type="button" data-show-open="${escapeHtml(it.id)}">Ver veículo</button>
           <button class="btnSecondary" type="button" data-show-copy="${escapeHtml(it.id)}">Copiar dados</button>
+          <button class="sellerModeBtn" type="button" data-show-seller="${escapeHtml(it.id)}">💼 Modo vendedor</button>
           <button class="btnW full" type="button" data-show-wa="${escapeHtml(it.id)}">📲 Compartilhar veículo</button>
           ${canManageShowroom()?`<button class="btnP" type="button" data-show-edit="${escapeHtml(it.id)}">Editar</button><button class="btnDanger" type="button" data-show-del="${escapeHtml(it.id)}">Excluir</button>`:''}
         </div>
@@ -2860,7 +3068,8 @@ function openShowModal(item){
       <div class="showModalHintBar">
         <span class="showModalHintChip">📸 ${gallery.length} foto${gallery.length===1?'':'s'}</span>
         <span class="showModalHintChip">👆 Toque nas miniaturas</span>
-        <span class="showModalHintChip">↔️ Deslize para trocar</span>
+        <span class="showModalHintChip">↔️ Deslize a foto principal</span>
+        <span class="showModalHintChip">🖼️ Miniaturas em faixa no celular</span>
         <span class="showModalHintChip">🔍 Toque na foto para zoom</span>
       </div>
     </div>
@@ -2892,6 +3101,7 @@ function openShowModal(item){
         <div class="showDesc">${escapeHtml(item.descricao||'Sem descrição comercial ainda.')}</div>
         <div class="showModalActionBar">
           <button class="btnW" type="button" id="btnShowModalShare">📲 Compartilhar veículo</button>
+          <button class="sellerModeBtn" type="button" id="btnShowModalSeller">💼 Modo vendedor</button>
           ${canManageShowroom()?`<button class="btnP" type="button" id="btnShowModalEdit">Editar anúncio</button>`:''}
         </div>
       </div>
@@ -2937,6 +3147,7 @@ function openShowModal(item){
 
   el("btnShowModalEdit")?.addEventListener("click", ()=>{ closeShowModal(); openShowEditor(item); });
   el("btnShowModalShare")?.addEventListener("click", ()=>shareShowVehicle(item));
+  el("btnShowModalSeller")?.addEventListener("click", ()=>{ closeShowModal(); sellerSelectedId=item.id; setTab('seller'); renderSellerMode(); });
 }
 function closeShowModal(){ const m=el("showModal"); if(m) m.style.display="none"; }
 function openShowEditor(item){
@@ -3071,6 +3282,203 @@ async function sendHistoricoToShowroom(item){
   setTab('showroom');
   openShowEditor(novo);
 }
+
+let sellerSelectedId = "";
+
+function sellerAvailableItems(){
+  return showroomItemsCache
+    .filter(Boolean)
+    .slice()
+    .sort((a,b)=>{
+      const sa = showroomSortValue(a.status), sb = showroomSortValue(b.status);
+      if(sa!==sb) return sa-sb;
+      return showroomMoneyNumber(b.preco)-showroomMoneyNumber(a.preco);
+    });
+}
+function buildSellerSearchIndex(item){
+  return [item?.marca,item?.modelo,item?.versao,item?.ano,item?.placa,item?.combustivel,item?.cor,item?.status].join(" ").toLowerCase();
+}
+function getSellerFilteredItems(){
+  const q=(el("sellerSearch")?.value||"").toString().trim().toLowerCase();
+  const items=sellerAvailableItems();
+  if(!q) return items;
+  return items.filter(it=>buildSellerSearchIndex(it).includes(q));
+}
+function sellerPrimaryTitle(item){
+  return ((item?.marca||"")+" "+(item?.modelo||"")+" "+(item?.versao||"")).replace(/\s+/g," ").trim() || "Veículo";
+}
+function sellerPhotos(item){
+  const fotos=normalizeShowroomFotos(item);
+  return fotos.length ? fotos : [showImgSrc(item)];
+}
+function buildSellerLongText(item){
+  const fotos=sellerPhotos(item);
+  const lines = [
+    `🚗 *${sellerPrimaryTitle(item)}*`,
+    item?.status ? `📌 *Status:* ${item.status}` : '',
+    item?.ano ? `📅 *Ano:* ${item.ano}` : '',
+    item?.km ? `🛣️ *KM:* ${item.km}` : '',
+    item?.cambio ? `⚙️ *Câmbio:* ${item.cambio}` : '',
+    item?.combustivel ? `⛽ *Combustível:* ${item.combustivel}` : '',
+    item?.cor ? `🎨 *Cor:* ${item.cor}` : '',
+    item?.placa ? `🔖 *Placa:* ${item.placa}` : '',
+    `💰 *Preço:* ${formatShowPrice(item?.preco)}`,
+    item?.fipe ? `📊 *FIPE:* ${formatShowMoney(item.fipe)}` : '',
+    '',
+    item?.descricao ? `📝 *Destaques:*\n${item.descricao}` : '📝 *Destaques:*\nVeículo pronto para apresentação comercial no showroom.',
+  ].filter(Boolean);
+  if(fotos.length){
+    lines.push('', '📸 *Fotos do veículo:*');
+    fotos.forEach((url, idx)=>lines.push(`${idx===0?'Capa':'Foto '+(idx+1)}: ${url}`));
+  }
+  lines.push('', '📍 *Clube do Auto*', 'Fale com nossa equipe para mais detalhes e negociação.');
+  return lines.join('\n').trim();
+}
+function buildSellerShortText(item){
+  return [
+    `🚗 *${sellerPrimaryTitle(item)}*`,
+    [item?.ano,item?.km].filter(Boolean).join(' • '),
+    [item?.cambio,item?.combustivel,item?.cor].filter(Boolean).join(' • '),
+    `💰 *${formatShowPrice(item?.preco)}*`,
+    item?.status ? `📌 ${item.status}` : '',
+    sellerPhotos(item)[0] ? `📸 ${sellerPhotos(item)[0]}` : ''
+  ].filter(Boolean).join('\n').trim();
+}
+function buildSellerClientText(item){
+  const nomeVeiculo=sellerPrimaryTitle(item);
+  return [
+    `Olá! Tudo bem?`,
+    `Separei uma opção que pode te interessar na *Clube do Auto*:`,
+    ``,
+    `🚗 *${nomeVeiculo}*`,
+    `💰 *Preço:* ${formatShowPrice(item?.preco)}`,
+    [item?.ano,item?.km,item?.cambio,item?.combustivel].filter(Boolean).join(' • '),
+    ``,
+    item?.descricao ? `Destaques: ${item.descricao}` : `Se quiser, eu te envio mais detalhes, fotos e condição de negociação.`,
+    sellerPhotos(item)[0] ? `📸 ${sellerPhotos(item)[0]}` : '',
+    ``,
+    `Posso te passar mais informações por aqui.`
+  ].filter(Boolean).join('\n').trim();
+}
+async function sellerCopy(kind){
+  const item=showroomItemsCache.find(x=>x.id===sellerSelectedId);
+  if(!item) return;
+  const map = {
+    long: buildSellerLongText(item),
+    short: buildSellerShortText(item),
+    client: buildSellerClientText(item)
+  };
+  const ok = await copiar(map[kind]||'');
+  if(ok) alert('Texto copiado.');
+}
+function sellerWhats(kind){
+  const item=showroomItemsCache.find(x=>x.id===sellerSelectedId);
+  if(!item) return;
+  const map = {
+    long: buildSellerLongText(item),
+    short: buildSellerShortText(item),
+    client: buildSellerClientText(item)
+  };
+  abrirWhats(map[kind]||'');
+}
+function renderSellerThumbs(item){
+  const rail=el('sellerThumbRail');
+  const main=el('sellerMainImg');
+  if(!rail || !main) return;
+  const fotos=sellerPhotos(item);
+  rail.innerHTML=fotos.map((url,idx)=>`<button type="button" data-seller-thumb="${idx}" class="${idx===0?'active':''}"><img src="${escapeHtml(url)}" alt="Foto ${idx+1}"></button>`).join('');
+  main.src=fotos[0] || showImgSrc(item);
+  rail.querySelectorAll('[data-seller-thumb]').forEach(btn=>btn.addEventListener('click', ()=>{
+    const idx=Number(btn.dataset.sellerThumb||0);
+    const src=fotos[idx] || fotos[0] || showImgSrc(item);
+    main.src=src;
+    rail.querySelectorAll('[data-seller-thumb]').forEach(b=>b.classList.toggle('active', b===btn));
+  }));
+}
+function renderSellerMode(){
+  const list=el('sellerList');
+  const countChip=el('sellerCountChip');
+  if(!list) return;
+  const items=getSellerFilteredItems();
+  if(countChip) countChip.textContent=`${items.length} veículos`;
+  if(!showroomItemsCache.length){
+    list.innerHTML = `<div class="sellerEmpty">Nenhum veículo no showroom ainda.</div>`;
+    el('sellerContent')?.classList.add('hidden');
+    el('sellerEmptyState')?.classList.remove('hidden');
+    return;
+  }
+  if(!items.length){
+    list.innerHTML = `<div class="sellerEmpty">Nenhum veículo encontrado para essa busca.</div>`;
+  }else{
+    list.innerHTML = items.map(it=>{
+      const active = sellerSelectedId===it.id ? ' active' : '';
+      return `<div class="sellerCardItem${active}" data-seller-item="${escapeHtml(it.id)}">
+        <div class="sellerCardTitle">${escapeHtml(sellerPrimaryTitle(it))}</div>
+        <div class="sellerCardMeta">${escapeHtml(it.ano||'Ano não informado')} • ${escapeHtml(it.km||'KM não informado')} • ${escapeHtml(formatShowPrice(it.preco))}</div>
+        <div class="sellerCardTags">
+          <span class="sellerCardTag">${escapeHtml(it.status||'Em preparação')}</span>
+          <span class="sellerCardTag">${escapeHtml(it.cambio||'Câmbio')}</span>
+          <span class="sellerCardTag">${escapeHtml(it.combustivel||'Combustível')}</span>
+        </div>
+      </div>`;
+    }).join('');
+    list.querySelectorAll('[data-seller-item]').forEach(node=>node.addEventListener('click', ()=>{
+      sellerSelectedId=node.dataset.sellerItem||'';
+      renderSellerMode();
+    }));
+  }
+
+  if(!sellerSelectedId){
+    const firstDisponivel = sellerAvailableItems().find(x=>(x.status||'').toLowerCase().includes('dispon'));
+    sellerSelectedId = (firstDisponivel || sellerAvailableItems()[0] || {}).id || '';
+  }
+  const item=showroomItemsCache.find(x=>x.id===sellerSelectedId);
+  const empty=el('sellerEmptyState');
+  const content=el('sellerContent');
+  if(!item){
+    content?.classList.add('hidden');
+    empty?.classList.remove('hidden');
+    return;
+  }
+  empty?.classList.add('hidden');
+  content?.classList.remove('hidden');
+
+  const opp=showroomOpportunityInfo(item);
+  const oppEl=el('sellerOpportunity');
+  if(oppEl){
+    oppEl.textContent=opp.label;
+    oppEl.className=`sellerOpportunity ${opp.cls||'warn'}`;
+  }
+  const set=(id,val)=>{ const node=el(id); if(node) node.textContent=val; };
+  set('sellerVehicleTitle', sellerPrimaryTitle(item));
+  set('sellerVehiclePrice', formatShowPrice(item.preco));
+  set('sellerSpecAno', item.ano || '—');
+  set('sellerSpecKm', item.km || '—');
+  set('sellerSpecCambio', item.cambio || '—');
+  set('sellerSpecCombustivel', item.combustivel || '—');
+  set('sellerSpecCor', item.cor || '—');
+  set('sellerSpecStatus', item.status || '—');
+  set('sellerFotosChip', `${sellerPhotos(item).length} fotos`);
+  set('sellerFipeChip', `FIPE ${item.fipe ? formatShowMoney(item.fipe) : '—'}`);
+  set('sellerPlacaChip', `Placa ${item.placa || '—'}`);
+  if(el('sellerLongText')) el('sellerLongText').value = buildSellerLongText(item);
+  if(el('sellerShortText')) el('sellerShortText').value = buildSellerShortText(item);
+  if(el('sellerClientText')) el('sellerClientText').value = buildSellerClientText(item);
+  renderSellerThumbs(item);
+}
+el("sellerSearch")?.addEventListener("input", ()=>renderSellerMode());
+el("btnSellerCopyLong")?.addEventListener("click", ()=>sellerCopy('long'));
+el("btnSellerWhatsLong")?.addEventListener("click", ()=>sellerWhats('long'));
+el("btnSellerCopyShort")?.addEventListener("click", ()=>sellerCopy('short'));
+el("btnSellerWhatsShort")?.addEventListener("click", ()=>sellerWhats('short'));
+el("btnSellerCopyClient")?.addEventListener("click", ()=>sellerCopy('client'));
+el("btnSellerWhatsClient")?.addEventListener("click", ()=>sellerWhats('client'));
+el("btnSellerOpenShowroom")?.addEventListener("click", ()=>{
+  const item=showroomItemsCache.find(x=>x.id===sellerSelectedId);
+  if(item){ setTab('showroom'); openShowModal(item); }
+});
+
+
 el("btnShowClose")?.addEventListener("click", closeShowModal);
 el("showModal")?.addEventListener("click", (ev)=>{ if(ev.target?.id==="showModal") closeShowModal(); });
 el("btnShowNew")?.addEventListener("click", ()=>openShowEditor(null));
