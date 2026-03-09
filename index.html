@@ -1159,6 +1159,193 @@ select{
 }
 
 
+/* ===== V12 • showroom premium ===== */
+.showCard{
+  transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+}
+.showCard:hover{
+  transform:translateY(-3px);
+  box-shadow:0 18px 38px rgba(15,23,42,.14);
+  border-color:rgba(37,99,235,.20);
+}
+.showStockBadge{
+  position:absolute;
+  left:12px;
+  bottom:12px;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 12px;
+  border-radius:999px;
+  background:rgba(15,23,42,.88);
+  color:#fff;
+  font-size:11px;
+  font-weight:900;
+  border:1px solid rgba(255,255,255,.10);
+  box-shadow:0 10px 24px rgba(15,23,42,.16);
+}
+.showPrice{
+  box-shadow:0 14px 34px rgba(15,23,42,.24);
+}
+.showPriceStrong{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 12px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#16a34a 0%, #22c55e 100%);
+  color:#fff;
+  font-size:12px;
+  font-weight:900;
+}
+.showModalStage{
+  position:relative;
+  overflow:hidden;
+  border-radius:22px;
+  border:1px solid rgba(148,163,184,.16);
+  background:linear-gradient(180deg,#ffffff 0%, #f8fbff 100%);
+}
+.showModalViewer{
+  position:relative;
+  min-height:320px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#f8fafc;
+}
+.showMainImg{
+  transition:transform .18s ease;
+  cursor:zoom-in;
+}
+.showMainImg.zoomed{
+  transform:scale(1.28);
+  cursor:zoom-out;
+}
+.showModalCounter{
+  position:absolute;
+  top:14px;
+  right:14px;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 12px;
+  border-radius:999px;
+  background:rgba(15,23,42,.88);
+  color:#fff;
+  font-size:12px;
+  font-weight:900;
+  z-index:3;
+}
+.showModalBadgeBar{
+  position:absolute;
+  left:14px;
+  top:14px;
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  z-index:3;
+}
+.showModalPill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 12px;
+  border-radius:999px;
+  background:rgba(255,255,255,.94);
+  color:#0f172a;
+  font-size:12px;
+  font-weight:900;
+  border:1px solid rgba(148,163,184,.18);
+}
+.showModalNav{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:4;
+  width:auto;
+  min-width:44px;
+  min-height:44px;
+  padding:10px 14px;
+  border:none;
+  border-radius:999px;
+  background:rgba(15,23,42,.84);
+  color:#fff;
+  font-size:20px;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 14px 30px rgba(15,23,42,.20);
+}
+.showModalPrev{left:14px}
+.showModalNext{right:14px}
+.showModalHintBar{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  padding:12px 14px;
+  border-top:1px solid rgba(226,232,240,.90);
+  background:#fff;
+}
+.showModalHintChip{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 12px;
+  border-radius:999px;
+  background:#f8fafc;
+  color:#334155;
+  border:1px solid rgba(148,163,184,.16);
+  font-size:12px;
+  font-weight:800;
+}
+.showThumbs.showThumbsGallery{
+  grid-template-columns:repeat(3,1fr);
+}
+.showModalThumb{
+  transition:transform .14s ease, box-shadow .14s ease, border-color .14s ease;
+}
+.showModalThumb:hover{
+  transform:translateY(-2px);
+}
+.showModalThumb img{
+  height:112px;
+}
+.showModalActionBar{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:14px;
+}
+.showModalActionBar button{
+  width:auto;
+}
+.showModalHeroPrice{
+  font-size:22px;
+  font-weight:900;
+  color:#0f172a;
+  letter-spacing:-.03em;
+}
+.showModalHeroLine{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:center;
+  margin:14px 0 4px 0;
+}
+@media (max-width:760px){
+  .showModalViewer{min-height:260px}
+  .showThumbs.showThumbsGallery{grid-template-columns:repeat(2,1fr)}
+  .showModalNav{
+    min-width:40px;
+    min-height:40px;
+    padding:8px 12px;
+  }
+  .showModalCounter{top:auto;bottom:12px;right:12px}
+  .showModalBadgeBar{right:12px;left:12px;top:12px}
+  .showModalBadgeBar .showModalPill{font-size:11px}
+  .showModalHeroPrice{font-size:20px}
+}
+
+
 /* ===== V10.4.1 fix • remover ticket medio ===== */
 .stockKpi.ticketMedioHide{display:none!important;}
 
@@ -2603,6 +2790,7 @@ function renderShowroom(){
       <div class="showImg">
         <img src="${escapeHtml(showImgSrc(it))}" alt="${escapeHtml((it.marca?it.marca+" ":"") + (it.modelo||"Veículo"))}">
         <span class="showBadge ${showroomStatusClass(it.status)}">${escapeHtml(it.status||"Em preparação")}</span>
+        <span class="showStockBadge">🚗 VEÍCULO EM ESTOQUE</span>
         <div class="showPriceBox">
           <span class="showPrice">${escapeHtml(formatShowPrice(it.preco))}</span>
           <span class="showFipeMini">FIPE: ${escapeHtml(it.fipe ? formatShowMoney(it.fipe) : '—')}</span>
@@ -2654,45 +2842,99 @@ function openShowModal(item){
   const body=el("showModalBody");
   if(!body) return;
   const fotos=normalizeShowroomFotos(item);
-  const img=fotos[0] || showImgSrc(item);
+  const gallery=fotos.length ? fotos : [showImgSrc(item)];
+  const startImg=gallery[0] || showImgSrc(item);
+  const opp=showroomOpportunityInfo(item);
   body.innerHTML = `
-    <div class="showGallery">
-      <img class="showMainImg" id="showModalMainImg" src="${escapeHtml(img)}" alt="${escapeHtml(item.modelo||'Veículo')}">
+    <div class="showModalStage">
+      <div class="showModalViewer" id="showModalViewer">
+        <div class="showModalBadgeBar">
+          <span class="showModalPill">🚗 VEÍCULO EM ESTOQUE</span>
+          <span class="showModalPill">${escapeHtml(item.status||'Em preparação')}</span>
+        </div>
+        <button class="showModalNav showModalPrev" type="button" id="showModalPrev" aria-label="Foto anterior">‹</button>
+        <img class="showMainImg" id="showModalMainImg" src="${escapeHtml(startImg)}" alt="${escapeHtml(item.modelo||'Veículo')}">
+        <button class="showModalNav showModalNext" type="button" id="showModalNext" aria-label="Próxima foto">›</button>
+        <div class="showModalCounter" id="showModalCounter">1 / ${gallery.length}</div>
+      </div>
+      <div class="showModalHintBar">
+        <span class="showModalHintChip">📸 ${gallery.length} foto${gallery.length===1?'':'s'}</span>
+        <span class="showModalHintChip">👆 Toque nas miniaturas</span>
+        <span class="showModalHintChip">↔️ Deslize para trocar</span>
+        <span class="showModalHintChip">🔍 Toque na foto para zoom</span>
+      </div>
+    </div>
+    <div class="showModalHeroLine">
+      <div class="showModalHeroPrice">${escapeHtml(formatShowPrice(item.preco))}</div>
+      <span class="showPriceStrong">${escapeHtml(opp.label)}</span>
+    </div>
+    <div class="showGallery" style="margin-top:12px">
       <div class="showThumbs showThumbsGallery">
-        ${fotos.length ? fotos.map((url, i) => `
+        ${gallery.map((url, i) => `
           <div class="showModalThumb ${i===0 ? 'active' : ''}" data-show-thumb="${i}" data-show-url="${escapeHtml(url)}">
             <img src="${escapeHtml(url)}" alt="Foto ${i+1}">
             <span class="showModalThumbTag">${i===0 ? 'CAPA' : 'FOTO ' + (i+1)}</span>
           </div>
-        `).join('') : `<div class="showDetailCard"><div class="showDetailLabel">Origem</div><div class="showDetailValue">${item.origemVistoriaId ? 'Histórico / veículo comprado' : 'Cadastro direto no showroom'}</div></div>`}
+        `).join('')}
       </div>
-    </div>
-    <div class="showDetailGrid three">
-      <div class="showDetailCard"><div class="showDetailLabel">Veículo</div><div class="showDetailValue">${escapeHtml(((item.marca||"")+" "+(item.modelo||"")+" "+(item.versao||"")).trim())}</div></div>
-      <div class="showDetailCard"><div class="showDetailLabel">Preço de venda</div><div class="showDetailValue">${escapeHtml(formatShowPrice(item.preco))}</div></div>
-      <div class="showDetailCard"><div class="showDetailLabel">FIPE</div><div class="showDetailValue">${escapeHtml(item.fipe ? formatShowMoney(item.fipe) : 'Não informada')}</div></div>
-      <div class="showDetailCard"><div class="showDetailLabel">Ano / KM</div><div class="showDetailValue">${escapeHtml(item.ano||'')} • ${escapeHtml(item.km||'')}</div></div>
-      <div class="showDetailCard"><div class="showDetailLabel">Configuração</div><div class="showDetailValue">${escapeHtml(item.cambio||'')} • ${escapeHtml(item.combustivel||'')} • ${escapeHtml(item.cor||'')}</div></div>
-      <div class="showDetailCard"><div class="showDetailLabel">Status</div><div class="showDetailValue">${escapeHtml(item.status||'')}</div></div>
-      <div class="showDetailCard"><div class="showDetailLabel">Placa</div><div class="showDetailValue">${escapeHtml(item.placa||'Não informada')}</div></div>
-      <div class="showDetailCard"><div class="showDetailLabel">Oportunidade</div><div class="showDetailValue">${escapeHtml(showroomOpportunityInfo(item).label)}</div></div>
-      <div class="showDetailCard"><div class="showDetailLabel">Origem</div><div class="showDetailValue">${item.origemVistoriaId ? 'Histórico / veículo comprado' : 'Cadastro direto no showroom'}</div></div>
-    </div>
-    <div class="showDesc">${escapeHtml(item.descricao||'Sem descrição comercial ainda.')}</div>
-    <div class="btnLine">
-      <button class="btnW" type="button" id="btnShowModalShare">📲 Compartilhar veículo</button>
-      ${canManageShowroom()?`<button class="btnP" type="button" id="btnShowModalEdit">Editar anúncio</button>`:''}
+      <div>
+        <div class="showDetailGrid three">
+          <div class="showDetailCard"><div class="showDetailLabel">Veículo</div><div class="showDetailValue">${escapeHtml(((item.marca||"")+" "+(item.modelo||"")+" "+(item.versao||"")).trim())}</div></div>
+          <div class="showDetailCard"><div class="showDetailLabel">Preço de venda</div><div class="showDetailValue">${escapeHtml(formatShowPrice(item.preco))}</div></div>
+          <div class="showDetailCard"><div class="showDetailLabel">FIPE</div><div class="showDetailValue">${escapeHtml(item.fipe ? formatShowMoney(item.fipe) : 'Não informada')}</div></div>
+          <div class="showDetailCard"><div class="showDetailLabel">Ano / KM</div><div class="showDetailValue">${escapeHtml(item.ano||'')} • ${escapeHtml(item.km||'')}</div></div>
+          <div class="showDetailCard"><div class="showDetailLabel">Configuração</div><div class="showDetailValue">${escapeHtml(item.cambio||'')} • ${escapeHtml(item.combustivel||'')} • ${escapeHtml(item.cor||'')}</div></div>
+          <div class="showDetailCard"><div class="showDetailLabel">Status</div><div class="showDetailValue">${escapeHtml(item.status||'')}</div></div>
+          <div class="showDetailCard"><div class="showDetailLabel">Placa</div><div class="showDetailValue">${escapeHtml(item.placa||'Não informada')}</div></div>
+          <div class="showDetailCard"><div class="showDetailLabel">Oportunidade</div><div class="showDetailValue">${escapeHtml(opp.label)}</div></div>
+          <div class="showDetailCard"><div class="showDetailLabel">Origem</div><div class="showDetailValue">${item.origemVistoriaId ? 'Histórico / veículo comprado' : 'Cadastro direto no showroom'}</div></div>
+        </div>
+        <div class="showDesc">${escapeHtml(item.descricao||'Sem descrição comercial ainda.')}</div>
+        <div class="showModalActionBar">
+          <button class="btnW" type="button" id="btnShowModalShare">📲 Compartilhar veículo</button>
+          ${canManageShowroom()?`<button class="btnP" type="button" id="btnShowModalEdit">Editar anúncio</button>`:''}
+        </div>
+      </div>
     </div>
   `;
   el("showModal").style.display="flex";
-  body.querySelectorAll('[data-show-thumb]').forEach(thumb => {
-    thumb.addEventListener('click', () => {
-      const main = el('showModalMainImg');
-      if(main) main.src = thumb.dataset.showUrl || img;
-      body.querySelectorAll('[data-show-thumb]').forEach(x => x.classList.remove('active'));
-      thumb.classList.add('active');
-    });
+
+  let currentIndex = 0;
+  const main = el('showModalMainImg');
+  const counter = el('showModalCounter');
+  const thumbs = Array.from(body.querySelectorAll('[data-show-thumb]'));
+
+  function setActive(index){
+    if(!gallery.length) return;
+    currentIndex = (index + gallery.length) % gallery.length;
+    if(main) main.src = gallery[currentIndex] || startImg;
+    if(counter) counter.textContent = `${currentIndex + 1} / ${gallery.length}`;
+    thumbs.forEach((thumb, i)=> thumb.classList.toggle('active', i === currentIndex));
+    if(main) main.classList.remove('zoomed');
+  }
+
+  thumbs.forEach((thumb, idx) => {
+    thumb.addEventListener('click', () => setActive(idx));
   });
+
+  el("showModalPrev")?.addEventListener("click", ()=>setActive(currentIndex - 1));
+  el("showModalNext")?.addEventListener("click", ()=>setActive(currentIndex + 1));
+
+  let touchStartX = 0;
+  const viewer = el('showModalViewer');
+  viewer?.addEventListener('touchstart', (ev)=>{
+    touchStartX = ev.changedTouches?.[0]?.clientX || 0;
+  }, {passive:true});
+  viewer?.addEventListener('touchend', (ev)=>{
+    const endX = ev.changedTouches?.[0]?.clientX || 0;
+    const diff = endX - touchStartX;
+    if(Math.abs(diff) < 35) return;
+    if(diff < 0) setActive(currentIndex + 1);
+    else setActive(currentIndex - 1);
+  }, {passive:true});
+
+  main?.addEventListener('click', ()=> main.classList.toggle('zoomed'));
+
   el("btnShowModalEdit")?.addEventListener("click", ()=>{ closeShowModal(); openShowEditor(item); });
   el("btnShowModalShare")?.addEventListener("click", ()=>shareShowVehicle(item));
 }
