@@ -1032,18 +1032,6 @@ select{
 /* ===== V10.4.1 fix • remover ticket medio ===== */
 .stockKpi.ticketMedioHide{display:none!important;}
 
-
-/* ===== V10.4.3 • múltiplas fotos no showroom ===== */
-.showMultiTools{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
-.showMultiBtn{width:auto;padding:10px 12px;border:none;border-radius:12px;background:linear-gradient(135deg,#1d4ed8 0%, #3b82f6 100%);color:#fff;font-weight:800;cursor:pointer;box-shadow:var(--shadowSoft)}
-.showMultiHint{font-size:12px;color:#64748b;margin-top:8px}
-.showGalleryStrip{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
-.showGalleryItem{position:relative;border-radius:16px;overflow:hidden;border:1px solid rgba(148,163,184,.16);background:#f8fafc;min-height:110px}
-.showGalleryItem img{width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:1.3/1}
-.showGalleryRm{position:absolute;top:8px;right:8px;border:none;background:rgba(15,23,42,.88);color:#fff;border-radius:999px;width:28px;height:28px;font-weight:900;cursor:pointer}
-.showThumbs img.activeThumb{outline:3px solid rgba(37,99,235,.35)}
-@media (max-width:760px){.showGalleryStrip{grid-template-columns:repeat(2,1fr)}}
-
 </style>
 </head>
 
@@ -3421,105 +3409,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
   });
 })();
 </script>
-
-
-<script>
-/* ===== V10.4.2 • compartilhamento premium (texto formatado + tentativa de foto anexada) ===== */
-(function(){
-
-function collectImages(root){
-  return Array.from(root.querySelectorAll("img"))
-    .map(i=>i.src)
-    .filter(u=>/^https?:\/\//i.test(u))
-    .slice(0,5);
-}
-
-function buildMessage(card){
-  const title = card.querySelector(".showTitle")?.innerText || "";
-  const price = card.querySelector(".showPrice")?.innerText || "";
-  const meta = card.querySelector(".showMeta")?.innerText || "";
-  const specs = Array.from(card.querySelectorAll(".showSpec")).map(s=>s.innerText).join(" • ");
-
-  let msg = "";
-  if(title) msg += "🚗 " + title + "\n";
-  if(meta) msg += "📍 " + meta + "\n";
-  if(specs) msg += "⚙️ " + specs + "\n";
-  if(price) msg += "\n💰 Valor de venda: " + price + "\n";
-  msg += "\nFale conosco para mais informações.";
-
-  return msg;
-}
-
-async function tryNativeShare(msg, images){
-  if(!navigator.share) return false;
-
-  try{
-    const files = [];
-    for(const url of images){
-      try{
-        const r = await fetch(url);
-        const blob = await r.blob();
-        const name = "foto_" + Date.now() + ".jpg";
-        files.push(new File([blob], name, {type: blob.type}));
-      }catch(e){}
-    }
-
-    if(files.length && navigator.canShare && navigator.canShare({files})){
-      await navigator.share({
-        text: msg,
-        files: files
-      });
-      return true;
-    }else{
-      await navigator.share({text: msg});
-      return true;
-    }
-
-  }catch(e){
-    return false;
-  }
-}
-
-function shareFallback(msg, images){
-  let txt = msg + "\n\n📸 Fotos:\n";
-  images.forEach(u=> txt += u + "\n");
-  window.open("https://wa.me/?text=" + encodeURIComponent(txt), "_blank");
-}
-
-function attachShare(){
-  const buttons = document.querySelectorAll("button, .showShare, [data-share]");
-  buttons.forEach(btn=>{
-    const label = (btn.innerText || "").toLowerCase();
-    if(!label.includes("compartilhar")) return;
-    if(btn.dataset.sharePremium) return;
-
-    btn.dataset.sharePremium = "1";
-    btn.addEventListener("click", async function(e){
-      e.preventDefault();
-      const card = btn.closest(".showCard");
-      if(!card) return;
-
-      const msg = buildMessage(card);
-      const images = collectImages(card);
-
-      const ok = await tryNativeShare(msg, images);
-      if(!ok){
-        shareFallback(msg, images);
-      }
-    });
-  });
-}
-
-document.addEventListener("DOMContentLoaded", ()=>{
-  attachShare();
-  setInterval(attachShare,2000);
-});
-
-})();
-</script>
-
-
-<input type="file" id="showroomMorePhotosInput" accept="image/*" multiple style="display:none">
 
 </body>
 </html>
