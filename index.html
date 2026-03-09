@@ -1032,6 +1032,18 @@ select{
 /* ===== V10.4.1 fix • remover ticket medio ===== */
 .stockKpi.ticketMedioHide{display:none!important;}
 
+
+/* ===== V10.4.3 • múltiplas fotos no showroom ===== */
+.showMultiTools{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.showMultiBtn{width:auto;padding:10px 12px;border:none;border-radius:12px;background:linear-gradient(135deg,#1d4ed8 0%, #3b82f6 100%);color:#fff;font-weight:800;cursor:pointer;box-shadow:var(--shadowSoft)}
+.showMultiHint{font-size:12px;color:#64748b;margin-top:8px}
+.showGalleryStrip{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.showGalleryItem{position:relative;border-radius:16px;overflow:hidden;border:1px solid rgba(148,163,184,.16);background:#f8fafc;min-height:110px}
+.showGalleryItem img{width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:1.3/1}
+.showGalleryRm{position:absolute;top:8px;right:8px;border:none;background:rgba(15,23,42,.88);color:#fff;border-radius:999px;width:28px;height:28px;font-weight:900;cursor:pointer}
+.showThumbs img.activeThumb{outline:3px solid rgba(37,99,235,.35)}
+@media (max-width:760px){.showGalleryStrip{grid-template-columns:repeat(2,1fr)}}
+
 </style>
 </head>
 
@@ -3505,6 +3517,9 @@ document.addEventListener("DOMContentLoaded", ()=>{
 
 })();
 </script>
+
+
+<input type="file" id="showroomMorePhotosInput" accept="image/*" multiple style="display:none">
 
 </body>
 </html>
