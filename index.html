@@ -1500,6 +1500,15 @@ select{
   white-space:pre-wrap;
 }
 
+
+/* ===== V13.1 • reforço visual seguro ===== */
+.showBlindadoRibbon{
+  top:12px!important;
+  left:12px!important;
+  background:linear-gradient(135deg,#991b1b 0%, #dc2626 100%)!important;
+  border:1px solid rgba(255,255,255,.18)!important;
+}
+
 </style>
 </head>
 
@@ -4584,6 +4593,148 @@ document.addEventListener("DOMContentLoaded", ()=>{
       patchRoleUiText();
       injectV13Ui();
     }, 1500);
+  });
+})();
+</script>
+
+
+<script>
+/* ===== V13.1 • reforço seguro catálogo ===== */
+(function(){
+  function roleNow(){
+    try{ return (window.currentRole || "").toString().trim().toLowerCase(); }catch(_){ return ""; }
+  }
+  function isCatalogOnlyRoleV131(){
+    return ["cliente","convidado","repasse"].includes(roleNow());
+  }
+  function canSeeInspectionSummaryV131(){
+    return ["repasse","consultor","closer","gerente","admin"].includes(roleNow());
+  }
+
+  function safeGetText(obj, keys){
+    for(const k of keys){
+      const val = obj && obj[k];
+      if(val !== undefined && val !== null && String(val).trim()) return String(val).trim();
+    }
+    return "";
+  }
+
+  function extractLine(reportText, labels){
+    const t = String(reportText || "");
+    for(const label of labels){
+      const esc = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const re1 = new RegExp("\\*" + esc + "\\*:\\s*(.+)$", "mi");
+      const m1 = t.match(re1);
+      if(m1 && m1[1]) return m1[1].trim();
+      const re2 = new RegExp(esc + ":\\s*(.+)$", "mi");
+      const m2 = t.match(re2);
+      if(m2 && m2[1]) return m2[1].trim();
+    }
+    return "";
+  }
+
+  function itemIsBlindadoV131(item){
+    try{
+      const direct = item && (item.blindado === true || item.blindado === "true" || item.blindado === 1 || item.blindado === "1");
+      if(direct) return true;
+      const textPool = [
+        safeGetText(item, ["reportText","descricao","versao","modelo"]),
+        safeGetText(item, ["observacoes","observacao"])
+      ].join(" ").toLowerCase();
+      return textPool.includes("blindado") || textPool.includes("blindagem");
+    }catch(_){
+      return false;
+    }
+  }
+
+  function inspectionSummaryV131(item){
+    if(!item) return "";
+    const rt = item.reportText || "";
+    const laudo = safeGetText(item, ["laudo"]) || extractLine(rt, ["Laudo"]);
+    const obs = safeGetText(item, ["laudoObs","observacoes","observacao"]) || extractLine(rt, ["Descrição do laudo","Observações"]);
+    const estrutura = extractLine(rt, ["Estrutura"]);
+    const pintura = extractLine(rt, ["Pintura"]);
+    const leilao = safeGetText(item, ["leilao"]) || extractLine(rt, ["Leilão"]);
+    const lines = [];
+    if(laudo) lines.push("Laudo: " + laudo);
+    if(obs) lines.push("Observações: " + obs);
+    if(estrutura) lines.push("Estrutura: " + estrutura);
+    if(pintura) lines.push("Pintura: " + pintura);
+    if(leilao && leilao.toLowerCase() !== "não") lines.push("Leilão: " + leilao);
+    return lines.join("\n").trim();
+  }
+
+  function hideRestrictedCardButtons(){
+    if(!isCatalogOnlyRoleV131()) return;
+    document.querySelectorAll(".showCard").forEach(card=>{
+      const actions = card.querySelector(".showActions");
+      if(!actions) return;
+      actions.querySelectorAll("button").forEach(btn=>{
+        const txt = (btn.innerText || "").toLowerCase().trim();
+        const keep = txt.includes("ver veículo") || txt.includes("ver veiculo") || txt.includes("copiar");
+        btn.style.display = keep ? "" : "none";
+      });
+    });
+    document.querySelectorAll('[data-show-seller], .sellerModeBtn, [data-show-wa]').forEach(btn=>{
+      btn.style.display = "none";
+    });
+    const seller = document.getElementById("btnShowModalSeller");
+    if(seller) seller.style.display = "none";
+  }
+
+  function decorateCardsV131(){
+    const items = window.showroomItemsCache || [];
+    items.forEach(item=>{
+      const card = document.querySelector(`[data-show-card-id="${item.id}"]`) || document.querySelector(`[data-show-open="${item.id}"]`)?.closest(".showCard");
+      if(!card) return;
+
+      const imgWrap = card.querySelector(".showImg");
+      if(imgWrap){
+        let ribbon = imgWrap.querySelector(".showBlindadoRibbon");
+        if(itemIsBlindadoV131(item)){
+          if(!ribbon){
+            ribbon = document.createElement("div");
+            ribbon.className = "showBlindadoRibbon";
+            ribbon.textContent = "BLINDADO";
+            imgWrap.appendChild(ribbon);
+          }
+        }else if(ribbon){
+          ribbon.remove();
+        }
+      }
+
+      let box = card.querySelector(".showInspectionMini");
+      const summary = inspectionSummaryV131(item);
+      if(canSeeInspectionSummaryV131() && summary){
+        if(!box){
+          box = document.createElement("div");
+          box.className = "showInspectionMini";
+          box.innerHTML = '<div class="showInspectionMiniTitle">Resumo da vistoria</div><div class="showInspectionMiniText"></div>';
+          const body = card.querySelector(".showBody") || card;
+          const actions = card.querySelector(".showActions");
+          if(actions) body.insertBefore(box, actions);
+          else body.appendChild(box);
+        }
+        const txt = box.querySelector(".showInspectionMiniText");
+        if(txt) txt.textContent = summary;
+      }else if(box){
+        box.remove();
+      }
+    });
+  }
+
+  function bootV131(){
+    hideRestrictedCardButtons();
+    decorateCardsV131();
+    const tab = document.getElementById("tabShowroom");
+    if(tab) tab.textContent = "Catálogo";
+  }
+
+  document.addEventListener("DOMContentLoaded", ()=>{
+    bootV131();
+    const obs = new MutationObserver(()=> bootV131());
+    obs.observe(document.body, {childList:true, subtree:true});
+    setInterval(bootV131, 1800);
   });
 })();
 </script>
