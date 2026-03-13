@@ -813,7 +813,7 @@ select{
 
 
 
-/* ===== Showroom Vex • fase 1 segura ===== */
+/* ===== Catálogo • fase 1 segura ===== */
 .showHero{
   display:grid;grid-template-columns:1.2fr .8fr;gap:14px;align-items:center;
   background:linear-gradient(135deg,#0f172a 0%, #111827 55%, #1e293b 100%);
@@ -1512,7 +1512,7 @@ select{
   <div class="tabs">
     <button class="tabbtn active" id="tabNova">Nova avaliação</button>
     <button class="tabbtn" id="tabHist">Histórico</button>
-    <button class="tabbtn" id="tabShowroom">Showroom Vex</button>
+    <button class="tabbtn" id="tabShowroom">Catálogo</button>
     <button class="tabbtn" id="tabSeller">Modo vendedor</button>
     <button class="tabbtn hidden" id="tabPainel">Painel</button>
     <button class="tabbtn hidden" id="tabUsers">Usuários</button>
@@ -1985,7 +1985,7 @@ select{
   <div id="viewShowroom" class="hidden">
     <div class="showHero">
       <div>
-        <div class="showHeroTitle">🚗 Showroom Vex</div>
+        <div class="showHeroTitle">🚗 Catálogo</div>
         <div class="showHeroSub"></div>
       </div>
       <div class="showHeroStats">
@@ -2143,7 +2143,7 @@ select{
     <div class="modalTop">
       <div>
         <div class="modalTitle">🚘 Detalhes do veículo</div>
-        <div class="modalHint">Visual comercial do Showroom Vex.</div>
+        <div class="modalHint">Visual comercial do Catálogo.</div>
       </div>
       <button class="btnX" type="button" id="btnShowClose">Fechar</button>
     </div>
@@ -2155,7 +2155,7 @@ select{
   <div class="modalBox">
     <div class="modalTop">
       <div>
-        <div class="modalTitle">📝 Anúncio do Showroom Vex</div>
+        <div class="modalTitle">📝 Anúncio do Catálogo</div>
         <div class="modalHint">Edite o anúncio, adicione capa e galeria de fotos e publique na vitrine. Ao vir do histórico, a FIPE já entra preenchida automaticamente.</div>
       </div>
       <button class="btnX" type="button" id="btnShowEditorClose">Fechar</button>
@@ -2315,7 +2315,7 @@ const firebaseConfig = {
 };
 
 const HARD_ADMINS = new Set(["admin@clubedoauto.com","frank.since96@gmail.com","devfrank@clubedoauto.com"].map(s=>s.toLowerCase()));
-const ROLE_ORDER = ["consultor","closer","gerente","admin"];
+const ROLE_ORDER = ["repasse","consultor","closer","gerente","admin"];
 
 const el=(id)=>document.getElementById(id);
 const v=(id)=>(el(id)?.value??"").toString().trim();
@@ -2370,11 +2370,27 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 await setPersistence(auth, browserLocalPersistence);
 
-let isGuest=false, currentRole="consultor", canHistory=false, isAdmin=false, canPainel=false;
+let isGuest=false, currentRole="consultor", canHistory=false, isAdmin=false, canPainel=false, canSeller=false;
 let unsubUsers=null;
 
-function computePermissions(){ canHistory=(currentRole==="admin"||currentRole==="gerente"||currentRole==="closer"); isAdmin=(currentRole==="admin"); canPainel=canHistory; }
-function setRoleUI(){ el("roleTxt").textContent=currentRole; el("tabUsers").classList.toggle("hidden", !isAdmin); el("tabPainel").classList.toggle("hidden", !canPainel); }
+function isCatalogOnlyRole(){ return currentRole==="repasse" || currentRole==="convidado"; }
+function computePermissions(){
+  canHistory=(currentRole==="admin"||currentRole==="gerente"||currentRole==="closer");
+  isAdmin=(currentRole==="admin");
+  canPainel=canHistory;
+  canSeller=(currentRole==="admin"||currentRole==="gerente"||currentRole==="closer"||currentRole==="consultor");
+}
+function setRoleUI(){
+  if(el("roleTxt")) el("roleTxt").textContent=currentRole;
+  const onlyCatalog = isCatalogOnlyRole();
+
+  if(el("tabNova")) el("tabNova").classList.toggle("hidden", onlyCatalog);
+  if(el("tabHist")) el("tabHist").classList.toggle("hidden", onlyCatalog);
+  if(el("tabSeller")) el("tabSeller").classList.toggle("hidden", onlyCatalog || !canSeller);
+  if(el("tabPainel")) el("tabPainel").classList.toggle("hidden", onlyCatalog || !canPainel);
+  if(el("tabUsers")) el("tabUsers").classList.toggle("hidden", onlyCatalog || !isAdmin);
+  if(el("tabShowroom")) el("tabShowroom").textContent = "Catálogo";
+}
 function showLogin(){ el("screenLogin").style.display="block"; el("screenApp").classList.add("hidden"); }
 function showApp(){ el("screenLogin").style.display="none"; el("screenApp").classList.remove("hidden"); }
 
@@ -2382,12 +2398,12 @@ async function ensureUserDoc(user){
   const uid=user.uid, email=lower(user.email||"");
   const ref=doc(db,"users",uid), snap=await getDoc(ref);
   if(!snap.exists()){
-    const role=HARD_ADMINS.has(email)?"admin":"consultor";
+    const role=HARD_ADMINS.has(email)?"admin":"repasse";
     await setDoc(ref,{uid,email,role,displayName:(email.split("@")[0]||"").slice(0,24),createdAt:serverTimestamp(),updatedAt:serverTimestamp()},{merge:true});
     return role;
   }
   const data=snap.data()||{};
-  let role=(data.role || (HARD_ADMINS.has(email)?"admin":"consultor")).toString();
+  let role=(data.role || (HARD_ADMINS.has(email)?"admin":"repasse")).toString();
   if(HARD_ADMINS.has(email) && role!=="admin"){ await setDoc(ref,{role:"admin",updatedAt:serverTimestamp()},{merge:true}); role="admin"; }
   return role;
 }
@@ -2689,23 +2705,27 @@ function escapeHtml(s){ return (s??"").toString().replaceAll("&","&amp;").replac
 function formatDate(ts){ try{ const d=ts?.toDate?ts.toDate():null; if(!d) return ""; return new Intl.DateTimeFormat("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}).format(d);}catch(e){ return ""; } }
 
 function setTab(tab){
+  if(isCatalogOnlyRole() && tab!=="showroom") tab = "showroom";
+  if((!canSeller) && tab==="seller") tab = "showroom";
+  if((!canPainel) && tab==="painel") tab = "showroom";
+  if((!isAdmin) && tab==="users") tab = "showroom";
+
   const nova=tab==="nova", hist=tab==="hist", showroom=tab==="showroom", seller=tab==="seller", painel=tab==="painel", users=tab==="users";
-  el("tabNova").classList.toggle("active", nova);
-  el("tabHist").classList.toggle("active", hist);
-  el("tabShowroom").classList.toggle("active", showroom);
-  el("tabSeller").classList.toggle("active", seller);
-  el("tabPainel").classList.toggle("active", painel);
-  el("tabUsers").classList.toggle("active", users);
-  el("viewNova").classList.toggle("hidden", !nova);
-  el("viewHistorico").classList.toggle("hidden", !hist);
-  el("viewShowroom").classList.toggle("hidden", !showroom);
-  el("viewSeller").classList.toggle("hidden", !seller);
-  el("viewPainel").classList.toggle("hidden", !painel);
-  el("viewUsers").classList.toggle("hidden", !users);
-  document.body.classList.toggle('view-nova', nova);
+  if(el("tabNova")) el("tabNova").classList.toggle("active", nova);
+  if(el("tabHist")) el("tabHist").classList.toggle("active", hist);
+  if(el("tabShowroom")) el("tabShowroom").classList.toggle("active", showroom);
+  if(el("tabSeller")) el("tabSeller").classList.toggle("active", seller);
+  if(el("tabPainel")) el("tabPainel").classList.toggle("active", painel);
+  if(el("tabUsers")) el("tabUsers").classList.toggle("active", users);
+  if(el("viewNova")) el("viewNova").classList.toggle("hidden", !nova);
+  if(el("viewHistorico")) el("viewHistorico").classList.toggle("hidden", !hist);
+  if(el("viewShowroom")) el("viewShowroom").classList.toggle("hidden", !showroom);
+  if(el("viewSeller")) el("viewSeller").classList.toggle("hidden", !seller);
+  if(el("viewPainel")) el("viewPainel").classList.toggle("hidden", !painel);
+  if(el("viewUsers")) el("viewUsers").classList.toggle("hidden", !users);
   if(hist) openHistorico();
   if(showroom) renderShowroom();
-  if(seller) renderSellerMode();
+  if(seller && typeof renderSellerMode==="function") renderSellerMode();
   if(painel) openPainel();
   if(users) openUsers();
 }
@@ -2870,7 +2890,7 @@ function openShowroomFilePicker(append){
 function canManageShowroom(){ return currentRole==="admin" || currentRole==="gerente"; }
 function showroomPlaceholder(label){
   const txt = encodeURIComponent(label||"Sem foto");
-  return `data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='800' viewBox='0 0 1200 800'><defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'><stop stop-color='%230f172a'/><stop offset='1' stop-color='%231e3a8a'/></linearGradient></defs><rect width='1200' height='800' fill='url(%23g)'/><g fill='none' opacity='.20'><circle cx='180' cy='160' r='120' stroke='white' stroke-width='18'/><circle cx='980' cy='210' r='150' stroke='white' stroke-width='18'/></g><text x='50%' y='46%' dominant-baseline='middle' text-anchor='middle' font-family='Arial,Helvetica,sans-serif' font-size='56' fill='white' font-weight='700'>Showroom Vex</text><text x='50%' y='56%' dominant-baseline='middle' text-anchor='middle' font-family='Arial,Helvetica,sans-serif' font-size='28' fill='rgba(255,255,255,.88)'>${txt}</text></svg>`;
+  return `data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='800' viewBox='0 0 1200 800'><defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'><stop stop-color='%230f172a'/><stop offset='1' stop-color='%231e3a8a'/></linearGradient></defs><rect width='1200' height='800' fill='url(%23g)'/><g fill='none' opacity='.20'><circle cx='180' cy='160' r='120' stroke='white' stroke-width='18'/><circle cx='980' cy='210' r='150' stroke='white' stroke-width='18'/></g><text x='50%' y='46%' dominant-baseline='middle' text-anchor='middle' font-family='Arial,Helvetica,sans-serif' font-size='56' fill='white' font-weight='700'>Catálogo</text><text x='50%' y='56%' dominant-baseline='middle' text-anchor='middle' font-family='Arial,Helvetica,sans-serif' font-size='28' fill='rgba(255,255,255,.88)'>${txt}</text></svg>`;
 }
 function showImgSrc(item){
   return item?.fotoCapa || item?.fotos?.[0] || showroomPlaceholder(`${item?.marca||""} ${item?.modelo||""}`.trim());
@@ -2967,11 +2987,11 @@ function ensureShowroomListener(){
       renderShowroom();
     },(err)=>{
       const wrap=el("showroomGrid");
-      if(wrap) wrap.innerHTML=`<div class="showEmpty"><b>Erro ao ler o showroom:</b> ${escapeHtml(err?.message||err)}</div>`;
+      if(wrap) wrap.innerHTML=`<div class="showEmpty"><b>Erro ao ler o catálogo:</b> ${escapeHtml(err?.message||err)}</div>`;
     });
   }catch(err){
     const wrap=el("showroomGrid");
-    if(wrap) wrap.innerHTML=`<div class="showEmpty"><b>Erro ao iniciar showroom:</b> ${escapeHtml(err?.message||err)}</div>`;
+    if(wrap) wrap.innerHTML=`<div class="showEmpty"><b>Erro ao iniciar catálogo:</b> ${escapeHtml(err?.message||err)}</div>`;
   }
 }
 function renderShowroom(){
@@ -2983,7 +3003,7 @@ function renderShowroom(){
   const btnNew=el("btnShowNew");
   if(btnNew) btnNew.style.display = canManageShowroom() ? "block" : "none";
   if(!showroomItemsCache.length){
-    wrap.innerHTML = `<div class="showEmpty">Nenhum veículo no Showroom Vex ainda. Os carros enviados do Histórico aparecerão aqui.</div>`;
+    wrap.innerHTML = `<div class="showEmpty">Nenhum veículo no Catálogo ainda. Os carros enviados do Histórico aparecerão aqui.</div>`;
     return;
   }
   if(!items.length){
@@ -3096,7 +3116,7 @@ function openShowModal(item){
           <div class="showDetailCard"><div class="showDetailLabel">Status</div><div class="showDetailValue">${escapeHtml(item.status||'')}</div></div>
           <div class="showDetailCard"><div class="showDetailLabel">Placa</div><div class="showDetailValue">${escapeHtml(item.placa||'Não informada')}</div></div>
           <div class="showDetailCard"><div class="showDetailLabel">Oportunidade</div><div class="showDetailValue">${escapeHtml(opp.label)}</div></div>
-          <div class="showDetailCard"><div class="showDetailLabel">Origem</div><div class="showDetailValue">${item.origemVistoriaId ? 'Histórico / veículo comprado' : 'Cadastro direto no showroom'}</div></div>
+          <div class="showDetailCard"><div class="showDetailLabel">Origem</div><div class="showDetailValue">${item.origemVistoriaId ? 'Histórico / veículo comprado' : 'Cadastro direto no catálogo'}</div></div>
         </div>
         <div class="showDesc">${escapeHtml(item.descricao||'Sem descrição comercial ainda.')}</div>
         <div class="showModalActionBar">
@@ -3151,7 +3171,7 @@ function openShowModal(item){
 }
 function closeShowModal(){ const m=el("showModal"); if(m) m.style.display="none"; }
 function openShowEditor(item){
-  if(!canManageShowroom()) return alert("Somente gerente/admin podem editar o showroom.");
+  if(!canManageShowroom()) return alert("Somente gerente/admin podem editar o catálogo.");
   el("showEditHint").textContent='';
   el("showEditId").value=item?.id||'';
   el("showOrigemVistoriaId").value=item?.origemVistoriaId||'';
@@ -3252,11 +3272,11 @@ function shareShowVehicle(item){
   abrirWhats(msg.trim());
 }
 async function sendHistoricoToShowroom(item){
-  if(!canManageShowroom()) return alert('Somente gerente/admin podem enviar para o showroom.');
+  if(!canManageShowroom()) return alert('Somente gerente/admin podem enviar para o catálogo.');
   if(!item?.id) return;
   const dup = showroomItemsCache.find(x => x.origemVistoriaId === item.id || (x.placa && plateBR(x.placa)===plateBR(item.placa||'')));
   if(dup){
-    alert('Este veículo já está no showroom. Abrindo anúncio para edição.');
+    alert('Este veículo já está no catálogo. Abrindo anúncio para edição.');
     setTab('showroom');
     openShowEditor(dup);
     return;
@@ -3784,7 +3804,7 @@ el("btnCreateUser").addEventListener("click", async ()=>{
   try{ await createUserWithEmailAndPassword(auth,email,pass); isGuest=false; el("loginHint").innerHTML="<span class='ok'>Usuário cadastrado!</span>"; }
   catch(e){ el("loginHint").innerHTML="<span class='warn'>Erro ao cadastrar:</span> "+(e?.message||e); }
 });
-el("btnGuest").addEventListener("click", ()=>{ isGuest=true; try{ signOut(auth);}catch(e){} showApp(); el("whoami").textContent="Convidado"; currentRole="convidado"; computePermissions(); setRoleUI(); setTab("nova"); loadLastConsultor(); });
+el("btnGuest").addEventListener("click", ()=>{ isGuest=true; try{ signOut(auth);}catch(e){} showApp(); el("whoami").textContent="Convidado"; currentRole="convidado"; computePermissions(); setRoleUI(); setTab("showroom"); loadLastConsultor(); });
 el("btnLogout").addEventListener("click", async ()=>{ isGuest=false; try{ await signOut(auth);}catch(e){} showLogin(); });
 el("btnSwitchUser").addEventListener("click", ()=>{ isGuest=false; showLogin(); });
 
@@ -3839,7 +3859,7 @@ onAuthStateChanged(auth, async (u)=>{
     showApp();
     el("whoami").textContent=lower(u.email||"");
     try{ currentRole=await ensureUserDoc(u); }catch(e){ currentRole=HARD_ADMINS.has(lower(u.email||""))?"admin":"consultor"; }
-    computePermissions(); setRoleUI(); setTab("nova"); loadLastConsultor();
+    computePermissions(); setRoleUI(); setTab(isCatalogOnlyRole() ? "showroom" : "nova"); loadLastConsultor();
   }else{
     showLogin(); currentRole="consultor"; computePermissions(); setRoleUI();
   }
@@ -4232,6 +4252,14 @@ async function uploadFotoCloudinary(file) {
     obs.observe(document.body, {childList:true, subtree:true});
   });
 })();
+</script>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", ()=>{
+  const showTab = document.getElementById("tabShowroom");
+  if(showTab) showTab.textContent = "Catálogo";
+});
 </script>
 
 </body>
