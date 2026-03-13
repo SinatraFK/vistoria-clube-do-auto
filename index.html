@@ -2315,7 +2315,7 @@ const firebaseConfig = {
 };
 
 const HARD_ADMINS = new Set(["admin@clubedoauto.com","frank.since96@gmail.com","devfrank@clubedoauto.com"].map(s=>s.toLowerCase()));
-const ROLE_ORDER = ["repasse","consultor","closer","gerente","admin"];
+const ROLE_ORDER = ["cliente","convidado","repasse","consultor","closer","gerente","admin"];
 
 const el=(id)=>document.getElementById(id);
 const v=(id)=>(el(id)?.value??"").toString().trim();
@@ -2373,7 +2373,7 @@ await setPersistence(auth, browserLocalPersistence);
 let isGuest=false, currentRole="consultor", canHistory=false, isAdmin=false, canPainel=false, canSeller=false;
 let unsubUsers=null;
 
-function isCatalogOnlyRole(){ return currentRole==="repasse" || currentRole==="convidado"; }
+function isCatalogOnlyRole(){ return currentRole==="cliente" || currentRole==="convidado" || currentRole==="repasse"; }
 function computePermissions(){
   canHistory=(currentRole==="admin"||currentRole==="gerente"||currentRole==="closer");
   isAdmin=(currentRole==="admin");
@@ -2398,12 +2398,12 @@ async function ensureUserDoc(user){
   const uid=user.uid, email=lower(user.email||"");
   const ref=doc(db,"users",uid), snap=await getDoc(ref);
   if(!snap.exists()){
-    const role=HARD_ADMINS.has(email)?"admin":"repasse";
+    const role=HARD_ADMINS.has(email)?"admin":"cliente";
     await setDoc(ref,{uid,email,role,displayName:(email.split("@")[0]||"").slice(0,24),createdAt:serverTimestamp(),updatedAt:serverTimestamp()},{merge:true});
     return role;
   }
   const data=snap.data()||{};
-  let role=(data.role || (HARD_ADMINS.has(email)?"admin":"repasse")).toString();
+  let role=(data.role || (HARD_ADMINS.has(email)?"admin":"cliente")).toString().toLowerCase();
   if(HARD_ADMINS.has(email) && role!=="admin"){ await setDoc(ref,{role:"admin",updatedAt:serverTimestamp()},{merge:true}); role="admin"; }
   return role;
 }
