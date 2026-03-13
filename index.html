@@ -1460,6 +1460,46 @@ select{
   .sellerVehicleMain{height:250px}
 }
 
+
+/* ===== V13 • catálogo roles + blindado + resumo vistoria ===== */
+.showBlindadoRibbon{
+  position:absolute;
+  left:12px;
+  top:48px;
+  display:inline-flex;
+  align-items:center;
+  padding:8px 12px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#b91c1c 0%, #ef4444 100%);
+  color:#fff;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.04em;
+  box-shadow:0 12px 26px rgba(185,28,28,.22);
+  z-index:2;
+}
+.showInspectionMini{
+  margin-top:12px;
+  padding:12px;
+  border-radius:16px;
+  background:linear-gradient(180deg,#fff 0%, #f8fafc 100%);
+  border:1px solid rgba(148,163,184,.16);
+}
+.showInspectionMiniTitle{
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+  color:#64748b;
+}
+.showInspectionMiniText{
+  margin-top:8px;
+  font-size:12px;
+  line-height:1.45;
+  color:#334155;
+  white-space:pre-wrap;
+}
+
 </style>
 </head>
 
@@ -2315,7 +2355,7 @@ const firebaseConfig = {
 };
 
 const HARD_ADMINS = new Set(["admin@clubedoauto.com","frank.since96@gmail.com","devfrank@clubedoauto.com"].map(s=>s.toLowerCase()));
-const ROLE_ORDER = ["repasse","consultor","closer","gerente","admin"];
+const ROLE_ORDER = ["cliente","repasse","consultor","closer","gerente","admin"];
 
 const el=(id)=>document.getElementById(id);
 const v=(id)=>(el(id)?.value??"").toString().trim();
@@ -2373,7 +2413,7 @@ await setPersistence(auth, browserLocalPersistence);
 let isGuest=false, currentRole="consultor", canHistory=false, isAdmin=false, canPainel=false, canSeller=false;
 let unsubUsers=null;
 
-function isCatalogOnlyRole(){ return currentRole==="repasse" || currentRole==="convidado"; }
+function isCatalogOnlyRole(){ return currentRole==="repasse" || currentRole==="convidado" || currentRole==="cliente"; }
 function computePermissions(){
   canHistory=(currentRole==="admin"||currentRole==="gerente"||currentRole==="closer");
   isAdmin=(currentRole==="admin");
@@ -2398,12 +2438,12 @@ async function ensureUserDoc(user){
   const uid=user.uid, email=lower(user.email||"");
   const ref=doc(db,"users",uid), snap=await getDoc(ref);
   if(!snap.exists()){
-    const role=HARD_ADMINS.has(email)?"admin":"repasse";
+    const role=HARD_ADMINS.has(email)?"admin":"cliente";
     await setDoc(ref,{uid,email,role,displayName:(email.split("@")[0]||"").slice(0,24),createdAt:serverTimestamp(),updatedAt:serverTimestamp()},{merge:true});
     return role;
   }
   const data=snap.data()||{};
-  let role=(data.role || (HARD_ADMINS.has(email)?"admin":"repasse")).toString();
+  let role=(data.role || (HARD_ADMINS.has(email)?"admin":"cliente")).toString();
   if(HARD_ADMINS.has(email) && role!=="admin"){ await setDoc(ref,{role:"admin",updatedAt:serverTimestamp()},{merge:true}); role="admin"; }
   return role;
 }
@@ -4403,6 +4443,147 @@ document.addEventListener("DOMContentLoaded", ()=>{
     const obs = new MutationObserver(()=> bootCatalogRestrictionPatch());
     obs.observe(document.body, { childList:true, subtree:true });
     setInterval(bootCatalogRestrictionPatch, 1500);
+  });
+})();
+</script>
+
+
+<script>
+/* ===== V13 • catálogo cliente + leitura + blindado + resumo ===== */
+(function(){
+  function isCatalogOnlyRoleV13(){
+    try{
+      const role = (window.currentRole || '').toString().toLowerCase();
+      return role === 'repasse' || role === 'convidado' || role === 'cliente';
+    }catch(_){ return false; }
+  }
+  function canSeeInspectionSummaryV13(){
+    try{
+      const role = (window.currentRole || '').toString().toLowerCase();
+      return ['repasse','consultor','closer','gerente','admin'].includes(role);
+    }catch(_){ return false; }
+  }
+  function normalizeText(s){ return (s||'').toString().trim(); }
+
+  function firstMatch(text, labels){
+    const t = (text || '').toString();
+    for(const label of labels){
+      const re1 = new RegExp("\\\\*" + label.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&') + "\\\\*:\\\\s*(.+)$","mi");
+      const m1 = t.match(re1);
+      if(m1 && m1[1]) return m1[1].trim();
+      const re2 = new RegExp(label.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&') + ":\\\\s*(.+)$","mi");
+      const m2 = t.match(re2);
+      if(m2 && m2[1]) return m2[1].trim();
+    }
+    return "";
+  }
+
+  function inspectionSummaryForItem(item){
+    if(!item) return "";
+    const rt = item.reportText || "";
+    const laudo = item.laudo || firstMatch(rt, ['Laudo']) || "";
+    const obs = firstMatch(rt, ['Descrição do laudo', 'Observações', 'Laudo']) || item.laudoObs || "";
+    const estrutura = firstMatch(rt, ['Estrutura']) || "";
+    const pintura = firstMatch(rt, ['Pintura']) || "";
+    const leilao = item.leilao || firstMatch(rt, ['Leilão']) || "";
+    const lines = [];
+    if(laudo) lines.push("Laudo: " + laudo);
+    if(obs) lines.push("Observações: " + obs);
+    if(estrutura) lines.push("Estrutura: " + estrutura);
+    if(pintura) lines.push("Pintura: " + pintura);
+    if(leilao && leilao.toLowerCase() !== 'não') lines.push("Leilão: " + leilao);
+    return lines.join("\n");
+  }
+
+  function itemIsBlindado(item){
+    try{
+      if(item && (item.blindado === true || item.blindado === 'true')) return true;
+      const rt = (item && item.reportText ? item.reportText : '').toString().toLowerCase();
+      if(rt.includes('blindagem') || rt.includes('blindado')) return true;
+      return false;
+    }catch(_){ return false; }
+  }
+
+  function injectV13Ui(){
+    const onlyCatalog = isCatalogOnlyRoleV13();
+
+    document.querySelectorAll('[data-show-seller], .sellerModeBtn').forEach(btn=>{
+      if(onlyCatalog) btn.style.display = 'none';
+    });
+    if(onlyCatalog){
+      document.querySelectorAll('[data-show-wa]').forEach(btn=>{
+        btn.style.display = 'none';
+      });
+    }
+
+    const items = window.showroomItemsCache || [];
+    items.forEach(item=>{
+      const card = document.querySelector(`[data-show-card-id="${item.id}"]`) || document.querySelector(`[data-show-open="${item.id}"]`)?.closest('.showCard');
+      if(!card) return;
+
+      const imgWrap = card.querySelector('.showImg');
+      if(imgWrap && itemIsBlindado(item) && !imgWrap.querySelector('.showBlindadoRibbon')){
+        const ribbon = document.createElement('div');
+        ribbon.className = 'showBlindadoRibbon';
+        ribbon.textContent = 'BLINDADO';
+        imgWrap.appendChild(ribbon);
+      }
+
+      if(canSeeInspectionSummaryV13()){
+        let box = card.querySelector('.showInspectionMini');
+        const txt = inspectionSummaryForItem(item);
+        if(txt && !box){
+          box = document.createElement('div');
+          box.className = 'showInspectionMini';
+          box.innerHTML = `<div class="showInspectionMiniTitle">Resumo da vistoria</div><div class="showInspectionMiniText"></div>`;
+          const body = card.querySelector('.showBody') || card;
+          const actions = card.querySelector('.showActions');
+          if(actions) body.insertBefore(box, actions);
+          else body.appendChild(box);
+        }
+        if(box){
+          const textEl = box.querySelector('.showInspectionMiniText');
+          if(textEl) textEl.textContent = txt;
+        }
+      }
+    });
+
+    if(onlyCatalog){
+      document.querySelectorAll('.showCard').forEach(card=>{
+        const actions = card.querySelector('.showActions');
+        if(!actions) return;
+        const openBtn = actions.querySelector('[data-show-open], .mOpen, button');
+        const copyBtn = actions.querySelector('[data-show-copy], .mCopy');
+        if(copyBtn){
+          actions.querySelectorAll('button').forEach(btn=>{
+            const txt = (btn.innerText || '').toLowerCase().trim();
+            const keep = txt.includes('ver veículo') || txt.includes('ver veiculo') || txt.includes('copiar');
+            btn.style.display = keep ? '' : 'none';
+          });
+        }
+      });
+      const seller = document.getElementById('btnShowModalSeller');
+      if(seller) seller.style.display = 'none';
+    }
+  }
+
+  function patchRoleUiText(){
+    const tab = document.getElementById('tabShowroom');
+    if(tab) tab.textContent = 'Catálogo';
+  }
+
+  document.addEventListener('DOMContentLoaded', ()=>{
+    patchRoleUiText();
+    injectV13Ui();
+    const obs = new MutationObserver(()=>{
+      patchRoleUiText();
+      injectV13Ui();
+    });
+    obs.observe(document.body, {childList:true, subtree:true});
+    setInterval(()=>{
+      patchRoleUiText();
+      injectV13Ui();
+    }, 1500);
   });
 })();
 </script>
