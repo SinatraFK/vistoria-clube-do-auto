@@ -1460,26 +1460,6 @@ select{
   .sellerVehicleMain{height:250px}
 }
 
-
-/* ===== V12.1 seguro • cliente + catálogo only + blindado ===== */
-.showBlindadoRibbon{
-  position:absolute;
-  top:12px;
-  left:12px;
-  display:inline-flex;
-  align-items:center;
-  padding:8px 12px;
-  border-radius:999px;
-  background:linear-gradient(135deg,#991b1b 0%, #dc2626 100%);
-  color:#fff;
-  font-size:11px;
-  font-weight:900;
-  letter-spacing:.04em;
-  border:1px solid rgba(255,255,255,.16);
-  box-shadow:0 12px 24px rgba(153,27,27,.22);
-  z-index:3;
-}
-
 </style>
 </head>
 
@@ -2335,7 +2315,7 @@ const firebaseConfig = {
 };
 
 const HARD_ADMINS = new Set(["admin@clubedoauto.com","frank.since96@gmail.com","devfrank@clubedoauto.com"].map(s=>s.toLowerCase()));
-const ROLE_ORDER = ["cliente","repasse","consultor","closer","gerente","admin"];
+const ROLE_ORDER = ["repasse","consultor","closer","gerente","admin"];
 
 const el=(id)=>document.getElementById(id);
 const v=(id)=>(el(id)?.value??"").toString().trim();
@@ -2393,7 +2373,7 @@ await setPersistence(auth, browserLocalPersistence);
 let isGuest=false, currentRole="consultor", canHistory=false, isAdmin=false, canPainel=false, canSeller=false;
 let unsubUsers=null;
 
-function isCatalogOnlyRole(){ return currentRole==="repasse" || currentRole==="convidado" || currentRole==="cliente"; }
+function isCatalogOnlyRole(){ return currentRole==="repasse" || currentRole==="convidado"; }
 function computePermissions(){
   canHistory=(currentRole==="admin"||currentRole==="gerente"||currentRole==="closer");
   isAdmin=(currentRole==="admin");
@@ -2418,12 +2398,12 @@ async function ensureUserDoc(user){
   const uid=user.uid, email=lower(user.email||"");
   const ref=doc(db,"users",uid), snap=await getDoc(ref);
   if(!snap.exists()){
-    const role=HARD_ADMINS.has(email)?"admin":"cliente";
+    const role=HARD_ADMINS.has(email)?"admin":"repasse";
     await setDoc(ref,{uid,email,role,displayName:(email.split("@")[0]||"").slice(0,24),createdAt:serverTimestamp(),updatedAt:serverTimestamp()},{merge:true});
     return role;
   }
   const data=snap.data()||{};
-  let role=(data.role || (HARD_ADMINS.has(email)?"admin":"cliente")).toString();
+  let role=(data.role || (HARD_ADMINS.has(email)?"admin":"repasse")).toString();
   if(HARD_ADMINS.has(email) && role!=="admin"){ await setDoc(ref,{role:"admin",updatedAt:serverTimestamp()},{merge:true}); role="admin"; }
   return role;
 }
@@ -4423,87 +4403,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
     const obs = new MutationObserver(()=> bootCatalogRestrictionPatch());
     obs.observe(document.body, { childList:true, subtree:true });
     setInterval(bootCatalogRestrictionPatch, 1500);
-  });
-})();
-</script>
-
-
-<script>
-/* ===== V12.1 seguro • cliente + catálogo only + blindado ===== */
-(function(){
-  function roleNow(){
-    try{ return (window.currentRole || "").toString().trim().toLowerCase(); }catch(_){ return ""; }
-  }
-  function isCatalogOnlyRoleV121(){
-    return ["cliente","convidado","repasse"].includes(roleNow());
-  }
-  function normalizeText(s){
-    return (s || "").toString().trim();
-  }
-  function itemIsBlindado(item){
-    try{
-      if(item && (item.blindado === true || item.blindado === "true" || item.blindado === 1 || item.blindado === "1")) return true;
-      const pool = [
-        normalizeText(item?.reportText),
-        normalizeText(item?.descricao),
-        normalizeText(item?.versao),
-        normalizeText(item?.modelo)
-      ].join(" ").toLowerCase();
-      return pool.includes("blindagem") || pool.includes("blindado");
-    }catch(_){
-      return false;
-    }
-  }
-  function decorateBlindadoCards(){
-    const items = window.showroomItemsCache || [];
-    items.forEach(item=>{
-      const card = document.querySelector(`[data-show-card-id="${item.id}"]`) || document.querySelector(`[data-show-open="${item.id}"]`)?.closest('.showCard');
-      if(!card) return;
-      const imgWrap = card.querySelector('.showImg');
-      if(!imgWrap) return;
-      const hasRibbon = imgWrap.querySelector('.showBlindadoRibbon');
-      if(itemIsBlindado(item) && !hasRibbon){
-        const ribbon = document.createElement('div');
-        ribbon.className = 'showBlindadoRibbon';
-        ribbon.textContent = 'BLINDADO';
-        imgWrap.appendChild(ribbon);
-      }
-      if(!itemIsBlindado(item) && hasRibbon){
-        hasRibbon.remove();
-      }
-    });
-  }
-  function restrictCatalogCards(){
-    if(!isCatalogOnlyRoleV121()) return;
-    document.querySelectorAll('.showCard').forEach(card=>{
-      const actions = card.querySelector('.showActions');
-      if(!actions) return;
-      actions.querySelectorAll('button').forEach(btn=>{
-        const txt = (btn.innerText || "").toLowerCase().trim();
-        const keep = txt.includes('ver veículo') || txt.includes('ver veiculo') || txt.includes('copiar');
-        btn.style.display = keep ? '' : 'none';
-      });
-    });
-    document.querySelectorAll('[data-show-seller], .sellerModeBtn, [data-show-wa]').forEach(btn=>{
-      btn.style.display = 'none';
-    });
-    const seller = document.getElementById('btnShowModalSeller');
-    if(seller) seller.style.display = 'none';
-  }
-  function keepCatalogText(){
-    const tab = document.getElementById('tabShowroom');
-    if(tab) tab.textContent = 'Catálogo';
-  }
-  function bootV121(){
-    keepCatalogText();
-    decorateBlindadoCards();
-    restrictCatalogCards();
-  }
-  document.addEventListener('DOMContentLoaded', ()=>{
-    bootV121();
-    const obs = new MutationObserver(()=> bootV121());
-    obs.observe(document.body, {childList:true, subtree:true});
-    setInterval(bootV121, 1500);
   });
 })();
 </script>
