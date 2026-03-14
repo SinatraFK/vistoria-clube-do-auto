@@ -1460,6 +1460,191 @@ select{
   .sellerVehicleMain{height:250px}
 }
 
+
+
+/* ===== V15 • navegação app instalada ===== */
+.appFrame{
+  display:grid;
+  grid-template-columns:88px minmax(0,1fr);
+  gap:16px;
+  align-items:start;
+}
+.appSidebar{
+  position:sticky;
+  top:104px;
+  align-self:start;
+  min-height:calc(100vh - 120px);
+  background:linear-gradient(180deg,#ffffff 0%, #f8fbff 100%);
+  border:1px solid rgba(148,163,184,.16);
+  border-radius:24px;
+  box-shadow:0 18px 38px rgba(15,23,42,.08);
+  padding:12px;
+  overflow:hidden;
+  transition:width .18s ease, padding .18s ease;
+}
+.appSidebar::before{
+  content:"";
+  position:absolute;
+  inset:0 0 auto 0;
+  height:4px;
+  background:linear-gradient(90deg,#2563eb 0%, #3b82f6 48%, #22c55e 100%);
+}
+.appSidebarTop{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:4px 0 12px 0;
+  margin-bottom:10px;
+  border-bottom:1px solid rgba(148,163,184,.14);
+}
+.appSidebarToggle{
+  width:44px;
+  min-width:44px;
+  height:44px;
+  border:none;
+  border-radius:14px;
+  background:#eef2ff;
+  color:#1e3a8a;
+  font-size:18px;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:none;
+}
+.appSidebarMeta{
+  min-width:0;
+  opacity:0;
+  width:0;
+  overflow:hidden;
+  transition:opacity .16s ease, width .16s ease;
+}
+.appSidebarEyebrow{
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:#64748b;
+}
+.appSidebarRole{
+  display:inline-flex;
+  align-items:center;
+  margin-top:6px;
+  padding:6px 10px;
+  border-radius:999px;
+  background:#eef2ff;
+  color:#1e3a8a;
+  font-size:11px;
+  font-weight:900;
+}
+body.sidebar-expanded .appFrame{ grid-template-columns:240px minmax(0,1fr); }
+body.sidebar-expanded .appSidebarMeta{ opacity:1; width:auto; }
+.appSidebar .tabs{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin:0;
+  position:static;
+  top:auto;
+  padding:0;
+  border:none;
+  background:transparent;
+  backdrop-filter:none;
+  box-shadow:none;
+}
+.appSidebar .tabbtn{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:12px;
+  min-height:52px;
+  padding:14px 14px;
+  border-radius:16px;
+  background:linear-gradient(180deg,#ffffff 0%, #f8fafc 100%);
+  border:1px solid rgba(148,163,184,.14);
+  box-shadow:0 10px 22px rgba(15,23,42,.05);
+  overflow:hidden;
+}
+.navIcon{
+  width:24px;
+  min-width:24px;
+  text-align:center;
+  font-size:18px;
+  line-height:1;
+}
+.navLabel{
+  white-space:nowrap;
+  opacity:0;
+  width:0;
+  overflow:hidden;
+  transition:opacity .16s ease, width .16s ease;
+}
+body.sidebar-expanded .navLabel{
+  opacity:1;
+  width:auto;
+}
+.appMain{ min-width:0; }
+
+.bottomNav{
+  display:none;
+}
+
+@media (max-width:768px){
+  .appFrame{
+    display:block;
+  }
+  .appSidebar{
+    display:none;
+  }
+  .appMain{
+    min-width:0;
+  }
+  .bottomNav{
+    position:fixed;
+    left:12px;
+    right:12px;
+    bottom:12px;
+    z-index:9998;
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:8px;
+    padding:10px;
+    border-radius:22px;
+    background:rgba(15,23,42,.94);
+    backdrop-filter:blur(10px);
+    box-shadow:0 18px 40px rgba(15,23,42,.28);
+  }
+  .bottomNavBtn{
+    min-height:56px;
+    border:none;
+    border-radius:16px;
+    background:transparent;
+    color:#cbd5e1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    font-size:11px;
+    font-weight:900;
+    line-height:1;
+    cursor:pointer;
+    box-shadow:none;
+    padding:8px 4px;
+  }
+  .bottomNavBtn .navIcon{
+    width:auto;
+    min-width:0;
+    font-size:18px;
+  }
+  .bottomNavBtn.active{
+    background:linear-gradient(135deg,#2563eb 0%, #3b82f6 100%);
+    color:#fff;
+  }
+  #screenApp{
+    padding-bottom:96px;
+  }
+}
+
 </style>
 </head>
 
@@ -1509,14 +1694,25 @@ select{
     </div>
   </div>
 
-  <div class="tabs">
-    <button class="tabbtn active" id="tabNova">Nova avaliação</button>
-    <button class="tabbtn" id="tabHist">Histórico</button>
-    <button class="tabbtn" id="tabShowroom">Catálogo</button>
-    <button class="tabbtn" id="tabSeller">Modo vendedor</button>
-    <button class="tabbtn hidden" id="tabPainel">Painel</button>
-    <button class="tabbtn hidden" id="tabUsers">Usuários</button>
-  </div>
+  <div class="appFrame">
+    <aside class="appSidebar">
+      <div class="appSidebarTop">
+        <button class="appSidebarToggle" type="button" id="btnSidebarToggle">☰</button>
+        <div class="appSidebarMeta">
+          <div class="appSidebarEyebrow">Menu do app</div>
+          <div class="appSidebarRole" id="sidebarRolePill">CONSULTOR</div>
+        </div>
+      </div>
+      <div class="tabs">
+        <button class="tabbtn active" id="tabNova"><span class="navIcon">🚗</span><span class="navLabel">Nova avaliação</span></button>
+        <button class="tabbtn" id="tabHist"><span class="navIcon">📋</span><span class="navLabel">Histórico</span></button>
+        <button class="tabbtn" id="tabShowroom"><span class="navIcon">🏪</span><span class="navLabel">Catálogo</span></button>
+        <button class="tabbtn" id="tabSeller"><span class="navIcon">💼</span><span class="navLabel">Modo vendedor</span></button>
+        <button class="tabbtn hidden" id="tabPainel"><span class="navIcon">📊</span><span class="navLabel">Painel</span></button>
+        <button class="tabbtn hidden" id="tabUsers"><span class="navIcon">👥</span><span class="navLabel">Usuários</span></button>
+      </div>
+    </aside>
+    <div class="appMain">
 
   <div id="viewNova">
     <div class="appHero">
@@ -2135,6 +2331,16 @@ select{
       <div id="usersList"></div>
     </div>
   </div>
+    </div>
+  </div>
+
+  <nav class="bottomNav" id="bottomNav">
+    <button class="bottomNavBtn active" type="button" id="tabNovaMobile"><span class="navIcon">🚗</span><span>Nova</span></button>
+    <button class="bottomNavBtn" type="button" id="tabHistMobile"><span class="navIcon">📋</span><span>Histórico</span></button>
+    <button class="bottomNavBtn" type="button" id="tabShowroomMobile"><span class="navIcon">🏪</span><span>Catálogo</span></button>
+    <button class="bottomNavBtn" type="button" id="tabSellerMobile"><span class="navIcon">💼</span><span>Vendedor</span></button>
+    <button class="bottomNavBtn hidden" type="button" id="tabGestaoMobile"><span class="navIcon">👤</span><span>Gestão</span></button>
+  </nav>
 </section>
 
 
@@ -2393,7 +2599,7 @@ function computePermissions(){
 }
 function setRoleUI(){
   if(el("roleTxt")) el("roleTxt").textContent=formatRoleLabel(currentRole);
-  try{ window.currentRole=currentRole; }catch(e){};
+  if(el("sidebarRolePill")) el("sidebarRolePill").textContent=formatRoleLabel(currentRole);
   const onlyCatalog = isCatalogOnlyRole();
 
   if(el("tabNova")) el("tabNova").classList.toggle("hidden", onlyCatalog);
@@ -2402,6 +2608,20 @@ function setRoleUI(){
   if(el("tabPainel")) el("tabPainel").classList.toggle("hidden", onlyCatalog || !canPainel);
   if(el("tabUsers")) el("tabUsers").classList.toggle("hidden", onlyCatalog || !isAdmin);
   if(el("tabShowroom")) el("tabShowroom").textContent = "Catálogo";
+
+  if(el("tabNovaMobile")) el("tabNovaMobile").classList.toggle("hidden", onlyCatalog);
+  if(el("tabHistMobile")) el("tabHistMobile").classList.toggle("hidden", onlyCatalog);
+  if(el("tabShowroomMobile")) el("tabShowroomMobile").classList.toggle("hidden", false);
+  if(el("tabSellerMobile")) el("tabSellerMobile").classList.toggle("hidden", onlyCatalog || !canSeller);
+
+  const manageBtn = el("tabGestaoMobile");
+  if(manageBtn){
+    const manageTab = isAdmin ? "users" : (canPainel ? "painel" : "");
+    manageBtn.dataset.target = manageTab;
+    manageBtn.classList.toggle("hidden", !manageTab || onlyCatalog);
+    manageBtn.querySelector("span:last-child").textContent = isAdmin ? "Usuários" : "Painel";
+    manageBtn.querySelector(".navIcon").textContent = isAdmin ? "👥" : "📊";
+  }
 }
 function showLogin(){ el("screenLogin").style.display="block"; el("screenApp").classList.add("hidden"); }
 function showApp(){ el("screenLogin").style.display="none"; el("screenApp").classList.remove("hidden"); }
@@ -2729,6 +2949,11 @@ function setTab(tab){
   if(el("tabSeller")) el("tabSeller").classList.toggle("active", seller);
   if(el("tabPainel")) el("tabPainel").classList.toggle("active", painel);
   if(el("tabUsers")) el("tabUsers").classList.toggle("active", users);
+  if(el("tabNovaMobile")) el("tabNovaMobile").classList.toggle("active", nova);
+  if(el("tabHistMobile")) el("tabHistMobile").classList.toggle("active", hist);
+  if(el("tabShowroomMobile")) el("tabShowroomMobile").classList.toggle("active", showroom);
+  if(el("tabSellerMobile")) el("tabSellerMobile").classList.toggle("active", seller);
+  if(el("tabGestaoMobile")) el("tabGestaoMobile").classList.toggle("active", painel || users);
   if(el("viewNova")) el("viewNova").classList.toggle("hidden", !nova);
   if(el("viewHistorico")) el("viewHistorico").classList.toggle("hidden", !hist);
   if(el("viewShowroom")) el("viewShowroom").classList.toggle("hidden", !showroom);
@@ -2747,6 +2972,13 @@ el("tabShowroom").addEventListener("click",()=>setTab("showroom"));
 el("tabSeller").addEventListener("click",()=>setTab("seller"));
 el("tabPainel").addEventListener("click",()=>setTab("painel"));
 el("tabUsers").addEventListener("click",()=>setTab("users"));
+el("tabNovaMobile")?.addEventListener("click",()=>setTab("nova"));
+el("tabHistMobile")?.addEventListener("click",()=>setTab("hist"));
+el("tabShowroomMobile")?.addEventListener("click",()=>setTab("showroom"));
+el("tabSellerMobile")?.addEventListener("click",()=>setTab("seller"));
+el("tabGestaoMobile")?.addEventListener("click",()=>setTab(el("tabGestaoMobile")?.dataset.target || "showroom"));
+el("btnSidebarToggle")?.addEventListener("click",()=>document.body.classList.toggle("sidebar-expanded"));
+if(window.innerWidth>768) document.body.classList.add("sidebar-expanded");
 
 
 
@@ -3797,7 +4029,7 @@ function openUsers(){
       try{
         await updateDoc(doc(db,"users", id), {role:newRole, displayName:newName, updatedAt:serverTimestamp()});
         alert("Salvo!");
-        if(auth.currentUser && id===auth.currentUser.uid){ currentRole=newRole; try{ window.currentRole=currentRole; }catch(e){} computePermissions(); setRoleUI(); }
+        if(auth.currentUser && id===auth.currentUser.uid){ currentRole=newRole; computePermissions(); setRoleUI(); }
       }catch(e){ alert("Erro: "+(e?.message||e)); }
     }));
   }, (err)=>{ el("usersList").innerHTML="<div class='userItem'><b>Erro:</b> "+escapeHtml(err?.message||err)+"</div>"; });
@@ -3816,7 +4048,7 @@ el("btnCreateUser").addEventListener("click", async ()=>{
   try{ await createUserWithEmailAndPassword(auth,email,pass); isGuest=false; el("loginHint").innerHTML="<span class='ok'>Usuário cadastrado!</span>"; }
   catch(e){ el("loginHint").innerHTML="<span class='warn'>Erro ao cadastrar:</span> "+(e?.message||e); }
 });
-el("btnGuest").addEventListener("click", ()=>{ isGuest=true; try{ signOut(auth);}catch(e){} showApp(); el("whoami").textContent="Convidado"; currentRole="convidado"; try{ window.currentRole=currentRole; }catch(e){} computePermissions(); setRoleUI(); setTab("showroom"); loadLastConsultor(); });
+el("btnGuest").addEventListener("click", ()=>{ isGuest=true; try{ signOut(auth);}catch(e){} showApp(); el("whoami").textContent="Convidado"; currentRole="convidado"; computePermissions(); setRoleUI(); setTab("showroom"); loadLastConsultor(); });
 el("btnLogout").addEventListener("click", async ()=>{ isGuest=false; try{ await signOut(auth);}catch(e){} showLogin(); });
 el("btnSwitchUser").addEventListener("click", ()=>{ isGuest=false; showLogin(); });
 
@@ -3871,10 +4103,9 @@ onAuthStateChanged(auth, async (u)=>{
     showApp();
     el("whoami").textContent=lower(u.email||"");
     try{ currentRole=await ensureUserDoc(u); }catch(e){ currentRole=HARD_ADMINS.has(lower(u.email||""))?"admin":"consultor"; }
-    try{ window.currentRole=currentRole; }catch(e){};
     computePermissions(); setRoleUI(); setTab(isCatalogOnlyRole() ? "showroom" : "nova"); loadLastConsultor();
   }else{
-    showLogin(); currentRole="consultor"; try{ window.currentRole=currentRole; }catch(e){} computePermissions(); setRoleUI();
+    showLogin(); currentRole="consultor"; computePermissions(); setRoleUI();
   }
 });
 
