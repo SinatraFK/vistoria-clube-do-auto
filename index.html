@@ -1460,6 +1460,123 @@ select{
   .sellerVehicleMain{height:250px}
 }
 
+
+
+/* ===== V14 • shell de app com menu lateral seguro ===== */
+#screenApp{position:relative}
+.appShell{
+  display:grid;
+  grid-template-columns:260px minmax(0,1fr);
+  gap:16px;
+  align-items:start;
+}
+.appSidebar{
+  position:sticky;
+  top:96px;
+  align-self:start;
+  background:linear-gradient(180deg,#ffffff 0%, #f8fbff 100%);
+  border:1px solid rgba(148,163,184,.16);
+  border-radius:24px;
+  box-shadow:0 18px 38px rgba(15,23,42,.08);
+  padding:14px;
+  overflow:hidden;
+}
+.appSidebar::before{
+  content:"";
+  position:absolute;
+  inset:0 0 auto 0;
+  height:4px;
+  background:linear-gradient(90deg,#2563eb 0%, #3b82f6 48%, #22c55e 100%);
+}
+.appSidebarHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:#64748b;
+  margin-bottom:12px;
+  padding:4px 2px 10px 2px;
+  border-bottom:1px solid rgba(148,163,184,.14);
+}
+.appSidebarRole{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:6px 10px;
+  border-radius:999px;
+  background:#eef2ff;
+  color:#1e3a8a;
+  font-size:11px;
+  font-weight:900;
+}
+.appSidebar .tabs{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin:0;
+  position:static;
+  top:auto;
+  padding:0;
+  border:none;
+  background:transparent;
+  backdrop-filter:none;
+  box-shadow:none;
+}
+.appSidebar .tabbtn{
+  width:100%;
+  text-align:left;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  min-height:52px;
+  border-radius:16px;
+  padding:14px 16px;
+  font-size:14px;
+  font-weight:900;
+  background:linear-gradient(180deg,#ffffff 0%, #f8fafc 100%);
+  border:1px solid rgba(148,163,184,.14);
+  box-shadow:0 10px 22px rgba(15,23,42,.05);
+}
+.appSidebar .tabbtn.active{
+  background:linear-gradient(135deg,#2563eb 0%, #3b82f6 100%);
+  color:#fff;
+  box-shadow:0 18px 30px rgba(37,99,235,.22);
+}
+.appSidebar .tabbtn.hidden{display:none !important}
+.appMain{min-width:0}
+#btnNavToggle{display:none}
+@media (max-width:980px){
+  .appShell{
+    grid-template-columns:1fr;
+  }
+  .appSidebar{
+    position:fixed;
+    top:86px;
+    left:14px;
+    bottom:14px;
+    width:min(300px, calc(100vw - 28px));
+    z-index:9997;
+    overflow:auto;
+    transform:translateX(-115%);
+    transition:transform .18s ease;
+  }
+  body.nav-open .appSidebar{
+    transform:translateX(0);
+  }
+  .appMain{
+    min-width:0;
+  }
+  #btnNavToggle{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+  }
+}
+
 </style>
 </head>
 
@@ -1496,6 +1613,7 @@ select{
       </div>
     </div>
     <div class="topbarBtns">
+      <button class="btnSmall btnGhost" id="btnNavToggle">☰ Menu</button>
       <button class="btnSmall btnGhost" id="btnSwitchUser">Trocar usuário</button>
       <button class="btnSmall btnExit" id="btnLogout">Sair</button>
     </div>
@@ -1509,14 +1627,22 @@ select{
     </div>
   </div>
 
-  <div class="tabs">
-    <button class="tabbtn active" id="tabNova">Nova avaliação</button>
-    <button class="tabbtn" id="tabHist">Histórico</button>
-    <button class="tabbtn" id="tabShowroom">Catálogo</button>
-    <button class="tabbtn" id="tabSeller">Modo vendedor</button>
-    <button class="tabbtn hidden" id="tabPainel">Painel</button>
-    <button class="tabbtn hidden" id="tabUsers">Usuários</button>
-  </div>
+  <div class="appShell">
+    <aside class="appSidebar">
+      <div class="appSidebarHead">
+        <span>Menu do app</span>
+        <span class="appSidebarRole" id="sidebarRolePill">consultor</span>
+      </div>
+      <div class="tabs">
+        <button class="tabbtn active" id="tabNova">Nova avaliação</button>
+        <button class="tabbtn" id="tabHist">Histórico</button>
+        <button class="tabbtn" id="tabShowroom">Catálogo</button>
+        <button class="tabbtn" id="tabSeller">Modo vendedor</button>
+        <button class="tabbtn hidden" id="tabPainel">Painel</button>
+        <button class="tabbtn hidden" id="tabUsers">Usuários</button>
+      </div>
+    </aside>
+    <div class="appMain">
 
   <div id="viewNova">
     <div class="appHero">
@@ -2135,6 +2261,9 @@ select{
       <div id="usersList"></div>
     </div>
   </div>
+
+    </div>
+  </div>
 </section>
 
 
@@ -2735,6 +2864,12 @@ el("tabShowroom").addEventListener("click",()=>setTab("showroom"));
 el("tabSeller").addEventListener("click",()=>setTab("seller"));
 el("tabPainel").addEventListener("click",()=>setTab("painel"));
 el("tabUsers").addEventListener("click",()=>setTab("users"));
+
+function closeSidebarMenu(){ document.body.classList.remove("nav-open"); }
+el("btnNavToggle")?.addEventListener("click",()=>document.body.classList.toggle("nav-open"));
+["tabNova","tabHist","tabShowroom","tabSeller","tabPainel","tabUsers"].forEach(id=>{
+  el(id)?.addEventListener("click", closeSidebarMenu);
+});
 
 
 
