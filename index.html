@@ -850,6 +850,24 @@ select{
 }
 .showImg img{width:100%;height:100%;object-fit:cover;display:block}
 .showBadge{
+}
+
+.showBlindado{
+  position:absolute;
+  top:12px;
+  right:12px;
+  display:inline-flex;
+  align-items:center;
+  padding:7px 11px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:900;
+  background:#b91c1c;
+  color:#fff;
+  border:1px solid rgba(255,255,255,.25);
+  box-shadow:0 8px 20px rgba(0,0,0,.25);
+}
+
   position:absolute;top:12px;left:12px;display:inline-flex;align-items:center;padding:7px 11px;border-radius:999px;
   font-size:11px;font-weight:900;background:rgba(255,255,255,.92);color:#0f172a;border:1px solid rgba(148,163,184,.18)
 }
@@ -2315,7 +2333,7 @@ const firebaseConfig = {
 };
 
 const HARD_ADMINS = new Set(["admin@clubedoauto.com","frank.since96@gmail.com","devfrank@clubedoauto.com"].map(s=>s.toLowerCase()));
-const ROLE_ORDER = ["cliente","convidado","repasse","consultor","closer","gerente","admin"];
+const ROLE_ORDER = ["repasse","consultor","closer","gerente","admin"];
 
 const el=(id)=>document.getElementById(id);
 const v=(id)=>(el(id)?.value??"").toString().trim();
@@ -2373,7 +2391,7 @@ await setPersistence(auth, browserLocalPersistence);
 let isGuest=false, currentRole="consultor", canHistory=false, isAdmin=false, canPainel=false, canSeller=false;
 let unsubUsers=null;
 
-function isCatalogOnlyRole(){ return currentRole==="cliente" || currentRole==="convidado" || currentRole==="repasse"; }
+function isCatalogOnlyRole(){ return currentRole==="repasse" || currentRole==="convidado"; }
 function computePermissions(){
   canHistory=(currentRole==="admin"||currentRole==="gerente"||currentRole==="closer");
   isAdmin=(currentRole==="admin");
@@ -2398,12 +2416,12 @@ async function ensureUserDoc(user){
   const uid=user.uid, email=lower(user.email||"");
   const ref=doc(db,"users",uid), snap=await getDoc(ref);
   if(!snap.exists()){
-    const role=HARD_ADMINS.has(email)?"admin":"cliente";
+    const role=HARD_ADMINS.has(email)?"admin":"repasse";
     await setDoc(ref,{uid,email,role,displayName:(email.split("@")[0]||"").slice(0,24),createdAt:serverTimestamp(),updatedAt:serverTimestamp()},{merge:true});
     return role;
   }
   const data=snap.data()||{};
-  let role=(data.role || (HARD_ADMINS.has(email)?"admin":"cliente")).toString().toLowerCase();
+  let role=(data.role || (HARD_ADMINS.has(email)?"admin":"repasse")).toString();
   if(HARD_ADMINS.has(email) && role!=="admin"){ await setDoc(ref,{role:"admin",updatedAt:serverTimestamp()},{merge:true}); role="admin"; }
   return role;
 }
@@ -3017,6 +3035,7 @@ function renderShowroom(){
       <div class="showImg">
         <img src="${escapeHtml(showImgSrc(it))}" alt="${escapeHtml((it.marca?it.marca+" ":"") + (it.modelo||"Veículo"))}">
         <span class="showBadge ${showroomStatusClass(it.status)}">${escapeHtml(it.status||"Em preparação")}</span>
+        ${it.blindado ? `<span class="showBlindado">BLINDADO</span>` : ``}
         <span class="showStockBadge">🚗 VEÍCULO EM ESTOQUE</span>
         <div class="showPriceBox">
           <span class="showPrice">${escapeHtml(formatShowPrice(it.preco))}</span>
