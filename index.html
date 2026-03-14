@@ -1491,7 +1491,7 @@ select{
         <div class="userline">
           <span class="chip"><span class="dot" id="dot"></span><span id="statusTxt">APROVADO</span></span>
           <span class="chip" id="whoami">—</span>
-          <span class="chip"><span id="roleTxt">consultor</span></span>
+          <span class="chip"><span id="roleTxt">—</span></span>
         </div>
       </div>
     </div>
@@ -1558,7 +1558,6 @@ select{
         <button class="utilityBtn" type="button" id="btnExpandAllSecs">Expandir tudo</button>
         <button class="utilityBtn" type="button" id="btnCollapseAllSecs">Recolher tudo</button>
         <button class="utilityBtn" type="button" id="btnGoAcoes">Ir para ações finais</button>
-        <button class="utilityBtn" type="button" id="btnClearTop">🧹 Limpar relatório</button>
       </div>
       <div class="utilityGroup">
         <button class="utilityBtn" type="button" id="btnGoCliente">Cliente</button>
@@ -2375,6 +2374,17 @@ let isGuest=false, currentRole="consultor", canHistory=false, isAdmin=false, can
 let unsubUsers=null;
 
 function isCatalogOnlyRole(){ return currentRole==="repasse" || currentRole==="convidado"; }
+function formatRoleLabel(role){
+  const r=(role||"").toString().toLowerCase();
+  if(r==="admin") return "ADM";
+  if(r==="gerente") return "GERENTE";
+  if(r==="closer") return "CLOSER";
+  if(r==="consultor") return "CONSULTOR";
+  if(r==="repasse") return "REPASSE";
+  if(r==="convidado") return "CONVIDADO";
+  if(r==="cliente") return "CLIENTE";
+  return (role||"—").toString().toUpperCase();
+}
 function computePermissions(){
   canHistory=(currentRole==="admin"||currentRole==="gerente"||currentRole==="closer");
   isAdmin=(currentRole==="admin");
@@ -2382,7 +2392,8 @@ function computePermissions(){
   canSeller=(currentRole==="admin"||currentRole==="gerente"||currentRole==="closer"||currentRole==="consultor");
 }
 function setRoleUI(){
-  if(el("roleTxt")) el("roleTxt").textContent=currentRole;
+  if(el("roleTxt")) el("roleTxt").textContent=formatRoleLabel(currentRole);
+  try{ window.currentRole=currentRole; }catch(e){};
   const onlyCatalog = isCatalogOnlyRole();
 
   if(el("tabNova")) el("tabNova").classList.toggle("hidden", onlyCatalog);
@@ -2528,28 +2539,15 @@ el("placa").addEventListener("input", ()=>{
   placaDupTimer=setTimeout(verificarPlacaDuplicada, 450);
 });
 el("kmComprou").addEventListener("blur",()=>{ const val=v("kmComprou"), digs=onlyDigits(val); if(val && digs && digs.length===val.replace(/\s|\./g,"").length) el("kmComprou").value=fmtKM(val); atualizarPreview(); refreshNovaAppUX(); });
-function setupSafeCurrencyField(id){
+["fipe","valorPretendido","debitosValor","finValor"].forEach(id=>{
   const e=el(id);
   if(!e) return;
-  e.setAttribute("inputmode","numeric");
-  e.addEventListener("focus", ()=>{
-    const digs = onlyDigits(e.value);
-    if(digs) e.value = digs;
-  });
-  e.addEventListener("input", ()=>{
-    const digs = onlyDigits(e.value);
-    if(e.value !== digs) e.value = digs;
+  e.addEventListener("blur",()=>{
+    if(v(id)) el(id).value=fmtBRL(v(id));
     atualizarPreview();
     refreshNovaAppUX();
   });
-  e.addEventListener("blur", ()=>{
-    const digs = onlyDigits(e.value);
-    e.value = digs ? fmtBRL(digs) : "";
-    atualizarPreview();
-    refreshNovaAppUX();
-  });
-}
-["fipe","debitosValor","finValor"].forEach(setupSafeCurrencyField);
+});
 
 function setStatusBadge(){ const s=(v("laudo")||"APROVADO").toUpperCase(); el("statusTxt").innerText=s; el("dot").style.background=(s==="REPROVADO")?"#d32f2f":(s==="APONTAMENTO")?"#f9a825":"#2e7d32"; }
 function toggleLaudoDescricao(){ const s=(v("laudo")||"APROVADO").toUpperCase(); if(s==="APROVADO"){ el("laudoObsWrap").style.display="none"; el("laudoObs").value=""; } else el("laudoObsWrap").style.display="block"; }
@@ -3799,7 +3797,7 @@ function openUsers(){
       try{
         await updateDoc(doc(db,"users", id), {role:newRole, displayName:newName, updatedAt:serverTimestamp()});
         alert("Salvo!");
-        if(auth.currentUser && id===auth.currentUser.uid){ currentRole=newRole; computePermissions(); setRoleUI(); }
+        if(auth.currentUser && id===auth.currentUser.uid){ currentRole=newRole; try{ window.currentRole=currentRole; }catch(e){} computePermissions(); setRoleUI(); }
       }catch(e){ alert("Erro: "+(e?.message||e)); }
     }));
   }, (err)=>{ el("usersList").innerHTML="<div class='userItem'><b>Erro:</b> "+escapeHtml(err?.message||err)+"</div>"; });
@@ -3818,7 +3816,7 @@ el("btnCreateUser").addEventListener("click", async ()=>{
   try{ await createUserWithEmailAndPassword(auth,email,pass); isGuest=false; el("loginHint").innerHTML="<span class='ok'>Usuário cadastrado!</span>"; }
   catch(e){ el("loginHint").innerHTML="<span class='warn'>Erro ao cadastrar:</span> "+(e?.message||e); }
 });
-el("btnGuest").addEventListener("click", ()=>{ isGuest=true; try{ signOut(auth);}catch(e){} showApp(); el("whoami").textContent="Convidado"; currentRole="convidado"; computePermissions(); setRoleUI(); setTab("showroom"); loadLastConsultor(); });
+el("btnGuest").addEventListener("click", ()=>{ isGuest=true; try{ signOut(auth);}catch(e){} showApp(); el("whoami").textContent="Convidado"; currentRole="convidado"; try{ window.currentRole=currentRole; }catch(e){} computePermissions(); setRoleUI(); setTab("showroom"); loadLastConsultor(); });
 el("btnLogout").addEventListener("click", async ()=>{ isGuest=false; try{ await signOut(auth);}catch(e){} showLogin(); });
 el("btnSwitchUser").addEventListener("click", ()=>{ isGuest=false; showLogin(); });
 
@@ -3873,9 +3871,10 @@ onAuthStateChanged(auth, async (u)=>{
     showApp();
     el("whoami").textContent=lower(u.email||"");
     try{ currentRole=await ensureUserDoc(u); }catch(e){ currentRole=HARD_ADMINS.has(lower(u.email||""))?"admin":"consultor"; }
+    try{ window.currentRole=currentRole; }catch(e){};
     computePermissions(); setRoleUI(); setTab(isCatalogOnlyRole() ? "showroom" : "nova"); loadLastConsultor();
   }else{
-    showLogin(); currentRole="consultor"; computePermissions(); setRoleUI();
+    showLogin(); currentRole="consultor"; try{ window.currentRole=currentRole; }catch(e){} computePermissions(); setRoleUI();
   }
 });
 
@@ -3937,7 +3936,6 @@ el("btnFipeApply").addEventListener("click", ()=>{
 });
 el("btnFavOpen")?.addEventListener("click", ()=>alert("Favoritos: função em atualização. (Layout mantido)"));
 el("btnClearForm")?.addEventListener("click", ()=>window.location.reload());
-el("btnClearTop")?.addEventListener("click", ()=>window.location.reload());
 
 
 function getSectionMetaByTitle(title){
