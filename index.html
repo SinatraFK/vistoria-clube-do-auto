@@ -853,6 +853,23 @@ select{
   position:absolute;top:12px;left:12px;display:inline-flex;align-items:center;padding:7px 11px;border-radius:999px;
   font-size:11px;font-weight:900;background:rgba(255,255,255,.92);color:#0f172a;border:1px solid rgba(148,163,184,.18)
 }
+.showBlindadoRibbon{
+  position:absolute;
+  top:16px;
+  left:-44px;
+  width:180px;
+  transform:rotate(-38deg);
+  background:linear-gradient(135deg,#b91c1c 0%, #ef4444 100%);
+  color:#fff;
+  text-align:center;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.08em;
+  padding:8px 0;
+  box-shadow:0 12px 24px rgba(0,0,0,.20);
+  z-index:2;
+  text-transform:uppercase;
+}
 .showPrice{
   position:absolute;right:12px;bottom:12px;display:inline-flex;align-items:center;padding:9px 12px;border-radius:16px;
   font-size:16px;font-weight:900;background:rgba(15,23,42,.92);color:#fff;box-shadow:0 10px 24px rgba(15,23,42,.18)
@@ -1754,6 +1771,7 @@ body.sidebar-expanded .navLabel{
         <button class="utilityBtn" type="button" id="btnExpandAllSecs">Expandir tudo</button>
         <button class="utilityBtn" type="button" id="btnCollapseAllSecs">Recolher tudo</button>
         <button class="utilityBtn" type="button" id="btnGoAcoes">Ir para ações finais</button>
+        <button class="utilityBtn" type="button" id="btnClearTop">🧹 Limpar relatório</button>
       </div>
       <div class="utilityGroup">
         <button class="utilityBtn" type="button" id="btnGoCliente">Cliente</button>
@@ -2369,6 +2387,7 @@ body.sidebar-expanded .navLabel{
     <div class="card" style="box-shadow:none;border:1px solid #e5e7eb;margin-top:12px">
       <input type="hidden" id="showEditId">
       <input type="hidden" id="showOrigemVistoriaId">
+      <input type="hidden" id="showBlindado">
       <div class="row2">
         <div><label>Marca</label><input id="showMarca" placeholder="Ex: Honda"></div>
         <div><label>Modelo</label><input id="showModelo" placeholder="Ex: Civic EXL"></div>
@@ -2590,6 +2609,16 @@ function formatRoleLabel(role){
   if(r==="convidado") return "CONVIDADO";
   if(r==="cliente") return "CLIENTE";
   return (role||"—").toString().toUpperCase();
+}
+function canSeeCatalogFipe(){
+  return !["cliente","convidado"].includes((currentRole||"").toString().toLowerCase());
+}
+function isBlindadoItem(item){
+  if(!item) return false;
+  if(item.blindado===true) return true;
+  const versao=((item.versao||"")+"").toLowerCase();
+  const desc=((item.descricao||"")+"").toLowerCase();
+  return versao.includes("blindagem") || versao.includes("blindado") || desc.includes("blindado");
 }
 function computePermissions(){
   canHistory=(currentRole==="admin"||currentRole==="gerente"||currentRole==="closer");
@@ -3260,11 +3289,12 @@ function renderShowroom(){
     <div class="showCard">
       <div class="showImg">
         <img src="${escapeHtml(showImgSrc(it))}" alt="${escapeHtml((it.marca?it.marca+" ":"") + (it.modelo||"Veículo"))}">
+        ${isBlindadoItem(it) ? `<span class="showBlindadoRibbon">BLINDADO</span>` : ``}
         <span class="showBadge ${showroomStatusClass(it.status)}">${escapeHtml(it.status||"Em preparação")}</span>
         <span class="showStockBadge">🚗 VEÍCULO EM ESTOQUE</span>
         <div class="showPriceBox">
           <span class="showPrice">${escapeHtml(formatShowPrice(it.preco))}</span>
-          <span class="showFipeMini">FIPE: ${escapeHtml(it.fipe ? formatShowMoney(it.fipe) : '—')}</span>
+          ${canSeeCatalogFipe() ? `<span class="showFipeMini">FIPE: ${escapeHtml(it.fipe ? formatShowMoney(it.fipe) : '—')}</span>` : ``}
         </div>
       </div>
       <div class="showBody">
@@ -3276,7 +3306,7 @@ function renderShowroom(){
           <span class="showSpec">⛽ ${escapeHtml(it.combustivel||"Combustível")}</span>
           <span class="showSpec">🎨 ${escapeHtml(it.cor||"Cor")}</span>
         </div>
-        <div class="showAlert ${opp.cls}">${escapeHtml(opp.label)}</div>
+        ${canSeeCatalogFipe() ? `<div class="showAlert ${opp.cls}">${escapeHtml(opp.label)}</div>` : ``}
         <div class="showActions">
           <button class="btnB" type="button" data-show-open="${escapeHtml(it.id)}">Ver veículo</button>
           <button class="btnSecondary" type="button" data-show-copy="${escapeHtml(it.id)}">Copiar dados</button>
@@ -3295,7 +3325,7 @@ function renderShowroom(){
   wrap.querySelectorAll("[data-show-copy]").forEach(btn=>btn.addEventListener("click", async ()=>{
     const item=showroomItemsCache.find(x=>x.id===btn.dataset.showCopy);
     if(!item) return;
-    const txt = `${item.marca||''} ${item.modelo||''} ${item.versao||''}\n${item.ano||''} • ${item.km||''}\n${item.cambio||''} • ${item.combustivel||''} • ${item.cor||''}\nFIPE: ${item.fipe ? formatShowPrice(item.fipe) : 'Não informada'}\nPreço: ${formatShowPrice(item.preco)}\nStatus: ${item.status||''}`.trim();
+    const txt = `${item.marca||''} ${item.modelo||''} ${item.versao||''}\n${item.ano||''} • ${item.km||''}\n${item.cambio||''} • ${item.combustivel||''} • ${item.cor||''}\n${canSeeCatalogFipe() ? `FIPE: ${item.fipe ? formatShowPrice(item.fipe) : 'Não informada'}\n` : ''}Preço: ${formatShowPrice(item.preco)}\nStatus: ${item.status||''}`.trim();
     const ok = await copiar(txt);
     if(ok) alert("Dados do veículo copiados.");
   }));
@@ -3323,6 +3353,7 @@ function openShowModal(item){
         <div class="showModalBadgeBar">
           <span class="showModalPill">🚗 VEÍCULO EM ESTOQUE</span>
           <span class="showModalPill">${escapeHtml(item.status||'Em preparação')}</span>
+          ${isBlindadoItem(item) ? `<span class="showModalPill">🛡️ BLINDADO</span>` : ``}
         </div>
         <button class="showModalNav showModalPrev" type="button" id="showModalPrev" aria-label="Foto anterior">‹</button>
         <img class="showMainImg" id="showModalMainImg" src="${escapeHtml(startImg)}" alt="${escapeHtml(item.modelo||'Veículo')}">
@@ -3339,7 +3370,7 @@ function openShowModal(item){
     </div>
     <div class="showModalHeroLine">
       <div class="showModalHeroPrice">${escapeHtml(formatShowPrice(item.preco))}</div>
-      <span class="showPriceStrong">${escapeHtml(opp.label)}</span>
+      ${canSeeCatalogFipe() ? `<span class="showPriceStrong">${escapeHtml(opp.label)}</span>` : ``}
     </div>
     <div class="showGallery" style="margin-top:12px">
       <div class="showThumbs showThumbsGallery">
@@ -3354,12 +3385,12 @@ function openShowModal(item){
         <div class="showDetailGrid three">
           <div class="showDetailCard"><div class="showDetailLabel">Veículo</div><div class="showDetailValue">${escapeHtml(((item.marca||"")+" "+(item.modelo||"")+" "+(item.versao||"")).trim())}</div></div>
           <div class="showDetailCard"><div class="showDetailLabel">Preço de venda</div><div class="showDetailValue">${escapeHtml(formatShowPrice(item.preco))}</div></div>
-          <div class="showDetailCard"><div class="showDetailLabel">FIPE</div><div class="showDetailValue">${escapeHtml(item.fipe ? formatShowMoney(item.fipe) : 'Não informada')}</div></div>
+          ${canSeeCatalogFipe() ? `<div class="showDetailCard"><div class="showDetailLabel">FIPE</div><div class="showDetailValue">${escapeHtml(item.fipe ? formatShowMoney(item.fipe) : 'Não informada')}</div></div>` : ``}
           <div class="showDetailCard"><div class="showDetailLabel">Ano / KM</div><div class="showDetailValue">${escapeHtml(item.ano||'')} • ${escapeHtml(item.km||'')}</div></div>
           <div class="showDetailCard"><div class="showDetailLabel">Configuração</div><div class="showDetailValue">${escapeHtml(item.cambio||'')} • ${escapeHtml(item.combustivel||'')} • ${escapeHtml(item.cor||'')}</div></div>
           <div class="showDetailCard"><div class="showDetailLabel">Status</div><div class="showDetailValue">${escapeHtml(item.status||'')}</div></div>
           <div class="showDetailCard"><div class="showDetailLabel">Placa</div><div class="showDetailValue">${escapeHtml(item.placa||'Não informada')}</div></div>
-          <div class="showDetailCard"><div class="showDetailLabel">Oportunidade</div><div class="showDetailValue">${escapeHtml(opp.label)}</div></div>
+          ${canSeeCatalogFipe() ? `<div class="showDetailCard"><div class="showDetailLabel">Oportunidade</div><div class="showDetailValue">${escapeHtml(opp.label)}</div></div>` : ``}
           <div class="showDetailCard"><div class="showDetailLabel">Origem</div><div class="showDetailValue">${item.origemVistoriaId ? 'Histórico / veículo comprado' : 'Cadastro direto no catálogo'}</div></div>
         </div>
         <div class="showDesc">${escapeHtml(item.descricao||'Sem descrição comercial ainda.')}</div>
@@ -3419,6 +3450,7 @@ function openShowEditor(item){
   el("showEditHint").textContent='';
   el("showEditId").value=item?.id||'';
   el("showOrigemVistoriaId").value=item?.origemVistoriaId||'';
+  el("showBlindado").value=(item?.blindado || isBlindadoItem(item)) ? '1' : '';
   el("showMarca").value=item?.marca||'';
   el("showModelo").value=item?.modelo||'';
   el("showVersao").value=item?.versao||'';
@@ -3461,6 +3493,7 @@ async function saveShowEditor(){
     km: v("showKm"),
     fipe: v("showFipe"),
     preco: v("showPreco"),
+    blindado: !!v("showBlindado") || /blindagem|blindado/i.test(v("showVersao")),
     cambio: v("showCambio"),
     combustivel: v("showCombustivel"),
     cor: v("showCor"),
@@ -3541,7 +3574,8 @@ async function sendHistoricoToShowroom(item){
     placa:plateBR(item.placa||''),
     descricao:'Veículo vindo do histórico de compra. Complemente com preço, fotos e descrição comercial.',
     fotoCapa:'',
-    fotos:[]
+    fotos:[],
+    blindado: !!item.blindado || /blindagem|blindado/i.test((getFirstLineValue(item.reportText,'Versão')||''))
   };
   setTab('showroom');
   openShowEditor(novo);
@@ -4167,6 +4201,7 @@ el("btnFipeApply").addEventListener("click", ()=>{
 });
 el("btnFavOpen")?.addEventListener("click", ()=>alert("Favoritos: função em atualização. (Layout mantido)"));
 el("btnClearForm")?.addEventListener("click", ()=>window.location.reload());
+el("btnClearTop")?.addEventListener("click", ()=>window.location.reload());
 
 
 function getSectionMetaByTitle(title){
