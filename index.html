@@ -1759,23 +1759,44 @@ body.sidebar-expanded .navLabel{
   .showActions{grid-template-columns:1fr !important;}
 }
 
+
+.loginWrapPro{position:relative;overflow:hidden}
+.loginWrapPro::before{content:"";position:absolute;inset:0 0 auto 0;height:4px;background:linear-gradient(90deg,#2563eb 0%,#3b82f6 50%,#22c55e 100%)}
+.loginHeaderPro{text-align:center;margin-bottom:8px}
+.loginEyebrow{display:inline-flex;align-items:center;justify-content:center;padding:7px 12px;border-radius:999px;background:#eff6ff;color:#1d4ed8;font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;margin:4px auto 12px auto}
+.loginFieldBlock{margin-top:6px;padding:14px;border-radius:20px;background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%);border:1px solid rgba(148,163,184,.16)}
+.loginAssistRow{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:-2px;margin-bottom:6px}
+.loginLinkBtn{width:auto;padding:0;border:none;background:transparent;color:#1d4ed8;font-weight:900;cursor:pointer;box-shadow:none}
+.loginLinkBtn:hover{text-decoration:underline;transform:none}
+.loginAssistText{font-size:12px;color:#64748b;font-weight:700}
+@media (max-width:760px){.loginAssistRow{align-items:flex-start}.loginAssistText{width:100%}}
+
 </style>
 </head>
 
 <body>
 <section id="screenLogin">
-  <div class="loginWrap">
-    <img id="logoLogin" class="loginLogo" alt="Logo">
-    <div class="loginTitle">AVALIAÇÃO COMERCIAL</div>
-    <div class="loginSubtitle">Entre para salvar na nuvem. Histórico por cargo. Painel de usuários só Admin.</div>
-    <div class="loginRow">
-      <div><label>E-mail</label><input id="loginEmail" inputmode="email" placeholder="ex: consultor@clube.com"></div>
-      <div><label>Senha</label><input id="loginPass" type="password" placeholder="••••••••"></div>
+  <div class="loginWrap loginWrapPro">
+    <div class="loginHeaderPro">
+      <img id="logoLogin" class="loginLogo" alt="Logo">
+      <div class="loginEyebrow">Clube do Auto</div>
+      <div class="loginTitle">AVALIAÇÃO COMERCIAL</div>
+      <div class="loginSubtitle">Acesse com seu e-mail corporativo para continuar a operação com histórico, catálogo e permissões por cargo.</div>
+    </div>
+    <div class="loginFieldBlock">
+      <div class="loginRow">
+        <div><label>E-mail</label><input id="loginEmail" inputmode="email" placeholder="ex: consultor@clube.com"></div>
+        <div><label>Senha</label><input id="loginPass" type="password" placeholder="••••••••"></div>
+      </div>
+      <div class="loginAssistRow">
+        <button class="loginLinkBtn" type="button" id="btnForgotPass">Esqueci minha senha</button>
+        <span class="loginAssistText">Você receberá um link seguro de redefinição no e-mail cadastrado.</span>
+      </div>
     </div>
     <div class="loginBtns">
       <button class="btnP" id="btnDoLogin">Entrar</button>
       <button class="btnG" id="btnCreateUser">Cadastrar</button>
-      <button class="btnB" id="btnGuest">Convidado</button>
+      <button class="btnB" id="btnGuest">Entrar como convidado</button>
     </div>
     <div class="hint" id="loginHint" style="margin-top:12px"></div>
   </div>
@@ -1821,7 +1842,7 @@ body.sidebar-expanded .navLabel{
         <button class="tabbtn active" id="tabNova"><span class="navIcon">🚗</span><span class="navLabel">Nova avaliação</span></button>
         <button class="tabbtn" id="tabHist"><span class="navIcon">📋</span><span class="navLabel">Histórico</span></button>
         <button class="tabbtn" id="tabShowroom"><span class="navIcon">🏪</span><span class="navLabel">Catálogo</span></button>
-        <button class="tabbtn" id="tabSeller"><span class="navIcon">💼</span><span class="navLabel">Modo vendedor</span></button>
+        <button class="tabbtn hidden" id="tabSeller" aria-hidden="true"><span class="navIcon">💼</span><span class="navLabel">Modo vendedor</span></button>
         <button class="tabbtn hidden" id="tabPainel"><span class="navIcon">📊</span><span class="navLabel">Painel</span></button>
         <button class="tabbtn hidden" id="tabUsers"><span class="navIcon">👥</span><span class="navLabel">Usuários</span></button>
       </div>
@@ -1882,6 +1903,7 @@ body.sidebar-expanded .navLabel{
       <div class="quickAssistCard"><div class="quickAssistLabel">Fechamento</div><div class="quickAssistValue" id="assistResponsavel">Consultor não informado</div><div class="quickAssistMini" id="assistAvaliadores">Avaliadores não selecionados</div></div>
     </div>
     <div class="card fipeHero">
+      <button class="btnG" type="button" id="btnClearForm" style="margin-bottom:12px">🧹 Limpar formulário</button>
       <div class="modalTitle">🔎 Consulta FIPE</div>
       <div class="modalHint">Use a busca para preencher automaticamente <b>Modelo</b>, <b>Ano</b> e <b>Fipe</b>. (Carros)</div>
       <div class="btnLine" style="margin-top:10px">
@@ -2166,7 +2188,6 @@ body.sidebar-expanded .navLabel{
       <button class="btnP" type="button" id="btnFillPadrao">⚡ Preencher padrão</button>
       <button class="btnW" id="btnWhats">📲 Enviar relatório (WhatsApp)</button>
       <button class="btnB" id="btnCopy">📋 Copiar relatório</button>
-      <button class="btnG" type="button" id="btnClearForm">🧹 Limpar formulário</button>
       <h3 style="margin-top:14px;">Prévia</h3>
       <div class="preview" id="preview"></div>
       <div class="hint" id="saveHint" style="margin-top:10px"></div>
@@ -2452,7 +2473,7 @@ body.sidebar-expanded .navLabel{
     <button class="bottomNavBtn active" type="button" id="tabNovaMobile"><span class="navIcon">🚗</span><span>Nova</span></button>
     <button class="bottomNavBtn" type="button" id="tabHistMobile"><span class="navIcon">📋</span><span>Histórico</span></button>
     <button class="bottomNavBtn" type="button" id="tabShowroomMobile"><span class="navIcon">🏪</span><span>Catálogo</span></button>
-    <button class="bottomNavBtn" type="button" id="tabSellerMobile"><span class="navIcon">💼</span><span>Vendedor</span></button>
+    <button class="bottomNavBtn hidden" type="button" id="tabSellerMobile" aria-hidden="true"><span class="navIcon">💼</span><span>Vendedor</span></button>
     <button class="bottomNavBtn hidden" type="button" id="tabGestaoMobile"><span class="navIcon">👤</span><span>Gestão</span></button>
   </nav>
 </section>
@@ -2623,7 +2644,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 import { getFirestore, collection, addDoc, deleteDoc, serverTimestamp, query, orderBy, limit, onSnapshot, doc, getDoc, setDoc, updateDoc, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -2636,7 +2657,8 @@ const firebaseConfig = {
 };
 
 const HARD_ADMINS = new Set(["admin@clubedoauto.com","frank.since96@gmail.com","devfrank@clubedoauto.com"].map(s=>s.toLowerCase()));
-const ROLE_ORDER = ["repasse","consultor","closer","gerente","admin"];
+const ROLE_ORDER = ["admin","gerente","closer","consultor","repasse","cliente","convidado"];
+const ROLE_RANK = {admin:0, gerente:1, closer:2, consultor:3, repasse:4, cliente:5, convidado:6};
 
 const el=(id)=>document.getElementById(id);
 const v=(id)=>(el(id)?.value??"").toString().trim();
@@ -2707,7 +2729,10 @@ function formatRoleLabel(role){
   return (role||"—").toString().toUpperCase();
 }
 function canSeeCatalogFipe(){
-  return !["cliente","convidado"].includes((currentRole||"").toString().toLowerCase());
+  return ["admin","gerente","closer"].includes((currentRole||"").toString().toLowerCase());
+}
+function canSeeCatalogKm(){
+  return ["admin","gerente","closer"].includes((currentRole||"").toString().toLowerCase());
 }
 function isBlindadoItem(item){
   if(!item) return false;
@@ -2720,7 +2745,7 @@ function computePermissions(){
   canHistory=(currentRole==="admin"||currentRole==="gerente"||currentRole==="closer");
   isAdmin=(currentRole==="admin");
   canPainel=canHistory;
-  canSeller=(currentRole==="admin"||currentRole==="gerente"||currentRole==="closer"||currentRole==="consultor");
+  canSeller=false;
 }
 function setRoleUI(){
   if(el("roleTxt")) el("roleTxt").textContent=formatRoleLabel(currentRole);
@@ -2729,7 +2754,7 @@ function setRoleUI(){
 
   if(el("tabNova")) el("tabNova").classList.toggle("hidden", onlyCatalog);
   if(el("tabHist")) el("tabHist").classList.toggle("hidden", onlyCatalog);
-  if(el("tabSeller")) el("tabSeller").classList.toggle("hidden", onlyCatalog || !canSeller);
+  if(el("tabSeller")) el("tabSeller").classList.add("hidden");
   if(el("tabPainel")) el("tabPainel").classList.toggle("hidden", onlyCatalog || !canPainel);
   if(el("tabUsers")) el("tabUsers").classList.toggle("hidden", onlyCatalog || !isAdmin);
   if(el("tabShowroom")) el("tabShowroom").textContent = "Catálogo";
@@ -2737,7 +2762,7 @@ function setRoleUI(){
   if(el("tabNovaMobile")) el("tabNovaMobile").classList.toggle("hidden", onlyCatalog);
   if(el("tabHistMobile")) el("tabHistMobile").classList.toggle("hidden", onlyCatalog);
   if(el("tabShowroomMobile")) el("tabShowroomMobile").classList.toggle("hidden", false);
-  if(el("tabSellerMobile")) el("tabSellerMobile").classList.toggle("hidden", onlyCatalog || !canSeller);
+  if(el("tabSellerMobile")) el("tabSellerMobile").classList.add("hidden");
 
   const manageBtn = el("tabGestaoMobile");
   if(manageBtn){
@@ -3063,7 +3088,7 @@ function formatDate(ts){ try{ const d=ts?.toDate?ts.toDate():null; if(!d) return
 
 function setTab(tab){
   if(isCatalogOnlyRole() && tab!=="showroom") tab = "showroom";
-  if((!canSeller) && tab==="seller") tab = "showroom";
+  if(tab==="seller") tab = "showroom";
   if((!canPainel) && tab==="painel") tab = "showroom";
   if((!isAdmin) && tab==="users") tab = "showroom";
 
@@ -3087,20 +3112,17 @@ function setTab(tab){
   if(el("viewUsers")) el("viewUsers").classList.toggle("hidden", !users);
   if(hist) openHistorico();
   if(showroom) renderShowroom();
-  if(seller && typeof renderSellerMode==="function") renderSellerMode();
   if(painel) openPainel();
   if(users) openUsers();
 }
 el("tabNova").addEventListener("click",()=>setTab("nova"));
 el("tabHist").addEventListener("click",()=>setTab("hist"));
 el("tabShowroom").addEventListener("click",()=>setTab("showroom"));
-el("tabSeller").addEventListener("click",()=>setTab("seller"));
 el("tabPainel").addEventListener("click",()=>setTab("painel"));
 el("tabUsers").addEventListener("click",()=>setTab("users"));
 el("tabNovaMobile")?.addEventListener("click",()=>setTab("nova"));
 el("tabHistMobile")?.addEventListener("click",()=>setTab("hist"));
 el("tabShowroomMobile")?.addEventListener("click",()=>setTab("showroom"));
-el("tabSellerMobile")?.addEventListener("click",()=>setTab("seller"));
 el("tabGestaoMobile")?.addEventListener("click",()=>setTab(el("tabGestaoMobile")?.dataset.target || "showroom"));
 el("btnSidebarToggle")?.addEventListener("click",()=>document.body.classList.toggle("sidebar-expanded"));
 if(window.innerWidth>768) document.body.classList.add("sidebar-expanded");
@@ -3397,7 +3419,7 @@ function renderShowroom(){
         <div class="showTitle">${escapeHtml(((it.marca||"")+" "+(it.modelo||"")).trim() || "Veículo")}</div>
         <div class="showMeta">${escapeHtml(it.ano||"Ano não informado")} • ${escapeHtml(it.versao||"Versão não informada")}</div>
         <div class="showSpecRow">
-          <span class="showSpec">🛣️ ${escapeHtml(it.km||"KM não informado")}</span>
+          ${canSeeCatalogKm() ? `<span class="showSpec">🛣️ ${escapeHtml(it.km||"KM não informado")}</span>` : ``}
           <span class="showSpec">⚙️ ${escapeHtml(it.cambio||"Câmbio")}</span>
           <span class="showSpec">⛽ ${escapeHtml(it.combustivel||"Combustível")}</span>
           <span class="showSpec">🎨 ${escapeHtml(it.cor||"Cor")}</span>
@@ -3406,7 +3428,6 @@ function renderShowroom(){
         <div class="showActions">
           <button class="btnB" type="button" data-show-open="${escapeHtml(it.id)}">Ver veículo</button>
           <button class="btnSecondary" type="button" data-show-copy="${escapeHtml(it.id)}">Copiar dados</button>
-          <button class="sellerModeBtn" type="button" data-show-seller="${escapeHtml(it.id)}">💼 Modo vendedor</button>
           <button class="btnW full" type="button" data-show-wa="${escapeHtml(it.id)}">📲 Compartilhar veículo</button>
           ${canManageShowroom()?`<button class="btnP" type="button" data-show-edit="${escapeHtml(it.id)}">Editar</button><button class="btnDanger" type="button" data-show-del="${escapeHtml(it.id)}">Excluir</button>`:''}
         </div>
@@ -3421,7 +3442,7 @@ function renderShowroom(){
   wrap.querySelectorAll("[data-show-copy]").forEach(btn=>btn.addEventListener("click", async ()=>{
     const item=showroomItemsCache.find(x=>x.id===btn.dataset.showCopy);
     if(!item) return;
-    const txt = `${item.marca||''} ${item.modelo||''} ${item.versao||''}\n${item.ano||''} • ${item.km||''}\n${item.cambio||''} • ${item.combustivel||''} • ${item.cor||''}\n${canSeeCatalogFipe() ? `FIPE: ${item.fipe ? formatShowPrice(item.fipe) : 'Não informada'}\n` : ''}Preço: ${formatShowPrice(item.preco)}\nStatus: ${item.status||''}`.trim();
+    const txt = `${item.marca||''} ${item.modelo||''} ${item.versao||''}\n${[item.ano||'', canSeeCatalogKm() ? (item.km||'') : ''].filter(Boolean).join(' • ')}\n${item.cambio||''} • ${item.combustivel||''} • ${item.cor||''}\n${canSeeCatalogFipe() ? `FIPE: ${item.fipe ? formatShowPrice(item.fipe) : 'Não informada'}\n` : ''}Preço: ${formatShowPrice(item.preco)}\nStatus: ${item.status||''}`.trim();
     const ok = await copiar(txt);
     if(ok) alert("Dados do veículo copiados.");
   }));
@@ -3482,7 +3503,7 @@ function openShowModal(item){
           <div class="showDetailCard"><div class="showDetailLabel">Veículo</div><div class="showDetailValue">${escapeHtml(((item.marca||"")+" "+(item.modelo||"")+" "+(item.versao||"")).trim())}</div></div>
           <div class="showDetailCard"><div class="showDetailLabel">Preço de venda</div><div class="showDetailValue">${escapeHtml(formatShowPrice(item.preco))}</div></div>
           ${canSeeCatalogFipe() ? `<div class="showDetailCard"><div class="showDetailLabel">FIPE</div><div class="showDetailValue">${escapeHtml(item.fipe ? formatShowMoney(item.fipe) : 'Não informada')}</div></div>` : ``}
-          <div class="showDetailCard"><div class="showDetailLabel">Ano / KM</div><div class="showDetailValue">${escapeHtml(item.ano||'')} • ${escapeHtml(item.km||'')}</div></div>
+          <div class="showDetailCard"><div class="showDetailLabel">Ano${canSeeCatalogKm() ? ' / KM' : ''}</div><div class="showDetailValue">${escapeHtml(item.ano||'')}${canSeeCatalogKm() ? ` • ${escapeHtml(item.km||'')}` : ''}</div></div>
           <div class="showDetailCard"><div class="showDetailLabel">Configuração</div><div class="showDetailValue">${escapeHtml(item.cambio||'')} • ${escapeHtml(item.combustivel||'')} • ${escapeHtml(item.cor||'')}</div></div>
           <div class="showDetailCard"><div class="showDetailLabel">Status</div><div class="showDetailValue">${escapeHtml(item.status||'')}</div></div>
           <div class="showDetailCard"><div class="showDetailLabel">Placa</div><div class="showDetailValue">${escapeHtml(item.placa||'Não informada')}</div></div>
@@ -3492,7 +3513,6 @@ function openShowModal(item){
         <div class="showDesc">${escapeHtml(item.descricao||'Sem descrição comercial ainda.')}</div>
         <div class="showModalActionBar">
           <button class="btnW" type="button" id="btnShowModalShare">📲 Compartilhar veículo</button>
-          <button class="sellerModeBtn" type="button" id="btnShowModalSeller">💼 Modo vendedor</button>
           ${canManageShowroom()?`<button class="btnP" type="button" id="btnShowModalEdit">Editar anúncio</button>`:''}
         </div>
       </div>
@@ -3538,7 +3558,6 @@ function openShowModal(item){
 
   el("btnShowModalEdit")?.addEventListener("click", ()=>{ closeShowModal(); openShowEditor(item); });
   el("btnShowModalShare")?.addEventListener("click", ()=>shareShowVehicle(item));
-  el("btnShowModalSeller")?.addEventListener("click", ()=>{ closeShowModal(); sellerSelectedId=item.id; setTab('seller'); renderSellerMode(); });
 }
 function closeShowModal(){ const m=el("showModal"); if(m) m.style.display="none"; }
 function openShowEditor(item){
@@ -3711,7 +3730,7 @@ function buildSellerLongText(item){
     `🚗 *${sellerPrimaryTitle(item)}*`,
     item?.status ? `📌 *Status:* ${item.status}` : '',
     item?.ano ? `📅 *Ano:* ${item.ano}` : '',
-    item?.km ? `🛣️ *KM:* ${item.km}` : '',
+    (typeof canSeeCatalogKm==='function' && canSeeCatalogKm() && item?.km) ? `🛣️ *KM:* ${item.km}` : '',
     item?.cambio ? `⚙️ *Câmbio:* ${item.cambio}` : '',
     item?.combustivel ? `⛽ *Combustível:* ${item.combustivel}` : '',
     item?.cor ? `🎨 *Cor:* ${item.cor}` : '',
@@ -3731,7 +3750,7 @@ function buildSellerShortText(item){
   const fotos=sellerPhotos(item);
   const lines = [
     `🚗 *${sellerPrimaryTitle(item)}*`,
-    [item?.ano,item?.km].filter(Boolean).join(' • '),
+    [item?.ano,(typeof canSeeCatalogKm==='function' && canSeeCatalogKm()) ? item?.km : ''].filter(Boolean).join(' • '),
     [item?.cambio,item?.combustivel,item?.cor].filter(Boolean).join(' • '),
     `💰 *${formatShowPrice(item?.preco)}*`,
     item?.status ? `📌 ${item.status}` : ''
@@ -3751,7 +3770,7 @@ function buildSellerClientText(item){
     ``,
     `🚗 *${nomeVeiculo}*`,
     `💰 *Preço:* ${formatShowPrice(item?.preco)}`,
-    [item?.ano,item?.km,item?.cambio,item?.combustivel].filter(Boolean).join(' • '),
+    [item?.ano,(typeof canSeeCatalogKm==='function' && canSeeCatalogKm()) ? item?.km : '',item?.cambio,item?.combustivel].filter(Boolean).join(' • '),
     ``,
     item?.descricao ? `Destaques: ${item.descricao}` : `Se quiser, eu te envio mais detalhes, fotos e condição de negociação.`
   ].filter(Boolean);
@@ -4134,27 +4153,42 @@ function openUsers(){
   if(unsubUsers) unsubUsers();
   const qy=query(collection(db,"users"), orderBy("email","asc"), limit(500));
   unsubUsers=onSnapshot(qy,(snap)=>{
-    const users=snap.docs.map(d=>({id:d.id,...d.data()}));
-    el("usersList").innerHTML = users.map(u=>{
-      const opts=ROLE_ORDER.map(r=>`<option value="${r}" ${r===u.role?"selected":""}>${r}</option>`).join("");
-      return `<div class="userItem">
-        <div class="userTop">
-          <div><div class="userEmail">${escapeHtml(u.email||"")}</div><div class="userMeta">UID: ${escapeHtml(u.uid||u.id)}</div></div>
-          <div class="badgeRole">${escapeHtml(u.role||"consultor")}</div>
-        </div>
-        <div class="userActions">
-          <div><label>Nome (painel)</label><input data-name="${u.id}" placeholder="Ex: Lucas" value="${escapeHtml(u.displayName||"")}"></div>
-          <div><label>Alterar cargo</label><select data-role="${u.id}">${opts}</select></div>
-          <div><button class="btnP" data-save="${u.id}">Salvar</button></div>
-        </div>
-      </div>`;
+    const users=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>{
+      const ra=ROLE_RANK[(a.role||'consultor').toString().toLowerCase()] ?? 999;
+      const rb=ROLE_RANK[(b.role||'consultor').toString().toLowerCase()] ?? 999;
+      if(ra!==rb) return ra-rb;
+      const na=((a.displayName||'')+'').trim().toLowerCase();
+      const nb=((b.displayName||'')+'').trim().toLowerCase();
+      if(na!==nb) return na.localeCompare(nb,'pt-BR');
+      return ((a.email||'')+'').toLowerCase().localeCompare(((b.email||'')+'').toLowerCase(),'pt-BR');
+    });
+
+    const grouped=ROLE_ORDER.map(role=>({role, items:users.filter(u=>((u.role||'consultor')+'').toLowerCase()===role)})).filter(g=>g.items.length);
+
+    el("usersHint").innerHTML = `<span class='ok'>${users.length} usuário(s) carregado(s), organizados por hierarquia.</span>`;
+    el("usersList").innerHTML = grouped.map(group=>{
+      const block = group.items.map(u=>{
+        const opts=ROLE_ORDER.map(r=>`<option value="${r}" ${r===((u.role||'consultor')+'').toLowerCase()?"selected":""}>${formatRoleLabel(r)}</option>`).join("");
+        return `<div class="userItem">
+          <div class="userTop">
+            <div><div class="userEmail">${escapeHtml(u.email||"")}</div><div class="userMeta">UID: ${escapeHtml(u.uid||u.id)}</div></div>
+            <div class="badgeRole">${escapeHtml(formatRoleLabel(u.role||"consultor"))}</div>
+          </div>
+          <div class="userActions">
+            <div><label>Nome (painel)</label><input data-name="${u.id}" placeholder="Ex: Lucas" value="${escapeHtml(u.displayName||"")}"></div>
+            <div><label>Alterar cargo</label><select data-role="${u.id}">${opts}</select></div>
+            <div><button class="btnP" data-save="${u.id}">Salvar</button></div>
+          </div>
+        </div>`;
+      }).join("");
+      return `<div class="card" style="margin-bottom:12px"><h3 style="margin-bottom:8px">${escapeHtml(formatRoleLabel(group.role))}</h3><div class="hint" style="margin-bottom:12px">${group.items.length} usuário(s) neste nível.</div>${block}</div>`;
     }).join("") || "<div class='userItem'><b>Nenhum usuário.</b></div>";
 
     el("usersList").querySelectorAll("[data-save]").forEach(btn=>btn.addEventListener("click", async()=>{
       const id=btn.dataset.save;
       const sel=el("usersList").querySelector(`select[data-role="${id}"]`);
       const inp=el("usersList").querySelector(`input[data-name="${id}"]`);
-      const newRole=(sel?.value||"consultor").toString();
+      const newRole=(sel?.value||"consultor").toString().toLowerCase();
       const newName=((inp?.value||"").toString().trim()).slice(0,32);
       try{
         await updateDoc(doc(db,"users", id), {role:newRole, displayName:newName, updatedAt:serverTimestamp()});
@@ -4167,20 +4201,36 @@ function openUsers(){
 
 el("btnDoLogin").addEventListener("click", async ()=>{
   const email=v("loginEmail"), pass=v("loginPass");
-  if(!email||!pass) return el("loginHint").innerHTML="<span class='warn'>Preencha e-mail e senha.</span>";
+  if(!email||!pass) return el("loginHint").innerHTML="<span class='warn'>Preencha e-mail e senha para entrar.</span>";
   try{ await signInWithEmailAndPassword(auth,email,pass); isGuest=false; el("loginHint").innerHTML=""; }
-  catch(e){ el("loginHint").innerHTML="<span class='warn'>Erro no login:</span> "+(e?.message||e); }
+  catch(e){ el("loginHint").innerHTML="<span class='warn'>Não foi possível entrar.</span> Verifique e-mail e senha e tente novamente."; }
 });
 el("btnCreateUser").addEventListener("click", async ()=>{
   const email=v("loginEmail"), pass=v("loginPass");
-  if(!email||!pass) return el("loginHint").innerHTML="<span class='warn'>Preencha e-mail e senha.</span>";
-  if(pass.length<6) return el("loginHint").innerHTML="<span class='warn'>Senha mínima: 6 caracteres.</span>";
-  try{ await createUserWithEmailAndPassword(auth,email,pass); isGuest=false; el("loginHint").innerHTML="<span class='ok'>Usuário cadastrado!</span>"; }
-  catch(e){ el("loginHint").innerHTML="<span class='warn'>Erro ao cadastrar:</span> "+(e?.message||e); }
+  if(!email||!pass) return el("loginHint").innerHTML="<span class='warn'>Preencha e-mail e senha para cadastrar.</span>";
+  if(pass.length<6) return el("loginHint").innerHTML="<span class='warn'>A senha deve ter no mínimo 6 caracteres.</span>";
+  try{ await createUserWithEmailAndPassword(auth,email,pass); isGuest=false; el("loginHint").innerHTML="<span class='ok'>Usuário cadastrado com sucesso.</span>"; }
+  catch(e){ el("loginHint").innerHTML="<span class='warn'>Não foi possível cadastrar.</span> "+(e?.message||e); }
+});
+el("btnForgotPass")?.addEventListener("click", async ()=>{
+  const email=v("loginEmail");
+  if(!email) return el("loginHint").innerHTML="<span class='warn'>Informe o e-mail cadastrado para receber o link de redefinição.</span>";
+  try{
+    await sendPasswordResetEmail(auth, email);
+    el("loginHint").innerHTML="<span class='ok'>Enviamos um link de redefinição para o e-mail informado.</span>";
+  }catch(e){
+    el("loginHint").innerHTML="<span class='warn'>Não foi possível enviar o link de redefinição.</span> Confira o e-mail informado e tente novamente.";
+  }
 });
 el("btnGuest").addEventListener("click", ()=>{ isGuest=true; try{ signOut(auth);}catch(e){} showApp(); el("whoami").textContent="Convidado"; currentRole="convidado"; computePermissions(); setRoleUI(); setTab("showroom"); loadLastConsultor(); });
 el("btnLogout").addEventListener("click", async ()=>{ isGuest=false; try{ await signOut(auth);}catch(e){} showLogin(); });
 el("btnSwitchUser").addEventListener("click", ()=>{ isGuest=false; showLogin(); });
+["loginEmail","loginPass"].forEach(id=>el(id)?.addEventListener("keydown", (ev)=>{
+  if(ev.key==="Enter"){
+    ev.preventDefault();
+    el("btnDoLogin")?.click();
+  }
+}));
 
 function setButtonsDisabled(disabled){
   el("btnWhats").disabled=disabled; el("btnCopy").disabled=disabled;
@@ -4655,7 +4705,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
     const fotos = (typeof normalizeShowroomFotos === 'function') ? normalizeShowroomFotos(item) : [];
     const lines = [
       `${item.marca||''} ${item.modelo||''} ${item.versao||''}`.trim(),
-      [item.ano||'', item.km||''].filter(Boolean).join(' • '),
+      [item.ano||'', (typeof canSeeCatalogKm==='function' && canSeeCatalogKm()) ? (item.km||'') : ''].filter(Boolean).join(' • '),
       [item.cambio||'', item.combustivel||'', item.cor||''].filter(Boolean).join(' • '),
       `Preço: ${(typeof formatShowPrice === 'function') ? formatShowPrice(item.preco) : (item.preco||'Sob consulta')}`,
       item.status ? `Status: ${item.status}` : ''
