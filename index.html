@@ -1175,6 +1175,12 @@ select{
   .showThumbs.showThumbsGallery{grid-template-columns:repeat(2,1fr)}
 }
 
+.showPromoUploadBox{border:1px solid rgba(148,163,184,.16);border-radius:18px;background:linear-gradient(180deg,#fff 0%, #f8fbff 100%);padding:14px;box-shadow:var(--shadowSoft)}
+.showPromoPreviewWrap{margin-top:10px;border:1px dashed rgba(148,163,184,.28);border-radius:18px;overflow:hidden;background:#f8fafc;min-height:180px;display:flex;align-items:center;justify-content:center}
+.showPromoPreviewWrap img{display:block;width:100%;max-height:260px;object-fit:cover}
+.showPromoEmpty{padding:18px;text-align:center;color:#64748b;font-weight:800;font-size:13px}
+.showPromoActions{display:flex;gap:10px;flex-wrap:wrap}
+.showPromoActions button{width:auto}
 
 /* ===== V12 • showroom premium ===== */
 .showCard{
@@ -2601,6 +2607,20 @@ body.sidebar-expanded .navLabel{
           </div>
         </div>
       </div>
+      <div class="showPromoUploadBox">
+        <label>Capa promocional (opcional)</label>
+        <div class="hint">Se você criar a arte fora do app, pode subir aqui. Quando existir, ela vira a capa do catálogo no lugar da foto normal.</div>
+        <div class="showPromoActions">
+          <button class="btnB" type="button" id="btnShowPromoPick">🖼️ Escolher capa promocional</button>
+          <button class="btnSecondary" type="button" id="btnShowPromoRemove">Remover capa promocional</button>
+        </div>
+        <input type="hidden" id="showPromoCapaUrl">
+        <input type="file" id="showPromoCapaFile" accept="image/*" class="hidden">
+        <div class="showPromoPreviewWrap" id="showPromoPreviewWrap">
+          <img id="showPromoPreview" alt="Prévia da capa promocional" style="display:none">
+          <div class="showPromoEmpty" id="showPromoEmpty">Nenhuma capa promocional enviada.</div>
+        </div>
+      </div>
       <div class="btnLine">
         <button class="btnP" type="button" id="btnShowSave">Salvar anúncio</button>
         <button class="btnDanger" type="button" id="btnShowDelete" style="display:none">Excluir anúncio</button>
@@ -3197,6 +3217,10 @@ const showroomUploadState = {
   existingUrls: [],
   pendingFiles: []
 };
+const showroomPromoCapaState = {
+  existingUrl: '',
+  pendingFile: null
+};
 function getShowroomFotosFromForm(){
   try{
     const raw = el("showroomFotosJson")?.value || "[]";
@@ -3328,6 +3352,66 @@ function openShowroomFilePicker(append){
   if(!input) return alert('Campo de fotos não encontrado nesta versão.');
   input.dataset.appendMode = append ? '1' : '0';
   input.click();
+}
+function clearPendingShowPromoCapaFile(){
+  const fileObj = showroomPromoCapaState.pendingFile;
+  if(fileObj?.previewUrl && fileObj.previewUrl.startsWith('blob:')){
+    try{ URL.revokeObjectURL(fileObj.previewUrl); }catch(_){}
+  }
+  showroomPromoCapaState.pendingFile = null;
+  const input = el('showPromoCapaFile');
+  if(input) input.value = '';
+}
+function setShowPromoCapa(url){
+  showroomPromoCapaState.existingUrl = (url || '').toString().trim();
+  if(el('showPromoCapaUrl')) el('showPromoCapaUrl').value = showroomPromoCapaState.existingUrl;
+  renderShowPromoCapaPreview();
+}
+function renderShowPromoCapaPreview(){
+  const preview = el('showPromoPreview');
+  const empty = el('showPromoEmpty');
+  const src = showroomPromoCapaState.pendingFile?.previewUrl || showroomPromoCapaState.existingUrl || '';
+  if(preview){
+    if(src){ preview.src = src; preview.style.display = 'block'; }
+    else { preview.removeAttribute('src'); preview.style.display = 'none'; }
+  }
+  if(empty) empty.style.display = src ? 'none' : 'block';
+}
+function bindShowPromoCapaInput(){
+  const input = el('showPromoCapaFile');
+  if(!input || input.dataset.boundPromoCapa==='1') return;
+  input.dataset.boundPromoCapa='1';
+  input.addEventListener('change', (e)=>{
+    const file = (e.target?.files || [])[0];
+    clearPendingShowPromoCapaFile();
+    if(file && (file.type || '').startsWith('image/')){
+      showroomPromoCapaState.pendingFile = { file, previewUrl: URL.createObjectURL(file) };
+      renderShowPromoCapaPreview();
+      const hint = el('showEditHint');
+      if(hint) hint.innerHTML = `<span class='ok'>Capa promocional selecionada. Clique em salvar anúncio para concluir.</span>`;
+    }
+    input.value = '';
+  });
+}
+function openShowPromoCapaPicker(){
+  bindShowPromoCapaInput();
+  const input = el('showPromoCapaFile');
+  if(!input) return alert('Campo de capa promocional não encontrado nesta versão.');
+  input.click();
+}
+function removeShowPromoCapa(){
+  clearPendingShowPromoCapaFile();
+  setShowPromoCapa('');
+}
+async function uploadPendingShowPromoCapa(){
+  if(!showroomPromoCapaState.pendingFile) return (showroomPromoCapaState.existingUrl || '').toString().trim();
+  const hint = el('showEditHint');
+  if(hint) hint.innerHTML = `<span class='ok'>Enviando capa promocional...</span>`;
+  const url = await uploadFotoCloudinary(showroomPromoCapaState.pendingFile.file);
+  clearPendingShowPromoCapaFile();
+  setShowPromoCapa(url);
+  if(hint) hint.innerHTML = `<span class='ok'>Capa promocional preparada e anúncio salvo com sucesso.</span>`;
+  return url;
 }
 function canManageShowroom(){ return currentRole==="admin" || currentRole==="gerente"; }
 function showroomPlaceholder(label){
@@ -3525,7 +3609,7 @@ async function shareShowroomPromoImage(item){
   alert('Seu navegador não compartilha imagem direto. Baixei a arte pronta para você enviar no WhatsApp ou Instagram.');
 }
 function showImgSrc(item){
-  return item?.fotoCapa || item?.fotos?.[0] || showroomPlaceholder(`${item?.marca||""} ${item?.modelo||""}`.trim());
+  return item?.promoCapa || item?.fotoCapa || item?.fotos?.[0] || showroomPlaceholder(`${item?.marca||""} ${item?.modelo||""}`.trim());
 }
 function showroomStatusClass(status){
   const s=(status||"").toLowerCase();
@@ -3650,7 +3734,7 @@ function renderShowroom(){
     <div class="showCard">
       <div class="showImg">
         <img src="${escapeHtml(showImgSrc(it))}" alt="${escapeHtml((it.marca?it.marca+" ":"") + (it.modelo||"Veículo"))}">
-        ${showroomPromoCardHtml(it)}
+        ${it.promoCapa ? `` : showroomPromoCardHtml(it)}
       </div>
       <div class="showBody">
         <div class="showTitle">${escapeHtml(((it.marca||"")+" "+(it.modelo||"")).trim() || "Veículo")}</div>
@@ -3836,23 +3920,28 @@ function openShowEditor(item){
   el("showOfertaSelo").value=item?.ofertaSelo||'OPORTUNIDADE';
   el("showDescricao").value=item?.descricao||'';
   clearPendingShowroomFiles();
+  clearPendingShowPromoCapaFile();
   setShowroomFotos(normalizeShowroomFotos(item||{}));
+  setShowPromoCapa(item?.promoCapa || '');
   bindShowroomFileInput();
+  bindShowPromoCapaInput();
   el("btnShowDelete").style.display = item?.id ? 'inline-flex' : 'none';
   el("showEditorModal").style.display='flex';
 }
-function closeShowEditor(){ const m=el("showEditorModal"); if(m) m.style.display='none'; clearPendingShowroomFiles(); }
+function closeShowEditor(){ const m=el("showEditorModal"); if(m) m.style.display='none'; clearPendingShowroomFiles(); clearPendingShowPromoCapaFile(); }
 async function saveShowEditor(){
   if(!canManageShowroom()) return;
   const id=el("showEditId").value;
   let fotos = getShowroomFotosFromForm();
   const btnSave = el('btnShowSave');
   if(btnSave) btnSave.disabled = true;
+  let promoCapa = (el("showPromoCapaUrl")?.value || showroomPromoCapaState.existingUrl || '').toString().trim();
   try{
     fotos = await uploadPendingShowroomFiles();
+    promoCapa = await uploadPendingShowPromoCapa();
   }catch(err){
     if(btnSave) btnSave.disabled = false;
-    el("showEditHint").innerHTML = `<span class='warn'>Erro ao enviar fotos:</span> ${escapeHtml(err?.message||err)}`;
+    el("showEditHint").innerHTML = `<span class='warn'>Erro ao enviar imagens:</span> ${escapeHtml(err?.message||err)}`;
     return;
   }
   const payload={
@@ -3881,6 +3970,7 @@ async function saveShowEditor(){
       : null,
     fotoCapa: fotos[0] || '',
     fotos,
+    promoCapa,
     updatedAt: serverTimestamp(),
     updatedByUid: auth.currentUser?.uid || '',
     updatedByEmail: lower(auth.currentUser?.email || '')
@@ -3964,6 +4054,7 @@ async function sendHistoricoToShowroom(item){
     descricao:'Veículo vindo do histórico de compra. Complemente com preço, fotos e descrição comercial.',
     fotoCapa:'',
     fotos:[],
+    promoCapa:'',
     blindado: !!item.blindado || /blindagem|blindado/i.test((getFirstLineValue(item.reportText,'Versão')||''))
   };
   setTab('showroom');
@@ -4209,6 +4300,8 @@ el("showOfertaAtiva")?.addEventListener("change", ()=>{
 });
 el("btnShowTakePhoto")?.addEventListener("click", ()=>openShowroomFilePicker(false));
 el("btnShowAddPhotos")?.addEventListener("click", ()=>openShowroomFilePicker(true));
+el("btnShowPromoPick")?.addEventListener("click", openShowPromoCapaPicker);
+el("btnShowPromoRemove")?.addEventListener("click", removeShowPromoCapa);
 ["showFipe","showPreco","showPrecoMin","showPrecoMax"].forEach(id=>{
   const e=el(id);
   if(!e) return;
