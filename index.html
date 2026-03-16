@@ -2780,12 +2780,12 @@ async function ensureUserDoc(user){
   const uid=user.uid, email=lower(user.email||"");
   const ref=doc(db,"users",uid), snap=await getDoc(ref);
   if(!snap.exists()){
-    const role=HARD_ADMINS.has(email)?"admin":"repasse";
+    const role=HARD_ADMINS.has(email)?"admin":"cliente";
     await setDoc(ref,{uid,email,role,displayName:(email.split("@")[0]||"").slice(0,24),createdAt:serverTimestamp(),updatedAt:serverTimestamp()},{merge:true});
     return role;
   }
   const data=snap.data()||{};
-  let role=(data.role || (HARD_ADMINS.has(email)?"admin":"repasse")).toString();
+  let role=(data.role || (HARD_ADMINS.has(email)?"admin":"cliente")).toString();
   if(HARD_ADMINS.has(email) && role!=="admin"){ await setDoc(ref,{role:"admin",updatedAt:serverTimestamp()},{merge:true}); role="admin"; }
   return role;
 }
@@ -4199,27 +4199,87 @@ function openUsers(){
   }, (err)=>{ el("usersList").innerHTML="<div class='userItem'><b>Erro:</b> "+escapeHtml(err?.message||err)+"</div>"; });
 }
 
+let authActionBusy=false;
+function setAuthButtonsBusy(disabled){
+  ["btnDoLogin","btnCreateUser","btnForgotPass","btnGuest"].forEach(id=>{
+    const node=el(id);
+    if(node) node.disabled=disabled;
+  });
+}
+function setLoginHint(html){
+  if(el("loginHint")) el("loginHint").innerHTML=html||"";
+}
+function getFriendlyAuthError(err, mode){
+  const code=(err?.code||"").toString();
+  if(mode==="register"){
+    if(code.includes("email-already-in-use")) return "Este e-mail já está cadastrado.";
+    if(code.includes("invalid-email")) return "Informe um e-mail válido.";
+    if(code.includes("weak-password")) return "A senha precisa ter pelo menos 6 caracteres.";
+  }
+  if(mode==="login"){
+    if(code.includes("invalid-credential") || code.includes("wrong-password") || code.includes("user-not-found") || code.includes("invalid-login-credentials")) return "E-mail ou senha inválidos.";
+    if(code.includes("invalid-email")) return "Informe um e-mail válido.";
+    if(code.includes("too-many-requests")) return "Muitas tentativas. Aguarde alguns minutos e tente novamente.";
+  }
+  if(mode==="reset"){
+    if(code.includes("user-not-found")) return "Não encontramos cadastro para esse e-mail.";
+    if(code.includes("invalid-email")) return "Informe um e-mail válido.";
+    if(code.includes("too-many-requests")) return "Muitas solicitações em sequência. Aguarde um pouco e tente novamente.";
+  }
+  return (err?.message||"Não foi possível concluir a operação.").toString();
+}
+
 el("btnDoLogin").addEventListener("click", async ()=>{
+  if(authActionBusy) return;
   const email=v("loginEmail"), pass=v("loginPass");
-  if(!email||!pass) return el("loginHint").innerHTML="<span class='warn'>Preencha e-mail e senha para entrar.</span>";
-  try{ await signInWithEmailAndPassword(auth,email,pass); isGuest=false; el("loginHint").innerHTML=""; }
-  catch(e){ el("loginHint").innerHTML="<span class='warn'>Não foi possível entrar.</span> Verifique e-mail e senha e tente novamente."; }
+  if(!email||!pass) return setLoginHint("<span class='warn'>Preencha e-mail e senha para entrar.</span>");
+  authActionBusy=true; setAuthButtonsBusy(true);
+  try{
+    setLoginHint("Entrando...");
+    await signInWithEmailAndPassword(auth,email,pass);
+    isGuest=false;
+    setLoginHint("");
+  }catch(e){
+    setLoginHint("<span class='warn'>Não foi possível entrar.</span> "+escapeHtml(getFriendlyAuthError(e,"login")));
+  }finally{
+    authActionBusy=false; setAuthButtonsBusy(false);
+  }
 });
 el("btnCreateUser").addEventListener("click", async ()=>{
+  if(authActionBusy) return;
   const email=v("loginEmail"), pass=v("loginPass");
-  if(!email||!pass) return el("loginHint").innerHTML="<span class='warn'>Preencha e-mail e senha para cadastrar.</span>";
-  if(pass.length<6) return el("loginHint").innerHTML="<span class='warn'>A senha deve ter no mínimo 6 caracteres.</span>";
-  try{ await createUserWithEmailAndPassword(auth,email,pass); isGuest=false; el("loginHint").innerHTML="<span class='ok'>Usuário cadastrado com sucesso.</span>"; }
-  catch(e){ el("loginHint").innerHTML="<span class='warn'>Não foi possível cadastrar.</span> "+(e?.message||e); }
+  if(!email||!pass) return setLoginHint("<span class='warn'>Preencha e-mail e senha para cadastrar.</span>");
+  if(pass.length<6) return setLoginHint("<span class='warn'>A senha deve ter no mínimo 6 caracteres.</span>");
+  authActionBusy=true; setAuthButtonsBusy(true);
+  try{
+    setLoginHint("Criando cadastro...");
+    await createUserWithEmailAndPassword(auth,email,pass);
+    isGuest=false;
+    setLoginHint("<span class='ok'>Cadastro criado com sucesso.</span> O novo usuário entrou como Cliente.");
+    alert("Cadastro criado com sucesso. O novo usuário entrou como Cliente.");
+  }catch(e){
+    setLoginHint("<span class='warn'>Não foi possível cadastrar.</span> "+escapeHtml(getFriendlyAuthError(e,"register")));
+  }finally{
+    authActionBusy=false; setAuthButtonsBusy(false);
+  }
 });
 el("btnForgotPass")?.addEventListener("click", async ()=>{
+  if(authActionBusy) return;
   const email=v("loginEmail");
-  if(!email) return el("loginHint").innerHTML="<span class='warn'>Informe o e-mail cadastrado para receber o link de redefinição.</span>";
+  if(!email) return setLoginHint("<span class='warn'>Informe o e-mail cadastrado para receber o link de redefinição.</span>");
+  authActionBusy=true; setAuthButtonsBusy(true);
   try{
+    setLoginHint("Enviando link de redefinição...");
     await sendPasswordResetEmail(auth, email);
-    el("loginHint").innerHTML="<span class='ok'>Enviamos um link de redefinição para o e-mail informado.</span>";
+    const okMsg="<span class='ok'>Link de redefinição enviado com sucesso.</span> Verifique a caixa de entrada e o spam do e-mail informado.";
+    setLoginHint(okMsg);
+    alert("Link de redefinição enviado. Verifique a caixa de entrada e o spam do e-mail informado.");
   }catch(e){
-    el("loginHint").innerHTML="<span class='warn'>Não foi possível enviar o link de redefinição.</span> Confira o e-mail informado e tente novamente.";
+    const msg=getFriendlyAuthError(e,"reset");
+    setLoginHint("<span class='warn'>Não foi possível enviar o link de redefinição.</span> "+escapeHtml(msg));
+    alert("Não foi possível enviar o link de redefinição. "+msg);
+  }finally{
+    authActionBusy=false; setAuthButtonsBusy(false);
   }
 });
 el("btnGuest").addEventListener("click", ()=>{ isGuest=true; try{ signOut(auth);}catch(e){} showApp(); el("whoami").textContent="Convidado"; currentRole="convidado"; computePermissions(); setRoleUI(); setTab("showroom"); loadLastConsultor(); });
