@@ -1773,121 +1773,38 @@ body.sidebar-expanded .navLabel{
 
 
 
-/* ===== Oferta comercial no catálogo ===== */
-.showOfferTopBadge{
-  position:absolute;
-  top:14px;
-  right:14px;
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:12px 18px;
-  border-radius:999px;
-  background:linear-gradient(135deg,#ef4444 0%, #dc2626 100%);
-  color:#fff;
-  font-size:15px;
-  font-weight:900;
-  letter-spacing:.02em;
-  box-shadow:0 14px 28px rgba(220,38,38,.30);
-  z-index:4;
-}
-.showOfferTopBadge small{
-  font-size:11px;
-  opacity:.9;
-  font-weight:800;
-}
-.showOfferPanel{
-  position:absolute;
-  left:0;
-  right:0;
-  bottom:0;
-  padding:18px 16px 16px;
-  background:linear-gradient(180deg,rgba(15,23,42,0) 0%, rgba(15,23,42,.20) 18%, rgba(15,23,42,.78) 100%);
-  z-index:3;
-}
-.showOfferOld{
-  display:inline-flex;
-  align-items:center;
-  justify-content:flex-end;
-  margin-left:auto;
-  background:rgba(239,68,68,.94);
-  color:#fff;
-  padding:10px 14px;
-  border-radius:14px;
-  font-size:15px;
-  font-weight:900;
-  text-decoration:line-through;
-  text-decoration-thickness:3px;
-  box-shadow:0 12px 24px rgba(15,23,42,.18);
-}
-.showOfferNowRow{
-  display:flex;
-  align-items:flex-end;
-  justify-content:space-between;
-  gap:12px;
-  margin-top:10px;
-  flex-wrap:wrap;
-}
-.showOfferNowLabel{
-  color:#fff;
-  font-size:16px;
-  font-weight:900;
-  text-shadow:0 2px 8px rgba(0,0,0,.25);
-}
-.showOfferNowPrice{
-  color:#fef3c7;
-  font-size:34px;
-  line-height:1;
-  font-weight:900;
-  letter-spacing:-.04em;
-  text-shadow:0 4px 16px rgba(0,0,0,.35);
-}
-.showOfferBottomBadge{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  margin-top:12px;
-  margin-left:auto;
-  padding:10px 16px;
-  border-radius:999px;
-  background:linear-gradient(135deg,#16a34a 0%, #16a34a 45%, #15803d 100%);
-  color:#fff;
-  font-size:13px;
-  font-weight:900;
-  box-shadow:0 12px 24px rgba(22,163,74,.26);
-}
-.showOfferMeta{
-  margin-top:10px;
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-}
-.showOfferMeta .showSpec{background:#fff}
-.showOfferEditorWrap{
-  margin-top:12px;
-  padding:14px;
-  border-radius:18px;
-  background:linear-gradient(180deg,#fff7f7 0%, #fff 100%);
-  border:1px solid rgba(239,68,68,.16);
-}
-.showOfferFields{display:none;margin-top:12px}
-.showOfferFields.active{display:block}
-.showOfferPreviewTag{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:8px 12px;
-  border-radius:999px;
-  background:#fee2e2;
-  color:#991b1b;
-  font-size:12px;
-  font-weight:900;
-}
+/* ===== V13 • arte promocional automática do catálogo ===== */
+.showImgPromo{position:absolute;inset:0;pointer-events:none;display:flex;flex-direction:column;justify-content:space-between;padding:18px;background:linear-gradient(180deg,rgba(15,23,42,.14) 0%, rgba(15,23,42,.06) 32%, rgba(15,23,42,.24) 54%, rgba(15,23,42,.72) 100%)}
+.showPromoTop{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.showPromoBrand{display:flex;flex-direction:column;gap:2px;max-width:52%}
+.showPromoBrandMain{font-size:52px;font-weight:900;line-height:.9;letter-spacing:-.06em;color:#ef4444;text-transform:lowercase;text-shadow:0 12px 24px rgba(0,0,0,.18)}
+.showPromoBrandSub{font-size:13px;font-weight:900;letter-spacing:.22em;color:#fff;text-transform:uppercase;text-shadow:0 4px 18px rgba(0,0,0,.18)}
+.showPromoOffer{align-self:flex-start;display:inline-flex;align-items:center;gap:10px;padding:12px 20px;border-radius:999px;background:linear-gradient(135deg,#ef4444 0%, #dc2626 100%);color:#fff;font-size:24px;font-weight:900;box-shadow:0 16px 30px rgba(220,38,38,.32);text-transform:uppercase}
+.showPromoBadges{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.showPromoPill{display:inline-flex;align-items:center;gap:10px;padding:10px 16px;border-radius:999px;background:rgba(255,255,255,.92);backdrop-filter:blur(6px);color:#111827;font-size:16px;font-weight:900;box-shadow:0 10px 22px rgba(0,0,0,.14)}
+.showPromoPill.dark{background:rgba(17,24,39,.88);color:#fff}
+.showPromoBottom{display:flex;flex-direction:column;gap:12px;align-items:flex-end}
+.showPromoOld{min-width:56%;padding:12px 18px;border-radius:18px;background:linear-gradient(135deg,rgba(239,68,68,.96) 0%, rgba(220,38,38,.96) 100%);color:#fff;font-size:22px;font-weight:900;text-decoration:line-through;text-decoration-thickness:3px;text-shadow:0 6px 18px rgba(0,0,0,.18);box-shadow:0 16px 28px rgba(220,38,38,.22)}
+.showPromoCurrentWrap{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.showPromoCurrentLabel{font-size:22px;font-weight:900;color:#fff;text-shadow:0 8px 18px rgba(0,0,0,.18)}
+.showPromoCurrent{font-size:64px;font-weight:900;letter-spacing:-.06em;line-height:.95;color:#fff8d6;text-shadow:0 12px 24px rgba(0,0,0,.22)}
+.showPromoFooter{display:inline-flex;align-items:center;justify-content:center;padding:14px 24px;border-radius:999px;background:linear-gradient(135deg,#16a34a 0%, #22c55e 100%);border:3px solid rgba(163,230,53,.42);color:#fff;font-size:28px;font-weight:900;box-shadow:0 18px 34px rgba(22,163,74,.22);text-transform:uppercase}
+.showPromoMeta{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:rgba(15,23,42,.78);color:#fff;font-size:12px;font-weight:900}
+.showPromoCountdown{color:#fef08a}
+.showArtActions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.showArtActions button{min-height:48px;border-radius:16px}
+.showOfferPanel{margin-top:12px;padding:14px;border-radius:18px;background:linear-gradient(180deg,#ffffff 0%, #f8fafc 100%);border:1px solid rgba(148,163,184,.16)}
+.showOfferPanelTitle{font-size:13px;font-weight:900;color:#0f172a;margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em}
+.showOfferPreview{margin-top:10px;padding:10px 12px;border-radius:14px;background:#fff;border:1px dashed rgba(148,163,184,.28);font-size:12px;color:#475569;font-weight:800}
 @media (max-width:760px){
-  .showOfferTopBadge{top:12px;right:12px;padding:10px 14px;font-size:13px}
-  .showOfferOld{font-size:13px;padding:8px 12px}
-  .showOfferNowPrice{font-size:28px}
-  .showOfferNowLabel{font-size:14px}
+  .showPromoBrandMain{font-size:42px}
+  .showPromoOffer{font-size:20px;padding:10px 16px}
+  .showPromoPill{font-size:14px;padding:8px 12px}
+  .showPromoOld{font-size:18px;min-width:auto}
+  .showPromoCurrentLabel{font-size:18px}
+  .showPromoCurrent{font-size:50px}
+  .showPromoFooter{font-size:22px;padding:12px 20px}
+  .showArtActions{grid-template-columns:1fr}
 }
 
 </style>
@@ -2646,24 +2563,20 @@ body.sidebar-expanded .navLabel{
         <div><label>Status</label><select id="showStatus"><option>Em preparação</option><option>Disponível</option><option>Reservado</option><option>Vendido</option></select></div>
         <div><label>Placa</label><input id="showPlaca" placeholder="Ex: EPX5C99"></div>
       </div>
-      <label>Descrição</label><textarea id="showDescricao" placeholder="Observações comerciais do veículo, diferenciais e preparação."></textarea>
-      <div class="showOfferEditorWrap">
-        <label class="chkLabel"><input type="checkbox" id="showOfertaAtiva"> Ativar oferta promocional neste anúncio</label>
-        <div class="hint">Quando a oferta estiver ativa e dentro do prazo, o card do catálogo ganha o visual comercial de campanha com preço antigo riscado, preço promocional e selo de oportunidade.</div>
-        <div class="showOfferFields" id="showOfertaFields">
-          <input type="hidden" id="showOfertaExpiraEm">
-          <div class="row3">
-            <div><label>Preço de oferta</label><input id="showPrecoOferta" inputmode="numeric" placeholder="Ex: 78990"></div>
-            <div><label>Título da faixa</label><input id="showOfertaTitulo" placeholder="Ex: OFERTA"></div>
-            <div><label>Selo inferior</label><input id="showOfertaSelo" placeholder="Ex: OPORTUNIDADE"></div>
-          </div>
-          <div class="row3">
-            <div><label>Validade em horas</label><input id="showOfertaHoras" inputmode="numeric" placeholder="Ex: 24, 48, 72 ou 52"></div>
-            <div><label>Expira em</label><input id="showOfertaExpiraPreview" readonly placeholder="Será calculado ao salvar"></div>
-            <div><label>Status da oferta</label><div class="hint"><span class="showOfferPreviewTag" id="showOfertaStatusTag">Sem oferta ativa</span></div></div>
-          </div>
+      <div class="showOfferPanel">
+        <div class="showOfferPanelTitle">🔥 Oferta promocional e arte automática</div>
+        <div class="row3">
+          <div><label class="chkLabelRight">Ativar oferta <input type="checkbox" id="showOfertaAtiva"></label></div>
+          <div><label>Preço promocional</label><input id="showOfertaPreco" inputmode="numeric" placeholder="Ex: 78990"></div>
+          <div><label>Validade (horas)</label><input id="showOfertaHoras" inputmode="numeric" placeholder="Ex: 24, 48, 72"></div>
         </div>
+        <div class="row2">
+          <div><label>Título superior</label><input id="showOfertaTitulo" placeholder="Ex: OFERTA"></div>
+          <div><label>Selo inferior</label><input id="showOfertaSelo" placeholder="Ex: OPORTUNIDADE"></div>
+        </div>
+        <div class="showOfferPreview" id="showOfertaPreviewHint">Quando a oferta estiver ativa, o catálogo monta automaticamente a arte visual da capa e também libera a geração da imagem pronta para WhatsApp e Instagram.</div>
       </div>
+      <label>Descrição</label><textarea id="showDescricao" placeholder="Observações comerciais do veículo, diferenciais e preparação."></textarea>
       <div class="row2">
         <div>
           <label>Fotos do veículo</label>
@@ -3421,6 +3334,196 @@ function showroomPlaceholder(label){
   const txt = encodeURIComponent(label||"Sem foto");
   return `data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='800' viewBox='0 0 1200 800'><defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'><stop stop-color='%230f172a'/><stop offset='1' stop-color='%231e3a8a'/></linearGradient></defs><rect width='1200' height='800' fill='url(%23g)'/><g fill='none' opacity='.20'><circle cx='180' cy='160' r='120' stroke='white' stroke-width='18'/><circle cx='980' cy='210' r='150' stroke='white' stroke-width='18'/></g><text x='50%' y='46%' dominant-baseline='middle' text-anchor='middle' font-family='Arial,Helvetica,sans-serif' font-size='56' fill='white' font-weight='700'>Catálogo</text><text x='50%' y='56%' dominant-baseline='middle' text-anchor='middle' font-family='Arial,Helvetica,sans-serif' font-size='28' fill='rgba(255,255,255,.88)'>${txt}</text></svg>`;
 }
+
+function isOfertaAtiva(item){
+  if(!item) return false;
+  const flag = !!item.ofertaAtiva;
+  if(!flag) return false;
+  const precoPromo = showroomMoneyNumber(item.ofertaPreco || '');
+  if(!precoPromo) return false;
+  const exp = Number(item.ofertaExpiraEm || 0);
+  if(!exp) return true;
+  return Date.now() <= exp;
+}
+function ofertaHorasRestantes(item){
+  const exp = Number(item?.ofertaExpiraEm || 0);
+  if(!exp || Date.now() > exp) return '';
+  const diff = exp - Date.now();
+  const totalHours = Math.max(1, Math.ceil(diff / 3600000));
+  return `${totalHours}h restantes`;
+}
+function ofertaTitulo(item){ return (item?.ofertaTitulo || 'OFERTA').toString().trim() || 'OFERTA'; }
+function ofertaSelo(item){ return (item?.ofertaSelo || 'OPORTUNIDADE').toString().trim() || 'OPORTUNIDADE'; }
+function displayShowPrice(item){
+  return isOfertaAtiva(item) ? formatShowPrice(item.ofertaPreco || item.preco) : formatShowPrice(item.preco);
+}
+function promoStatusText(item){
+  const status = (item?.status || 'Disponível').toString().trim() || 'Disponível';
+  return status;
+}
+function showroomPromoCardHtml(item){
+  const offer = isOfertaAtiva(item);
+  const title = offer ? ofertaTitulo(item) : '';
+  const footer = offer ? ofertaSelo(item) : promoStatusText(item);
+  const countdown = offer ? ofertaHorasRestantes(item) : '';
+  const oldPrice = offer ? formatShowPrice(item.preco) : '';
+  const currentPrice = displayShowPrice(item);
+  return `
+    <div class="showImgPromo">
+      <div>
+        <div class="showPromoTop">
+          <div class="showPromoBrand">
+            <div class="showPromoBrandMain">vex</div>
+            <div class="showPromoBrandSub">multimarcas</div>
+          </div>
+          ${offer ? `<div class="showPromoOffer">🔥 ${escapeHtml(title)}</div>` : ``}
+        </div>
+        <div class="showPromoBadges">
+          <span class="showPromoPill">${escapeHtml(promoStatusText(item))}</span>
+          ${isBlindadoItem(item) ? `<span class="showPromoPill dark">🛡️ BLINDADO</span>` : ``}
+          ${countdown ? `<span class="showPromoMeta showPromoCountdown">⏱️ ${escapeHtml(countdown)}</span>` : ``}
+        </div>
+      </div>
+      <div class="showPromoBottom">
+        ${offer ? `<div class="showPromoOld">DE: ${escapeHtml(oldPrice)}</div>` : ``}
+        <div class="showPromoCurrentWrap">
+          <div class="showPromoCurrentLabel">${offer ? 'POR:' : 'PREÇO:'}</div>
+          <div class="showPromoCurrent">${escapeHtml(currentPrice)}</div>
+        </div>
+        <div class="showPromoFooter">${escapeHtml(footer)}</div>
+      </div>
+    </div>
+  `;
+}
+async function loadImageElement(src){
+  return await new Promise((resolve,reject)=>{
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = ()=>resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+}
+async function generateShowroomPromoDataUrl(item){
+  const src = showImgSrc(item);
+  const canvas = document.createElement('canvas');
+  canvas.width = 1080;
+  canvas.height = 1350;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#0f172a';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  const radius = 48;
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(radius,0); ctx.lineTo(canvas.width-radius,0); ctx.quadraticCurveTo(canvas.width,0,canvas.width,radius);
+  ctx.lineTo(canvas.width,canvas.height-radius); ctx.quadraticCurveTo(canvas.width,canvas.height,canvas.width-radius,canvas.height);
+  ctx.lineTo(radius,canvas.height); ctx.quadraticCurveTo(0,canvas.height,0,canvas.height-radius);
+  ctx.lineTo(0,radius); ctx.quadraticCurveTo(0,0,radius,0); ctx.closePath();
+  ctx.clip();
+  try{
+    const img = await loadImageElement(src);
+    const scale = Math.max(canvas.width / img.width, canvas.height / img.height);
+    const dw = img.width * scale;
+    const dh = img.height * scale;
+    const dx = (canvas.width - dw) / 2;
+    const dy = (canvas.height - dh) / 2;
+    ctx.drawImage(img, dx, dy, dw, dh);
+  }catch(_){
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+  }
+  const gradient = ctx.createLinearGradient(0,0,0,canvas.height);
+  gradient.addColorStop(0,'rgba(15,23,42,.08)');
+  gradient.addColorStop(.45,'rgba(15,23,42,.10)');
+  gradient.addColorStop(.65,'rgba(15,23,42,.28)');
+  gradient.addColorStop(1,'rgba(15,23,42,.82)');
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle = '#ef4444';
+  ctx.font = '900 110px Inter, Arial';
+  ctx.fillText('vex', 54, 130);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '900 34px Inter, Arial';
+  ctx.fillText('MULTIMARCAS', 56, 180);
+  const offer = isOfertaAtiva(item);
+  const title = offer ? ofertaTitulo(item) : '';
+  const footer = offer ? ofertaSelo(item) : promoStatusText(item);
+  const countdown = offer ? ofertaHorasRestantes(item) : '';
+  function roundRect(x,y,w,h,r,fill,stroke){
+    ctx.beginPath();
+    ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r); ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h); ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r); ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
+    if(fill){ ctx.fillStyle = fill; ctx.fill(); }
+    if(stroke){ ctx.strokeStyle = stroke; ctx.lineWidth = 6; ctx.stroke(); }
+  }
+  if(offer){
+    roundRect(585, 40, 420, 106, 52, '#ef4444');
+    ctx.fillStyle = '#fff';
+    ctx.font = '900 54px Inter, Arial';
+    ctx.fillText(`🔥 ${title.toUpperCase()}`, 632, 110);
+  }
+  roundRect(50, 230, 270, 96, 42, 'rgba(255,255,255,.92)');
+  ctx.fillStyle = '#111827';
+  ctx.font = '900 44px Inter, Arial';
+  const status = (item.status || 'Disponível').toString();
+  ctx.fillText(status, 86, 291);
+  if(isBlindadoItem(item)){
+    roundRect(50, 354, 370, 96, 42, 'rgba(17,24,39,.88)', 'rgba(255,255,255,.72)');
+    ctx.fillStyle = '#fff';
+    ctx.font = '900 44px Inter, Arial';
+    ctx.fillText('🛡️ BLINDADO', 84, 415);
+  }
+  if(countdown){
+    roundRect(730, 250, 290, 64, 30, 'rgba(15,23,42,.78)');
+    ctx.fillStyle = '#fef08a';
+    ctx.font = '900 28px Inter, Arial';
+    ctx.fillText(`⏱️ ${countdown}`, 758, 291);
+  }
+  if(offer){
+    roundRect(540, 835, 480, 86, 26, 'rgba(239,68,68,.95)');
+    ctx.fillStyle = '#fff';
+    ctx.font = '900 56px Inter, Arial';
+    const oldP = `DE: ${formatShowPrice(item.preco)}`;
+    ctx.fillText(oldP, 592, 892);
+    const width = ctx.measureText(oldP).width;
+    ctx.strokeStyle = '#fff8d6';
+    ctx.lineWidth = 7;
+    ctx.beginPath(); ctx.moveTo(590, 864); ctx.lineTo(590+width, 864); ctx.stroke();
+  }
+  ctx.fillStyle = '#fff';
+  ctx.font = '900 58px Inter, Arial';
+  ctx.fillText(offer ? 'POR:' : 'PREÇO:', 308, 1060);
+  ctx.fillStyle = '#fff8d6';
+  ctx.font = '900 126px Inter, Arial';
+  ctx.fillText(displayShowPrice(item), 506, 1066);
+  roundRect(470, 1168, 520, 114, 56, '#16a34a', 'rgba(163,230,53,.42)');
+  ctx.fillStyle = '#fff';
+  ctx.font = '900 62px Inter, Arial';
+  const footerText = footer.toUpperCase();
+  const tw = ctx.measureText(footerText).width;
+  ctx.fillText(footerText, 730 - tw/2, 1243);
+  ctx.restore();
+  return canvas.toDataURL('image/jpeg', 0.92);
+}
+async function downloadShowroomPromoImage(item){
+  const dataUrl = await generateShowroomPromoDataUrl(item);
+  const a = document.createElement('a');
+  a.href = dataUrl;
+  a.download = `oferta-${((item.marca||'veiculo')+'-'+(item.modelo||'')).toLowerCase().replace(/[^a-z0-9]+/g,'-') || 'veiculo'}.jpg`;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+async function shareShowroomPromoImage(item){
+  const dataUrl = await generateShowroomPromoDataUrl(item);
+  const res = await fetch(dataUrl);
+  const blob = await res.blob();
+  const file = new File([blob], 'oferta-veiculo.jpg', {type:'image/jpeg'});
+  const title = `${item.marca||''} ${item.modelo||''}`.trim() || 'Veículo';
+  if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+    await navigator.share({ files:[file], title, text:`${title} • ${displayShowPrice(item)}` });
+    return;
+  }
+  await downloadShowroomPromoImage(item);
+  alert('Seu navegador não compartilha imagem direto. Baixei a arte pronta para você enviar no WhatsApp ou Instagram.');
+}
 function showImgSrc(item){
   return item?.fotoCapa || item?.fotos?.[0] || showroomPlaceholder(`${item?.marca||""} ${item?.modelo||""}`.trim());
 }
@@ -3506,49 +3609,6 @@ function formatShowPrice(raw){
   if(!raw) return "Sob consulta";
   return formatShowMoney(raw);
 }
-function showroomOfferExpiryMs(item){
-  const v=item?.ofertaExpiraEm;
-  if(!v) return 0;
-  if(typeof v?.toMillis === 'function') return v.toMillis();
-  const t = new Date(v).getTime();
-  return Number.isFinite(t) ? t : 0;
-}
-function showroomOfferIsActive(item){
-  const precoOferta = showroomMoneyNumber(item?.precoOferta);
-  const expira = showroomOfferExpiryMs(item);
-  return !!item?.ofertaAtiva && !!precoOferta && !!expira && expira > Date.now();
-}
-function showroomOfferInfo(item){
-  const active = showroomOfferIsActive(item);
-  const expira = showroomOfferExpiryMs(item);
-  const titulo = (item?.ofertaTitulo||'OFERTA').toString().trim() || 'OFERTA';
-  const selo = (item?.ofertaSelo||'OPORTUNIDADE').toString().trim() || 'OPORTUNIDADE';
-  const precoOferta = showroomMoneyNumber(item?.precoOferta);
-  const precoNormal = showroomMoneyNumber(item?.preco);
-  const desconto = (precoNormal && precoOferta && precoOferta < precoNormal) ? (precoNormal - precoOferta) : 0;
-  return {active, expira, titulo, selo, precoOferta, precoNormal, desconto};
-}
-function formatShowDateTime(raw){
-  const ms = showroomOfferExpiryMs({ofertaExpiraEm: raw});
-  if(!ms) return '—';
-  return new Intl.DateTimeFormat('pt-BR',{dateStyle:'short',timeStyle:'short'}).format(new Date(ms));
-}
-function updateShowOfertaUI(){
-  const on = !!el('showOfertaAtiva')?.checked;
-  const box = el('showOfertaFields');
-  const tag = el('showOfertaStatusTag');
-  const expiraPreview = el('showOfertaExpiraPreview');
-  if(box) box.classList.toggle('active', on);
-  const horas = (el('showOfertaHoras')?.value||'').replace(/[^\d]/g,'');
-  const hidden = el('showOfertaExpiraEm')?.value || '';
-  let preview = hidden ? formatShowDateTime(hidden) : 'Será calculado ao salvar';
-  if(on && horas){
-    const ms = Date.now() + Number(horas)*3600*1000;
-    preview = formatShowDateTime(new Date(ms).toISOString());
-  }
-  if(expiraPreview) expiraPreview.value = on ? preview : '';
-  if(tag) tag.textContent = !on ? 'Sem oferta ativa' : (preview && preview !== 'Será calculado ao salvar' ? `Oferta ativa até ${preview}` : 'Oferta pronta para ser publicada');
-}
 function ensureShowroomListener(){
   if(isGuest){ showroomItemsCache=[]; renderShowroom(); return; }
   if(unsubShowroom) return;
@@ -3584,29 +3644,13 @@ function renderShowroom(){
   }
   wrap.innerHTML = items.map(it=>{
     const opp=showroomOpportunityInfo(it);
+    const offer = isOfertaAtiva(it);
+    const displayPrice = displayShowPrice(it);
     return `
     <div class="showCard">
       <div class="showImg">
         <img src="${escapeHtml(showImgSrc(it))}" alt="${escapeHtml((it.marca?it.marca+" ":"") + (it.modelo||"Veículo"))}">
-        ${isBlindadoItem(it) ? `<span class="showBlindadoRibbon">BLINDADO</span>` : ``}
-        <span class="showBadge ${showroomStatusClass(it.status)}">${escapeHtml(it.status||"Em preparação")}</span>
-        ${showroomOfferInfo(it).active ? `<span class="showOfferTopBadge">🔥 ${escapeHtml(showroomOfferInfo(it).titulo)}</span>` : ``}
-        <span class="showStockBadge">🚗 VEÍCULO EM ESTOQUE</span>
-        ${showroomOfferInfo(it).active ? `
-          <div class="showOfferPanel">
-            <div style="display:flex;justify-content:flex-end"><span class="showOfferOld">DE: ${escapeHtml(formatShowPrice(it.preco))}</span></div>
-            <div class="showOfferNowRow">
-              <div class="showOfferNowLabel">POR:</div>
-              <div class="showOfferNowPrice">${escapeHtml(formatShowPrice(it.precoOferta))}</div>
-            </div>
-            <div style="display:flex;justify-content:flex-end"><span class="showOfferBottomBadge">${escapeHtml(showroomOfferInfo(it).selo)}</span></div>
-          </div>
-        ` : `
-          <div class="showPriceBox">
-            <span class="showPrice">${escapeHtml(formatShowPrice(it.preco))}</span>
-            ${canSeeCatalogFipe() ? `<span class="showFipeMini">FIPE: ${escapeHtml(it.fipe ? formatShowMoney(it.fipe) : '—')}</span>` : ``}
-          </div>
-        `}
+        ${showroomPromoCardHtml(it)}
       </div>
       <div class="showBody">
         <div class="showTitle">${escapeHtml(((it.marca||"")+" "+(it.modelo||"")).trim() || "Veículo")}</div>
@@ -3617,12 +3661,13 @@ function renderShowroom(){
           <span class="showSpec">⛽ ${escapeHtml(it.combustivel||"Combustível")}</span>
           <span class="showSpec">🎨 ${escapeHtml(it.cor||"Cor")}</span>
         </div>
-        ${showroomOfferInfo(it).active ? `<div class="showOfferMeta"><span class="showSpec">⏰ Oferta até ${escapeHtml(formatShowDateTime(it.ofertaExpiraEm))}</span>${showroomOfferInfo(it).desconto ? `<span class="showSpec">💸 Desconto de ${escapeHtml(formatShowPrice(showroomOfferInfo(it).desconto))}</span>` : ``}</div>` : ``}
-        ${canSeeCatalogFipe() ? `<div class="showAlert ${opp.cls}">${escapeHtml(opp.label)}</div>` : ``}
+        ${offer ? `<div class="showAlert good">Oferta ativa • ${escapeHtml(ofertaHorasRestantes(it) || 'prazo promocional')}</div>` : (canSeeCatalogFipe() ? `<div class="showAlert ${opp.cls}">${escapeHtml(opp.label)}</div>` : ``)}
         <div class="showActions">
           <button class="btnB" type="button" data-show-open="${escapeHtml(it.id)}">Ver veículo</button>
           <button class="btnSecondary" type="button" data-show-copy="${escapeHtml(it.id)}">Copiar dados</button>
           <button class="btnW full" type="button" data-show-wa="${escapeHtml(it.id)}">📲 Compartilhar veículo</button>
+          <button class="btnG" type="button" data-show-promo="${escapeHtml(it.id)}">🖼️ Baixar arte</button>
+          <button class="btnP" type="button" data-show-shareimg="${escapeHtml(it.id)}">🚀 Enviar imagem</button>
           ${canManageShowroom()?`<button class="btnP" type="button" data-show-edit="${escapeHtml(it.id)}">Editar</button><button class="btnDanger" type="button" data-show-del="${escapeHtml(it.id)}">Excluir</button>`:''}
         </div>
       </div>
@@ -3639,6 +3684,16 @@ function renderShowroom(){
     const txt = `${item.marca||''} ${item.modelo||''} ${item.versao||''}\n${[item.ano||'', canSeeCatalogKm() ? (item.km||'') : ''].filter(Boolean).join(' • ')}\n${item.cambio||''} • ${item.combustivel||''} • ${item.cor||''}\n${canSeeCatalogFipe() ? `FIPE: ${item.fipe ? formatShowPrice(item.fipe) : 'Não informada'}\n` : ''}Preço: ${formatShowPrice(item.preco)}\nStatus: ${item.status||''}`.trim();
     const ok = await copiar(txt);
     if(ok) alert("Dados do veículo copiados.");
+  }));
+  wrap.querySelectorAll("[data-show-promo]").forEach(btn=>btn.addEventListener("click", async ()=>{
+    const item=showroomItemsCache.find(x=>x.id===btn.dataset.showPromo);
+    if(!item) return;
+    try{ await downloadShowroomPromoImage(item); }catch(err){ alert('Não foi possível gerar a arte: '+(err?.message||err)); }
+  }));
+  wrap.querySelectorAll("[data-show-shareimg]").forEach(btn=>btn.addEventListener("click", async ()=>{
+    const item=showroomItemsCache.find(x=>x.id===btn.dataset.showShareimg);
+    if(!item) return;
+    try{ await shareShowroomPromoImage(item); }catch(err){ alert('Não foi possível compartilhar a imagem: '+(err?.message||err)); }
   }));
   wrap.querySelectorAll("[data-show-edit]").forEach(btn=>btn.addEventListener("click", ()=>{
     const item=showroomItemsCache.find(x=>x.id===btn.dataset.showEdit);
@@ -3680,9 +3735,7 @@ function openShowModal(item){
       </div>
     </div>
     <div class="showModalHeroLine">
-      <div>
-        ${showroomOfferInfo(item).active ? `<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><span class="showOfferTopBadge" style="position:static;box-shadow:none">🔥 ${escapeHtml(showroomOfferInfo(item).titulo)}</span><span class="showSpec">⏰ Até ${escapeHtml(formatShowDateTime(item.ofertaExpiraEm))}</span></div><div style="margin-top:8px;color:#64748b;font-weight:900;text-decoration:line-through">DE: ${escapeHtml(formatShowPrice(item.preco))}</div><div class="showModalHeroPrice">POR: ${escapeHtml(formatShowPrice(item.precoOferta))}</div>` : `<div class="showModalHeroPrice">${escapeHtml(formatShowPrice(item.preco))}</div>`}
-      </div>
+      <div class="showModalHeroPrice">${escapeHtml(displayShowPrice(item))}</div>
       ${canSeeCatalogFipe() ? `<span class="showPriceStrong">${escapeHtml(opp.label)}</span>` : ``}
     </div>
     <div class="showGallery" style="margin-top:12px">
@@ -3698,7 +3751,6 @@ function openShowModal(item){
         <div class="showDetailGrid three">
           <div class="showDetailCard"><div class="showDetailLabel">Veículo</div><div class="showDetailValue">${escapeHtml(((item.marca||"")+" "+(item.modelo||"")+" "+(item.versao||"")).trim())}</div></div>
           <div class="showDetailCard"><div class="showDetailLabel">Preço de venda</div><div class="showDetailValue">${escapeHtml(formatShowPrice(item.preco))}</div></div>
-          ${showroomOfferInfo(item).active ? `<div class="showDetailCard"><div class="showDetailLabel">Oferta ativa</div><div class="showDetailValue">${escapeHtml(formatShowPrice(item.precoOferta))} • até ${escapeHtml(formatShowDateTime(item.ofertaExpiraEm))}</div></div>` : ``}
           ${canSeeCatalogFipe() ? `<div class="showDetailCard"><div class="showDetailLabel">FIPE</div><div class="showDetailValue">${escapeHtml(item.fipe ? formatShowMoney(item.fipe) : 'Não informada')}</div></div>` : ``}
           <div class="showDetailCard"><div class="showDetailLabel">Ano${canSeeCatalogKm() ? ' / KM' : ''}</div><div class="showDetailValue">${escapeHtml(item.ano||'')}${canSeeCatalogKm() ? ` • ${escapeHtml(item.km||'')}` : ''}</div></div>
           <div class="showDetailCard"><div class="showDetailLabel">Configuração</div><div class="showDetailValue">${escapeHtml(item.cambio||'')} • ${escapeHtml(item.combustivel||'')} • ${escapeHtml(item.cor||'')}</div></div>
@@ -3755,6 +3807,8 @@ function openShowModal(item){
 
   el("btnShowModalEdit")?.addEventListener("click", ()=>{ closeShowModal(); openShowEditor(item); });
   el("btnShowModalShare")?.addEventListener("click", ()=>shareShowVehicle(item));
+  el("btnShowModalPromo")?.addEventListener("click", async ()=>{ try{ await downloadShowroomPromoImage(item); }catch(err){ alert('Não foi possível gerar a arte: ' + (err?.message||err)); } });
+  el("btnShowModalShareImage")?.addEventListener("click", async ()=>{ try{ await shareShowroomPromoImage(item); }catch(err){ alert('Não foi possível compartilhar a imagem: ' + (err?.message||err)); } });
 }
 function closeShowModal(){ const m=el("showModal"); if(m) m.style.display="none"; }
 function openShowEditor(item){
@@ -3775,31 +3829,19 @@ function openShowEditor(item){
   el("showCor").value=item?.cor||'';
   el("showStatus").value=item?.status||'Em preparação';
   el("showPlaca").value=item?.placa||'';
+  el("showOfertaAtiva").checked=!!item?.ofertaAtiva;
+  el("showOfertaPreco").value=item?.ofertaPreco||'';
+  el("showOfertaHoras").value=item?.ofertaHoras||'';
+  el("showOfertaTitulo").value=item?.ofertaTitulo||'OFERTA';
+  el("showOfertaSelo").value=item?.ofertaSelo||'OPORTUNIDADE';
   el("showDescricao").value=item?.descricao||'';
-  if(el('showOfertaAtiva')) el('showOfertaAtiva').checked = !!item?.ofertaAtiva;
-  if(el('showPrecoOferta')) el('showPrecoOferta').value = item?.precoOferta||'';
-  if(el('showOfertaTitulo')) el('showOfertaTitulo').value = item?.ofertaTitulo||'OFERTA';
-  if(el('showOfertaSelo')) el('showOfertaSelo').value = item?.ofertaSelo||'OPORTUNIDADE';
-  if(el('showOfertaHoras')) el('showOfertaHoras').value = '';
-  if(el('showOfertaExpiraEm')) el('showOfertaExpiraEm').value = item?.ofertaExpiraEm || '';
-  const ofertaToggle = el('showOfertaAtiva');
-  const ofertaHoras = el('showOfertaHoras');
-  if(ofertaToggle && !ofertaToggle.dataset.boundOferta){
-    ofertaToggle.addEventListener('change', updateShowOfertaUI);
-    ofertaToggle.dataset.boundOferta='1';
-  }
-  if(ofertaHoras && !ofertaHoras.dataset.boundOferta){
-    ofertaHoras.addEventListener('input', updateShowOfertaUI);
-    ofertaHoras.dataset.boundOferta='1';
-  }
-  updateShowOfertaUI();
   clearPendingShowroomFiles();
   setShowroomFotos(normalizeShowroomFotos(item||{}));
   bindShowroomFileInput();
   el("btnShowDelete").style.display = item?.id ? 'inline-flex' : 'none';
   el("showEditorModal").style.display='flex';
 }
-function closeShowEditor(){ const m=el("showEditorModal"); if(m) m.style.display='none'; if(el('showOfertaAtiva')) el('showOfertaAtiva').checked=false; if(el('showOfertaHoras')) el('showOfertaHoras').value=''; if(el('showOfertaExpiraEm')) el('showOfertaExpiraEm').value=''; updateShowOfertaUI(); clearPendingShowroomFiles(); }
+function closeShowEditor(){ const m=el("showEditorModal"); if(m) m.style.display='none'; clearPendingShowroomFiles(); }
 async function saveShowEditor(){
   if(!canManageShowroom()) return;
   const id=el("showEditId").value;
@@ -3829,26 +3871,29 @@ async function saveShowEditor(){
     status: v("showStatus") || 'Em preparação',
     placa: plateBR(v("showPlaca")),
     descricao: v("showDescricao"),
-    ofertaAtiva: !!el('showOfertaAtiva')?.checked,
-    precoOferta: v('showPrecoOferta'),
-    ofertaTitulo: v('showOfertaTitulo') || 'OFERTA',
-    ofertaSelo: v('showOfertaSelo') || 'OPORTUNIDADE',
-    ofertaExpiraEm: '',
+    ofertaAtiva: !!el("showOfertaAtiva")?.checked,
+    ofertaPreco: v("showOfertaPreco"),
+    ofertaHoras: v("showOfertaHoras"),
+    ofertaTitulo: v("showOfertaTitulo") || 'OFERTA',
+    ofertaSelo: v("showOfertaSelo") || 'OPORTUNIDADE',
+    ofertaExpiraEm: (!!el("showOfertaAtiva")?.checked && Number((v("showOfertaHoras")||'').replace(/[^\d]/g,''))>0)
+      ? (Date.now() + Number((v("showOfertaHoras")||'').replace(/[^\d]/g,'')) * 3600000)
+      : null,
     fotoCapa: fotos[0] || '',
     fotos,
     updatedAt: serverTimestamp(),
     updatedByUid: auth.currentUser?.uid || '',
     updatedByEmail: lower(auth.currentUser?.email || '')
   };
-  const ofertaHoras = Number((v('showOfertaHoras')||'').replace(/[^\d]/g,'')) || 0;
-  const ofertaExpiraAtual = el('showOfertaExpiraEm')?.value || '';
   if(payload.ofertaAtiva){
-    if(!payload.precoOferta){ if(btnSave) btnSave.disabled = false; return alert('Informe o preço de oferta.'); }
-    payload.ofertaExpiraEm = ofertaHoras ? new Date(Date.now() + ofertaHoras*3600*1000).toISOString() : ofertaExpiraAtual;
-    if(!payload.ofertaExpiraEm){ if(btnSave) btnSave.disabled = false; return alert('Informe a validade da oferta em horas.'); }
-  }else{
-    payload.precoOferta='';
-    payload.ofertaExpiraEm='';
+    if(!showroomMoneyNumber(payload.ofertaPreco)){
+      if(btnSave) btnSave.disabled = false;
+      return alert('Informe o preço promocional da oferta.');
+    }
+    if(!Number((payload.ofertaHoras||'').replace(/[^\d]/g,''))){
+      if(btnSave) btnSave.disabled = false;
+      return alert('Informe a validade da oferta em horas.');
+    }
   }
   if(!payload.modelo){ if(btnSave) btnSave.disabled = false; return alert('Informe ao menos o modelo do veículo.'); }
   try{
@@ -3879,7 +3924,7 @@ function shareShowVehicle(item){
     `🚗 *${((item.marca||"")+" "+(item.modelo||"")+" "+(item.versao||"")).trim()}*`,
     `${item.ano||''} • ${item.km||''}`,
     `${item.cambio||''} • ${item.combustivel||''} • ${item.cor||''}`,
-    showroomOfferIsActive(item) ? `🔥 *${item.ofertaTitulo||'OFERTA'}:* de ${formatShowPrice(item.preco)} por ${formatShowPrice(item.precoOferta)} até ${formatShowDateTime(item.ofertaExpiraEm)}` : `💰 *Preço:* ${formatShowPrice(item.preco)}`,
+    `💰 *Preço:* ${formatShowPrice(item.preco)}`,
     item.status ? `📌 *Status:* ${item.status}` : '',
     item.descricao || ''
   ].filter(Boolean).join('\n');
@@ -4136,6 +4181,32 @@ el("btnShowEditorClose")?.addEventListener("click", closeShowEditor);
 el("showEditorModal")?.addEventListener("click", (ev)=>{ if(ev.target?.id==="showEditorModal") closeShowEditor(); });
 el("btnShowSave")?.addEventListener("click", saveShowEditor);
 el("btnShowDelete")?.addEventListener("click", deleteShowEditor);
+["showOfertaPreco","showOfertaHoras","showOfertaTitulo","showOfertaSelo"].forEach(id=>{
+  const node = el(id);
+  if(node){
+    node.addEventListener('blur', ()=>{ if((id==="showOfertaPreco") && v(id)) node.value = fmtBRL(v(id)); });
+    node.addEventListener('input', ()=>{
+      const hint = el('showOfertaPreviewHint');
+      if(hint){
+        const ativo = !!el('showOfertaAtiva')?.checked;
+        const preco = v('showOfertaPreco') || 'sob consulta';
+        const horas = v('showOfertaHoras') || 'sem prazo';
+        hint.textContent = ativo
+          ? `Oferta ativa: ${v('showOfertaTitulo')||'OFERTA'} • preço ${preco} • validade ${horas}h • selo ${v('showOfertaSelo')||'OPORTUNIDADE'}.`
+          : 'Quando a oferta estiver ativa, o catálogo monta automaticamente a arte visual da capa e também libera a geração da imagem pronta para WhatsApp e Instagram.';
+      }
+    });
+  }
+});
+el("showOfertaAtiva")?.addEventListener("change", ()=>{
+  const hint = el('showOfertaPreviewHint');
+  if(hint){
+    hint.textContent = el('showOfertaAtiva')?.checked
+      ? `Oferta ativa: ${v('showOfertaTitulo')||'OFERTA'} • preço ${v('showOfertaPreco')||'sob consulta'} • validade ${v('showOfertaHoras')||'sem prazo'}h • selo ${v('showOfertaSelo')||'OPORTUNIDADE'}.`
+      : 'Quando a oferta estiver ativa, o catálogo monta automaticamente a arte visual da capa e também libera a geração da imagem pronta para WhatsApp e Instagram.';
+  }
+  renderShowroom();
+});
 el("btnShowTakePhoto")?.addEventListener("click", ()=>openShowroomFilePicker(false));
 el("btnShowAddPhotos")?.addEventListener("click", ()=>openShowroomFilePicker(true));
 ["showFipe","showPreco","showPrecoMin","showPrecoMax"].forEach(id=>{
@@ -4143,7 +4214,7 @@ el("btnShowAddPhotos")?.addEventListener("click", ()=>openShowroomFilePicker(tru
   if(!e) return;
   e.addEventListener("blur", ()=>{ if(v(id)) e.value = fmtBRL(v(id)); renderShowroom(); });
 });
-["showSearch","showStatusFilter","showCambioFilter","showCombustivelFilter","showPrecoMin","showPrecoMax","showKmMax"].forEach(id=>{
+["showSearch","showStatusFilter","showCambioFilter","showCombustivelFilter","showPrecoMin","showPrecoMax","showKmMax","showOfertaAtiva","showOfertaPreco","showOfertaHoras","showOfertaTitulo","showOfertaSelo"].forEach(id=>{
   const node=el(id);
   if(!node) return;
   node.addEventListener("input", renderShowroom);
