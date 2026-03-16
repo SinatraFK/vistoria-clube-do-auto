@@ -1771,6 +1771,125 @@ body.sidebar-expanded .navLabel{
 .loginAssistText{font-size:12px;color:#64748b;font-weight:700}
 @media (max-width:760px){.loginAssistRow{align-items:flex-start}.loginAssistText{width:100%}}
 
+
+
+/* ===== Oferta comercial no catálogo ===== */
+.showOfferTopBadge{
+  position:absolute;
+  top:14px;
+  right:14px;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:12px 18px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#ef4444 0%, #dc2626 100%);
+  color:#fff;
+  font-size:15px;
+  font-weight:900;
+  letter-spacing:.02em;
+  box-shadow:0 14px 28px rgba(220,38,38,.30);
+  z-index:4;
+}
+.showOfferTopBadge small{
+  font-size:11px;
+  opacity:.9;
+  font-weight:800;
+}
+.showOfferPanel{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  padding:18px 16px 16px;
+  background:linear-gradient(180deg,rgba(15,23,42,0) 0%, rgba(15,23,42,.20) 18%, rgba(15,23,42,.78) 100%);
+  z-index:3;
+}
+.showOfferOld{
+  display:inline-flex;
+  align-items:center;
+  justify-content:flex-end;
+  margin-left:auto;
+  background:rgba(239,68,68,.94);
+  color:#fff;
+  padding:10px 14px;
+  border-radius:14px;
+  font-size:15px;
+  font-weight:900;
+  text-decoration:line-through;
+  text-decoration-thickness:3px;
+  box-shadow:0 12px 24px rgba(15,23,42,.18);
+}
+.showOfferNowRow{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:10px;
+  flex-wrap:wrap;
+}
+.showOfferNowLabel{
+  color:#fff;
+  font-size:16px;
+  font-weight:900;
+  text-shadow:0 2px 8px rgba(0,0,0,.25);
+}
+.showOfferNowPrice{
+  color:#fef3c7;
+  font-size:34px;
+  line-height:1;
+  font-weight:900;
+  letter-spacing:-.04em;
+  text-shadow:0 4px 16px rgba(0,0,0,.35);
+}
+.showOfferBottomBadge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  margin-top:12px;
+  margin-left:auto;
+  padding:10px 16px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#16a34a 0%, #16a34a 45%, #15803d 100%);
+  color:#fff;
+  font-size:13px;
+  font-weight:900;
+  box-shadow:0 12px 24px rgba(22,163,74,.26);
+}
+.showOfferMeta{
+  margin-top:10px;
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.showOfferMeta .showSpec{background:#fff}
+.showOfferEditorWrap{
+  margin-top:12px;
+  padding:14px;
+  border-radius:18px;
+  background:linear-gradient(180deg,#fff7f7 0%, #fff 100%);
+  border:1px solid rgba(239,68,68,.16);
+}
+.showOfferFields{display:none;margin-top:12px}
+.showOfferFields.active{display:block}
+.showOfferPreviewTag{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 12px;
+  border-radius:999px;
+  background:#fee2e2;
+  color:#991b1b;
+  font-size:12px;
+  font-weight:900;
+}
+@media (max-width:760px){
+  .showOfferTopBadge{top:12px;right:12px;padding:10px 14px;font-size:13px}
+  .showOfferOld{font-size:13px;padding:8px 12px}
+  .showOfferNowPrice{font-size:28px}
+  .showOfferNowLabel{font-size:14px}
+}
+
 </style>
 </head>
 
@@ -2061,27 +2180,20 @@ body.sidebar-expanded .navLabel{
           <select id="manopla"><option>Bom</option><option>Trocar</option></select>
         </div>
       </div>
-      <label>Forro de porta</label>
+      <label>Forro de porta (selecione)</label>
       <div style="border:1px dashed #e5e7eb;border-radius:14px;padding:12px;background:#fafafa;margin-bottom:10px">
-        <div class="row2">
-          <div>
-            <label>Estado geral</label>
-            <select id="forroEstado"><option>Bom</option><option>Avariado</option></select>
-          </div>
-          <div>
-            <div class="hint" style="margin-top:30px">Começa como bom. Só abre os detalhes se marcar avariado.</div>
-          </div>
+        <div class="row3">
+          <label class="chkLabelRight">Motorista <input type="checkbox" id="forro_motorista"></label>
+          <label class="chkLabelRight">Passageiro <input type="checkbox" id="forro_passageiro"></label>
+          <label class="chkLabelRight">Traseiro D <input type="checkbox" id="forro_traseiro_d"></label>
+          <label class="chkLabelRight">Traseiro E <input type="checkbox" id="forro_traseiro_e"></label>
+          <label class="chkLabelRight">Dianteiros <input type="checkbox" id="forro_dianteiros"></label>
+          <label class="chkLabelRight">Traseiros <input type="checkbox" id="forro_traseiros"></label>
+          <label class="chkLabelRight">Todos <input type="checkbox" id="forro_todos"></label>
         </div>
-        <div id="forroDetalhesWrap" class="hidden" style="margin-top:10px">
-          <div class="row3">
-            <label class="chkLabelRight">Motorista <input type="checkbox" id="forro_motorista"></label>
-            <label class="chkLabelRight">Passageiro <input type="checkbox" id="forro_passageiro"></label>
-            <label class="chkLabelRight">Traseiro D <input type="checkbox" id="forro_traseiro_d"></label>
-            <label class="chkLabelRight">Traseiro E <input type="checkbox" id="forro_traseiro_e"></label>
-            <label class="chkLabelRight">Dianteiros <input type="checkbox" id="forro_dianteiros"></label>
-            <label class="chkLabelRight">Traseiros <input type="checkbox" id="forro_traseiros"></label>
-            <label class="chkLabelRight">Todos <input type="checkbox" id="forro_todos"></label>
-          </div>
+        <div style="margin-top:10px">
+          <label>Estado</label>
+          <select id="forroEstado"><option>Bom</option><option>Avariado</option></select>
         </div>
       </div>
 
@@ -2138,32 +2250,17 @@ body.sidebar-expanded .navLabel{
         <div><label>Lanterna (E)</label><select id="lanternaE"><option>Bom</option><option>Polimento</option><option>Troca</option></select></div>
       </div>
       <h3 style="margin-top:14px">🪟 Vidros</h3>
+      <label>Para-brisa</label>
+      <select id="vidroParabrisa"><option>OK</option><option>Reparo</option><option>Troca</option></select>
       <div style="border:1px dashed #e5e7eb;border-radius:14px;padding:12px;background:#fafafa;margin-bottom:10px">
-        <div class="row2">
-          <div>
-            <label>Estado geral</label>
-            <select id="vidroEstado"><option>Bom</option><option>Avariado</option></select>
-          </div>
-          <div>
-            <div class="hint" style="margin-top:30px">Começa como bom. Só abre os detalhes se marcar avariado.</div>
-          </div>
-        </div>
-        <div id="vidroDetalhesWrap" class="hidden" style="margin-top:10px">
-          <label>Para-brisa</label>
-          <select id="vidroParabrisa"><option>OK</option><option>Reparo</option><option>Troca</option></select>
-          <div style="border:1px dashed #e5e7eb;border-radius:14px;padding:12px;background:#fff;margin-bottom:10px">
-            <div class="hint">Demais vidros (marque e selecione a ação).</div>
-            <div class="chkRow"><label class="chkLabelRight">Dianteiro (D) <input type="checkbox" id="vidro_dd_chk"></label><select id="vidro_dd_act"><option>Reparo</option><option>Troca</option><option>Não abre</option></select></div>
-            <div class="chkRow"><label class="chkLabelRight">Dianteiro (E) <input type="checkbox" id="vidro_de_chk"></label><select id="vidro_de_act"><option>Reparo</option><option>Troca</option><option>Não abre</option></select></div>
-            <div class="chkRow"><label class="chkLabelRight">Traseiro (D) <input type="checkbox" id="vidro_td_chk"></label><select id="vidro_td_act"><option>Reparo</option><option>Troca</option><option>Não abre</option></select></div>
-            <div class="chkRow"><label class="chkLabelRight">Traseiro (E) <input type="checkbox" id="vidro_te_chk"></label><select id="vidro_te_act"><option>Reparo</option><option>Troca</option><option>Não abre</option></select></div>
-            <div class="chkRow"><label class="chkLabelRight">Vigia <input type="checkbox" id="vidro_vg_chk"></label><select id="vidro_vg_act"><option>Reparo</option><option>Troca</option><option>Não abre</option></select></div>
-          </div>
-        </div>
+        <div class="hint">Demais vidros (marque e selecione a ação).</div>
+        <div class="chkRow"><label class="chkLabelRight">Dianteiro (D) <input type="checkbox" id="vidro_dd_chk"></label><select id="vidro_dd_act"><option>Reparo</option><option>Troca</option><option>Não abre</option></select></div>
+        <div class="chkRow"><label class="chkLabelRight">Dianteiro (E) <input type="checkbox" id="vidro_de_chk"></label><select id="vidro_de_act"><option>Reparo</option><option>Troca</option><option>Não abre</option></select></div>
+        <div class="chkRow"><label class="chkLabelRight">Traseiro (D) <input type="checkbox" id="vidro_td_chk"></label><select id="vidro_td_act"><option>Reparo</option><option>Troca</option><option>Não abre</option></select></div>
+        <div class="chkRow"><label class="chkLabelRight">Traseiro (E) <input type="checkbox" id="vidro_te_chk"></label><select id="vidro_te_act"><option>Reparo</option><option>Troca</option><option>Não abre</option></select></div>
+        <div class="chkRow"><label class="chkLabelRight">Vigia <input type="checkbox" id="vidro_vg_chk"></label><select id="vidro_vg_act"><option>Reparo</option><option>Troca</option><option>Não abre</option></select></div>
       </div>
-      <label>Outros</label>
-      <textarea id="gastosOutros" placeholder="Ex: acabamento do painel, maçaneta interna direita, sensor traseiro..."></textarea>
-      <div class="hint">No relatório aparecem apenas itens que geram custo. “Bom/OK/0” não aparece. Em “Outros”, sai apenas o texto digitado.</div>
+      <div class="hint">No relatório aparecem apenas itens que geram custo. “Bom/OK/0” não aparece.</div>
     </div>
 
     <div class="card">
@@ -2550,6 +2647,23 @@ body.sidebar-expanded .navLabel{
         <div><label>Placa</label><input id="showPlaca" placeholder="Ex: EPX5C99"></div>
       </div>
       <label>Descrição</label><textarea id="showDescricao" placeholder="Observações comerciais do veículo, diferenciais e preparação."></textarea>
+      <div class="showOfferEditorWrap">
+        <label class="chkLabel"><input type="checkbox" id="showOfertaAtiva"> Ativar oferta promocional neste anúncio</label>
+        <div class="hint">Quando a oferta estiver ativa e dentro do prazo, o card do catálogo ganha o visual comercial de campanha com preço antigo riscado, preço promocional e selo de oportunidade.</div>
+        <div class="showOfferFields" id="showOfertaFields">
+          <input type="hidden" id="showOfertaExpiraEm">
+          <div class="row3">
+            <div><label>Preço de oferta</label><input id="showPrecoOferta" inputmode="numeric" placeholder="Ex: 78990"></div>
+            <div><label>Título da faixa</label><input id="showOfertaTitulo" placeholder="Ex: OFERTA"></div>
+            <div><label>Selo inferior</label><input id="showOfertaSelo" placeholder="Ex: OPORTUNIDADE"></div>
+          </div>
+          <div class="row3">
+            <div><label>Validade em horas</label><input id="showOfertaHoras" inputmode="numeric" placeholder="Ex: 24, 48, 72 ou 52"></div>
+            <div><label>Expira em</label><input id="showOfertaExpiraPreview" readonly placeholder="Será calculado ao salvar"></div>
+            <div><label>Status da oferta</label><div class="hint"><span class="showOfferPreviewTag" id="showOfertaStatusTag">Sem oferta ativa</span></div></div>
+          </div>
+        </div>
+      </div>
       <div class="row2">
         <div>
           <label>Fotos do veículo</label>
@@ -2729,22 +2843,6 @@ function getAvaliadores(){ return Array.from(document.querySelectorAll(".avChk:c
 function getAvaliadoresText(){ return getAvaliadores().join("/"); }
 function toggleDebitos(){ const sim=(v("debitosSel")||"Não")==="Sim"; el("debitosValorWrap").classList.toggle("hidden", !sim); if(!sim) el("debitosValor").value=""; }
 function toggleFin(){ const sim=(v("finSel")||"Não")==="Sim"; el("finValorWrap").classList.toggle("hidden", !sim); if(!sim) el("finValor").value=""; }
-function toggleForroDetalhes(){
-  const av=(v("forroEstado")||"Bom")==="Avariado";
-  el("forroDetalhesWrap")?.classList.toggle("hidden", !av);
-  if(!av){
-    ["forro_motorista","forro_passageiro","forro_traseiro_d","forro_traseiro_e","forro_dianteiros","forro_traseiros","forro_todos"].forEach(id=>{ if(el(id)) el(id).checked=false; });
-  }
-}
-function toggleVidroDetalhes(){
-  const av=(v("vidroEstado")||"Bom")==="Avariado";
-  el("vidroDetalhesWrap")?.classList.toggle("hidden", !av);
-  if(!av){
-    if(el("vidroParabrisa")) el("vidroParabrisa").value="OK";
-    ["vidro_dd_chk","vidro_de_chk","vidro_td_chk","vidro_te_chk","vidro_vg_chk"].forEach(id=>{ if(el(id)) el(id).checked=false; });
-    ["vidro_dd_act","vidro_de_act","vidro_td_act","vidro_te_act","vidro_vg_act"].forEach(id=>{ if(el(id)) el(id).value="Reparo"; });
-  }
-}
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -2831,34 +2929,7 @@ async function ensureUserDoc(user){
 
 function onlyDigits(s){ return (s??"").toString().replace(/[^\d]/g,""); }
 function fmtKM(raw){ const d=onlyDigits(raw); if(!d) return ""; return new Intl.NumberFormat("pt-BR").format(Number(d)); }
-function parseBRLInput(raw){
-  let s=(raw??"").toString().trim();
-  if(!s) return null;
-  s=s.replace(/\s+/g,"").replace(/R\$/gi,"");
-  const hasComma=s.includes(","), hasDot=s.includes(".");
-  if(hasComma){
-    s=s.replace(/\./g,"").replace(",", ".");
-    const n=Number(s);
-    return Number.isFinite(n) ? n : null;
-  }
-  if(hasDot){
-    const parts=s.split(".");
-    if(parts.length>1){
-      const last=parts[parts.length-1];
-      s = last.length===2 ? (parts.slice(0,-1).join("")+"."+last) : parts.join("");
-    }
-    const n=Number(s);
-    return Number.isFinite(n) ? n : null;
-  }
-  const d=s.replace(/[^\d]/g,"");
-  if(!d) return null;
-  return Number(d);
-}
-function fmtBRL(raw){
-  const n=(typeof raw==="number") ? raw : parseBRLInput(raw);
-  if(n==null || !Number.isFinite(n)) return "";
-  return new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL",minimumFractionDigits:2,maximumFractionDigits:2}).format(n).replace(/ /g," ");
-}
+function fmtBRL(raw){ const d=onlyDigits(raw); if(!d) return ""; return new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(Number(d)).replace(/ /g," "); }
 function plateBR(raw){ return (raw||"").toString().toUpperCase().replace(/\s+/g,"").trim(); }
 function isArVersion(){
   return ["Completo","Completo + 7 Lugares","Apenas AR"].includes(v("versao"));
@@ -2897,7 +2968,6 @@ function preencherPadrao(){
     if(el(id)) el(id).checked=false;
   });
   el("forroEstado").value="Bom";
-  toggleForroDetalhes();
 
   el("funilariaPecas").value="0";
   el("pneusQtd").value="0";
@@ -2915,7 +2985,6 @@ function preencherPadrao(){
   el("lanternaD").value="Bom";
   el("lanternaE").value="Bom";
 
-  if(el("vidroEstado")) el("vidroEstado").value="Bom";
   el("vidroParabrisa").value="OK";
   ["vidro_dd_chk","vidro_de_chk","vidro_td_chk","vidro_te_chk","vidro_vg_chk"].forEach(id=>{
     if(el(id)) el(id).checked=false;
@@ -2923,8 +2992,6 @@ function preencherPadrao(){
   ["vidro_dd_act","vidro_de_act","vidro_td_act","vidro_te_act","vidro_vg_act"].forEach(id=>{
     if(el(id)) el(id).value="Reparo";
   });
-  if(el("gastosOutros")) el("gastosOutros").value="";
-  toggleVidroDetalhes();
 
   if(isArVersion()) el("arCond").value="Bom";
   if(el("blindadoChk")?.checked){
@@ -2983,8 +3050,7 @@ el("kmComprou").addEventListener("blur",()=>{ const val=v("kmComprou"), digs=onl
   const e=el(id);
   if(!e) return;
   e.addEventListener("blur",()=>{
-    const formatted=fmtBRL(v(id));
-    el(id).value=formatted;
+    if(v(id)) el(id).value=fmtBRL(v(id));
     atualizarPreview();
     refreshNovaAppUX();
   });
@@ -3051,7 +3117,7 @@ function montar(){
   if(v("forroEstado")==="Avariado"){
     const portas=[];
     [["forro_motorista","Motorista"],["forro_passageiro","Passageiro"],["forro_traseiro_d","Traseiro D"],["forro_traseiro_e","Traseiro E"],["forro_dianteiros","Dianteiros"],["forro_traseiros","Traseiros"],["forro_todos","Todos"]].forEach(([id,label])=>{ if(el(id)?.checked) portas.push(label); });
-    gastos.push(portas.length ? `Forro de porta (${portas.join(", ")}): Avariado` : "Forro de porta: Avariado");
+    if(portas.length) gastos.push(`Forro de porta (${portas.join(", ")}): Avariado`);
   }
   const pecas=Number(v("funilariaPecas")||"0"), pintura=!!el("pinturaCompleta")?.checked, granizo=!!el("chuvaGranizo")?.checked;
   if(pecas>0 || pintura || granizo){
@@ -3067,14 +3133,8 @@ function montar(){
     const val=v(id);
     if(val && val!=="Bom") gastos.push(`${label}: ${val}`);
   });
-  if(v("vidroEstado")==="Avariado"){
-    if(v("vidroParabrisa") && v("vidroParabrisa")!=="OK") gastos.push(`Para-brisa: ${v("vidroParabrisa")}`);
-    [["vidro_dd_chk","vidro_dd_act","Vidro dianteiro (D)"],["vidro_de_chk","vidro_de_act","Vidro dianteiro (E)"],["vidro_td_chk","vidro_td_act","Vidro traseiro (D)"],["vidro_te_chk","vidro_te_act","Vidro traseiro (E)"],["vidro_vg_chk","vidro_vg_act","Vigia"]].forEach(([chk,act,label])=>{ if(el(chk)?.checked) gastos.push(`${label}: ${v(act)||"Reparo"}`); });
-    if(!gastos.some(x=>x.startsWith("Para-brisa:") || x.startsWith("Vidro ") || x.startsWith("Vigia"))) gastos.push("Vidros: Avariado");
-  }
-  if(v("gastosOutros")){
-    v("gastosOutros").split(/\n+/).map(x=>x.trim()).filter(Boolean).forEach(line=>gastos.push(line));
-  }
+  if(v("vidroParabrisa") && v("vidroParabrisa")!=="OK") gastos.push(`Para-brisa: ${v("vidroParabrisa")}`);
+  [["vidro_dd_chk","vidro_dd_act","Vidro dianteiro (D)"],["vidro_de_chk","vidro_de_act","Vidro dianteiro (E)"],["vidro_td_chk","vidro_td_act","Vidro traseiro (D)"],["vidro_te_chk","vidro_te_act","Vidro traseiro (E)"],["vidro_vg_chk","vidro_vg_act","Vigia"]].forEach(([chk,act,label])=>{ if(el(chk)?.checked) gastos.push(`${label}: ${v(act)||"Reparo"}`); });
   if(gastos.length){ lines.push(""); lines.push("⚙️ *Gastos*"); lines.push(...gastos); }
 
   if(v("testeRodagem")){ lines.push(""); lines.push("🛣️ *Teste de Rodagem*"); lines.push(v("testeRodagem")); }
@@ -3446,6 +3506,49 @@ function formatShowPrice(raw){
   if(!raw) return "Sob consulta";
   return formatShowMoney(raw);
 }
+function showroomOfferExpiryMs(item){
+  const v=item?.ofertaExpiraEm;
+  if(!v) return 0;
+  if(typeof v?.toMillis === 'function') return v.toMillis();
+  const t = new Date(v).getTime();
+  return Number.isFinite(t) ? t : 0;
+}
+function showroomOfferIsActive(item){
+  const precoOferta = showroomMoneyNumber(item?.precoOferta);
+  const expira = showroomOfferExpiryMs(item);
+  return !!item?.ofertaAtiva && !!precoOferta && !!expira && expira > Date.now();
+}
+function showroomOfferInfo(item){
+  const active = showroomOfferIsActive(item);
+  const expira = showroomOfferExpiryMs(item);
+  const titulo = (item?.ofertaTitulo||'OFERTA').toString().trim() || 'OFERTA';
+  const selo = (item?.ofertaSelo||'OPORTUNIDADE').toString().trim() || 'OPORTUNIDADE';
+  const precoOferta = showroomMoneyNumber(item?.precoOferta);
+  const precoNormal = showroomMoneyNumber(item?.preco);
+  const desconto = (precoNormal && precoOferta && precoOferta < precoNormal) ? (precoNormal - precoOferta) : 0;
+  return {active, expira, titulo, selo, precoOferta, precoNormal, desconto};
+}
+function formatShowDateTime(raw){
+  const ms = showroomOfferExpiryMs({ofertaExpiraEm: raw});
+  if(!ms) return '—';
+  return new Intl.DateTimeFormat('pt-BR',{dateStyle:'short',timeStyle:'short'}).format(new Date(ms));
+}
+function updateShowOfertaUI(){
+  const on = !!el('showOfertaAtiva')?.checked;
+  const box = el('showOfertaFields');
+  const tag = el('showOfertaStatusTag');
+  const expiraPreview = el('showOfertaExpiraPreview');
+  if(box) box.classList.toggle('active', on);
+  const horas = (el('showOfertaHoras')?.value||'').replace(/[^\d]/g,'');
+  const hidden = el('showOfertaExpiraEm')?.value || '';
+  let preview = hidden ? formatShowDateTime(hidden) : 'Será calculado ao salvar';
+  if(on && horas){
+    const ms = Date.now() + Number(horas)*3600*1000;
+    preview = formatShowDateTime(new Date(ms).toISOString());
+  }
+  if(expiraPreview) expiraPreview.value = on ? preview : '';
+  if(tag) tag.textContent = !on ? 'Sem oferta ativa' : (preview && preview !== 'Será calculado ao salvar' ? `Oferta ativa até ${preview}` : 'Oferta pronta para ser publicada');
+}
 function ensureShowroomListener(){
   if(isGuest){ showroomItemsCache=[]; renderShowroom(); return; }
   if(unsubShowroom) return;
@@ -3487,11 +3590,23 @@ function renderShowroom(){
         <img src="${escapeHtml(showImgSrc(it))}" alt="${escapeHtml((it.marca?it.marca+" ":"") + (it.modelo||"Veículo"))}">
         ${isBlindadoItem(it) ? `<span class="showBlindadoRibbon">BLINDADO</span>` : ``}
         <span class="showBadge ${showroomStatusClass(it.status)}">${escapeHtml(it.status||"Em preparação")}</span>
+        ${showroomOfferInfo(it).active ? `<span class="showOfferTopBadge">🔥 ${escapeHtml(showroomOfferInfo(it).titulo)}</span>` : ``}
         <span class="showStockBadge">🚗 VEÍCULO EM ESTOQUE</span>
-        <div class="showPriceBox">
-          <span class="showPrice">${escapeHtml(formatShowPrice(it.preco))}</span>
-          ${canSeeCatalogFipe() ? `<span class="showFipeMini">FIPE: ${escapeHtml(it.fipe ? formatShowMoney(it.fipe) : '—')}</span>` : ``}
-        </div>
+        ${showroomOfferInfo(it).active ? `
+          <div class="showOfferPanel">
+            <div style="display:flex;justify-content:flex-end"><span class="showOfferOld">DE: ${escapeHtml(formatShowPrice(it.preco))}</span></div>
+            <div class="showOfferNowRow">
+              <div class="showOfferNowLabel">POR:</div>
+              <div class="showOfferNowPrice">${escapeHtml(formatShowPrice(it.precoOferta))}</div>
+            </div>
+            <div style="display:flex;justify-content:flex-end"><span class="showOfferBottomBadge">${escapeHtml(showroomOfferInfo(it).selo)}</span></div>
+          </div>
+        ` : `
+          <div class="showPriceBox">
+            <span class="showPrice">${escapeHtml(formatShowPrice(it.preco))}</span>
+            ${canSeeCatalogFipe() ? `<span class="showFipeMini">FIPE: ${escapeHtml(it.fipe ? formatShowMoney(it.fipe) : '—')}</span>` : ``}
+          </div>
+        `}
       </div>
       <div class="showBody">
         <div class="showTitle">${escapeHtml(((it.marca||"")+" "+(it.modelo||"")).trim() || "Veículo")}</div>
@@ -3502,6 +3617,7 @@ function renderShowroom(){
           <span class="showSpec">⛽ ${escapeHtml(it.combustivel||"Combustível")}</span>
           <span class="showSpec">🎨 ${escapeHtml(it.cor||"Cor")}</span>
         </div>
+        ${showroomOfferInfo(it).active ? `<div class="showOfferMeta"><span class="showSpec">⏰ Oferta até ${escapeHtml(formatShowDateTime(it.ofertaExpiraEm))}</span>${showroomOfferInfo(it).desconto ? `<span class="showSpec">💸 Desconto de ${escapeHtml(formatShowPrice(showroomOfferInfo(it).desconto))}</span>` : ``}</div>` : ``}
         ${canSeeCatalogFipe() ? `<div class="showAlert ${opp.cls}">${escapeHtml(opp.label)}</div>` : ``}
         <div class="showActions">
           <button class="btnB" type="button" data-show-open="${escapeHtml(it.id)}">Ver veículo</button>
@@ -3564,7 +3680,9 @@ function openShowModal(item){
       </div>
     </div>
     <div class="showModalHeroLine">
-      <div class="showModalHeroPrice">${escapeHtml(formatShowPrice(item.preco))}</div>
+      <div>
+        ${showroomOfferInfo(item).active ? `<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><span class="showOfferTopBadge" style="position:static;box-shadow:none">🔥 ${escapeHtml(showroomOfferInfo(item).titulo)}</span><span class="showSpec">⏰ Até ${escapeHtml(formatShowDateTime(item.ofertaExpiraEm))}</span></div><div style="margin-top:8px;color:#64748b;font-weight:900;text-decoration:line-through">DE: ${escapeHtml(formatShowPrice(item.preco))}</div><div class="showModalHeroPrice">POR: ${escapeHtml(formatShowPrice(item.precoOferta))}</div>` : `<div class="showModalHeroPrice">${escapeHtml(formatShowPrice(item.preco))}</div>`}
+      </div>
       ${canSeeCatalogFipe() ? `<span class="showPriceStrong">${escapeHtml(opp.label)}</span>` : ``}
     </div>
     <div class="showGallery" style="margin-top:12px">
@@ -3580,6 +3698,7 @@ function openShowModal(item){
         <div class="showDetailGrid three">
           <div class="showDetailCard"><div class="showDetailLabel">Veículo</div><div class="showDetailValue">${escapeHtml(((item.marca||"")+" "+(item.modelo||"")+" "+(item.versao||"")).trim())}</div></div>
           <div class="showDetailCard"><div class="showDetailLabel">Preço de venda</div><div class="showDetailValue">${escapeHtml(formatShowPrice(item.preco))}</div></div>
+          ${showroomOfferInfo(item).active ? `<div class="showDetailCard"><div class="showDetailLabel">Oferta ativa</div><div class="showDetailValue">${escapeHtml(formatShowPrice(item.precoOferta))} • até ${escapeHtml(formatShowDateTime(item.ofertaExpiraEm))}</div></div>` : ``}
           ${canSeeCatalogFipe() ? `<div class="showDetailCard"><div class="showDetailLabel">FIPE</div><div class="showDetailValue">${escapeHtml(item.fipe ? formatShowMoney(item.fipe) : 'Não informada')}</div></div>` : ``}
           <div class="showDetailCard"><div class="showDetailLabel">Ano${canSeeCatalogKm() ? ' / KM' : ''}</div><div class="showDetailValue">${escapeHtml(item.ano||'')}${canSeeCatalogKm() ? ` • ${escapeHtml(item.km||'')}` : ''}</div></div>
           <div class="showDetailCard"><div class="showDetailLabel">Configuração</div><div class="showDetailValue">${escapeHtml(item.cambio||'')} • ${escapeHtml(item.combustivel||'')} • ${escapeHtml(item.cor||'')}</div></div>
@@ -3657,13 +3776,30 @@ function openShowEditor(item){
   el("showStatus").value=item?.status||'Em preparação';
   el("showPlaca").value=item?.placa||'';
   el("showDescricao").value=item?.descricao||'';
+  if(el('showOfertaAtiva')) el('showOfertaAtiva').checked = !!item?.ofertaAtiva;
+  if(el('showPrecoOferta')) el('showPrecoOferta').value = item?.precoOferta||'';
+  if(el('showOfertaTitulo')) el('showOfertaTitulo').value = item?.ofertaTitulo||'OFERTA';
+  if(el('showOfertaSelo')) el('showOfertaSelo').value = item?.ofertaSelo||'OPORTUNIDADE';
+  if(el('showOfertaHoras')) el('showOfertaHoras').value = '';
+  if(el('showOfertaExpiraEm')) el('showOfertaExpiraEm').value = item?.ofertaExpiraEm || '';
+  const ofertaToggle = el('showOfertaAtiva');
+  const ofertaHoras = el('showOfertaHoras');
+  if(ofertaToggle && !ofertaToggle.dataset.boundOferta){
+    ofertaToggle.addEventListener('change', updateShowOfertaUI);
+    ofertaToggle.dataset.boundOferta='1';
+  }
+  if(ofertaHoras && !ofertaHoras.dataset.boundOferta){
+    ofertaHoras.addEventListener('input', updateShowOfertaUI);
+    ofertaHoras.dataset.boundOferta='1';
+  }
+  updateShowOfertaUI();
   clearPendingShowroomFiles();
   setShowroomFotos(normalizeShowroomFotos(item||{}));
   bindShowroomFileInput();
   el("btnShowDelete").style.display = item?.id ? 'inline-flex' : 'none';
   el("showEditorModal").style.display='flex';
 }
-function closeShowEditor(){ const m=el("showEditorModal"); if(m) m.style.display='none'; clearPendingShowroomFiles(); }
+function closeShowEditor(){ const m=el("showEditorModal"); if(m) m.style.display='none'; if(el('showOfertaAtiva')) el('showOfertaAtiva').checked=false; if(el('showOfertaHoras')) el('showOfertaHoras').value=''; if(el('showOfertaExpiraEm')) el('showOfertaExpiraEm').value=''; updateShowOfertaUI(); clearPendingShowroomFiles(); }
 async function saveShowEditor(){
   if(!canManageShowroom()) return;
   const id=el("showEditId").value;
@@ -3693,12 +3829,27 @@ async function saveShowEditor(){
     status: v("showStatus") || 'Em preparação',
     placa: plateBR(v("showPlaca")),
     descricao: v("showDescricao"),
+    ofertaAtiva: !!el('showOfertaAtiva')?.checked,
+    precoOferta: v('showPrecoOferta'),
+    ofertaTitulo: v('showOfertaTitulo') || 'OFERTA',
+    ofertaSelo: v('showOfertaSelo') || 'OPORTUNIDADE',
+    ofertaExpiraEm: '',
     fotoCapa: fotos[0] || '',
     fotos,
     updatedAt: serverTimestamp(),
     updatedByUid: auth.currentUser?.uid || '',
     updatedByEmail: lower(auth.currentUser?.email || '')
   };
+  const ofertaHoras = Number((v('showOfertaHoras')||'').replace(/[^\d]/g,'')) || 0;
+  const ofertaExpiraAtual = el('showOfertaExpiraEm')?.value || '';
+  if(payload.ofertaAtiva){
+    if(!payload.precoOferta){ if(btnSave) btnSave.disabled = false; return alert('Informe o preço de oferta.'); }
+    payload.ofertaExpiraEm = ofertaHoras ? new Date(Date.now() + ofertaHoras*3600*1000).toISOString() : ofertaExpiraAtual;
+    if(!payload.ofertaExpiraEm){ if(btnSave) btnSave.disabled = false; return alert('Informe a validade da oferta em horas.'); }
+  }else{
+    payload.precoOferta='';
+    payload.ofertaExpiraEm='';
+  }
   if(!payload.modelo){ if(btnSave) btnSave.disabled = false; return alert('Informe ao menos o modelo do veículo.'); }
   try{
     if(id){
@@ -3728,7 +3879,7 @@ function shareShowVehicle(item){
     `🚗 *${((item.marca||"")+" "+(item.modelo||"")+" "+(item.versao||"")).trim()}*`,
     `${item.ano||''} • ${item.km||''}`,
     `${item.cambio||''} • ${item.combustivel||''} • ${item.cor||''}`,
-    `💰 *Preço:* ${formatShowPrice(item.preco)}`,
+    showroomOfferIsActive(item) ? `🔥 *${item.ofertaTitulo||'OFERTA'}:* de ${formatShowPrice(item.preco)} por ${formatShowPrice(item.precoOferta)} até ${formatShowDateTime(item.ofertaExpiraEm)}` : `💰 *Preço:* ${formatShowPrice(item.preco)}`,
     item.status ? `📌 *Status:* ${item.status}` : '',
     item.descricao || ''
   ].filter(Boolean).join('\n');
@@ -4381,14 +4532,12 @@ el("btnFillPadrao").addEventListener("click", ()=>{
 el("btnWhats").addEventListener("click", async ()=>{ if(!validar()) return; const texto=montar(); setButtonsDisabled(true); await salvarUmaVez(texto); abrirWhats(texto); setButtonsDisabled(false); });
 el("btnCopy").addEventListener("click", async ()=>{ if(!validar()) return; const texto=montar(); setButtonsDisabled(true); await salvarUmaVez(texto); const ok=await copiar(texto); if(ok) alert("Copiado!"); setButtonsDisabled(false); });
 
-["modelo","ano","versao","placa","km","kmComprou","debitosSel","debitosValor","finSel","finValor","fipe","valorPretendido","laudo","laudoObs","leilao","motor","luzes","arCond","blindadoChk","blindadoEstado","blindadoObs","testeRodagem","consultor","cliente","local","captacao","tablier","bancosOnde","bancosServico","volante","manopla","forro_motorista","forro_passageiro","forro_traseiro_d","forro_traseiro_e","forro_dianteiros","forro_traseiros","forro_todos","forroEstado","funilariaPecas","pneusQtd","pinturaCompleta","chuvaGranizo","paraChoqueD","paraChoqueT","retrovisorD","retrovisorE","farolD","farolE","lanternaD","lanternaE","vidroEstado","vidroParabrisa","vidro_dd_chk","vidro_dd_act","vidro_de_chk","vidro_de_act","vidro_td_chk","vidro_td_act","vidro_te_chk","vidro_te_act","vidro_vg_chk","vidro_vg_act","gastosOutros"].forEach(id=>{
+["modelo","ano","versao","placa","km","kmComprou","debitosSel","debitosValor","finSel","finValor","fipe","valorPretendido","laudo","laudoObs","leilao","motor","luzes","arCond","blindadoChk","blindadoEstado","blindadoObs","testeRodagem","consultor","cliente","local","captacao","tablier","bancosOnde","bancosServico","volante","manopla","forro_motorista","forro_passageiro","forro_traseiro_d","forro_traseiro_e","forro_dianteiros","forro_traseiros","forro_todos","forroEstado","funilariaPecas","pneusQtd","pinturaCompleta","chuvaGranizo","paraChoqueD","paraChoqueT","retrovisorD","retrovisorE","farolD","farolE","lanternaD","lanternaE","vidroParabrisa","vidro_dd_chk","vidro_dd_act","vidro_de_chk","vidro_de_act","vidro_td_chk","vidro_td_act","vidro_te_chk","vidro_te_act","vidro_vg_chk","vidro_vg_act"].forEach(id=>{
   const e=el(id); if(!e) return;
   e.addEventListener("input", ()=>{
     if(id==="laudo"){ setStatusBadge(); toggleLaudoDescricao(); }
     if(id==="versao"){ toggleArCond(); }
     if(id==="blindadoChk" || id==="blindadoEstado"){ toggleBlindagem(); }
-    if(id==="forroEstado"){ toggleForroDetalhes(); }
-    if(id==="vidroEstado"){ toggleVidroDetalhes(); }
     atualizarPreview();
     refreshNovaAppUX();
   });
@@ -4396,8 +4545,6 @@ el("btnCopy").addEventListener("click", async ()=>{ if(!validar()) return; const
     if(id==="laudo"){ setStatusBadge(); toggleLaudoDescricao(); }
     if(id==="versao"){ toggleArCond(); }
     if(id==="blindadoChk" || id==="blindadoEstado"){ toggleBlindagem(); }
-    if(id==="forroEstado"){ toggleForroDetalhes(); }
-    if(id==="vidroEstado"){ toggleVidroDetalhes(); }
     atualizarPreview();
   });
 });
@@ -4410,7 +4557,7 @@ el("btnHistExport").addEventListener("click", exportHistoricoCsv);
 el("debitosSel").addEventListener("change",()=>{ toggleDebitos(); atualizarPreview(); refreshNovaAppUX(); });
 el("finSel").addEventListener("change",()=>{ toggleFin(); atualizarPreview(); refreshNovaAppUX(); });
 document.querySelectorAll(".avChk").forEach(c=>c.addEventListener("change",()=>{ atualizarPreview(); refreshNovaAppUX(); }));
-toggleDebitos(); toggleFin(); toggleForroDetalhes(); toggleVidroDetalhes();
+toggleDebitos(); toggleFin();
 
 (function(){
   const chk=el("kmComprouNaoSabe"), wrap=el("kmComprouWrap"), inp=el("kmComprou");
