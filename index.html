@@ -1771,31 +1771,6 @@ body.sidebar-expanded .navLabel{
 .loginAssistText{font-size:12px;color:#64748b;font-weight:700}
 @media (max-width:760px){.loginAssistRow{align-items:flex-start}.loginAssistText{width:100%}}
 
-
-
-.loginProgressCard{margin-top:14px;padding:14px 14px 12px;border-radius:20px;background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%);border:1px solid rgba(148,163,184,.16);box-shadow:var(--shadowSoft)}
-.loginProgressHead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
-.loginProgressTitle{font-size:13px;font-weight:900;color:#0f172a;letter-spacing:.01em}
-.loginProgressState{font-size:12px;font-weight:800;color:#64748b}
-.loginProgressBar{width:100%;height:10px;border-radius:999px;background:#e2e8f0;overflow:hidden}
-.loginProgressBar span{display:block;height:100%;width:0%;border-radius:999px;background:linear-gradient(135deg,#2563eb 0%,#3b82f6 55%,#22c55e 100%);transition:width .22s ease}
-.loginProgressSteps{display:grid;grid-template-columns:1fr;gap:8px;margin-top:12px}
-.loginProgressStep{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:14px;background:#fff;border:1px solid rgba(148,163,184,.14);font-size:12px;font-weight:800;color:#64748b;transition:all .18s ease}
-.loginProgressStep .loginStepDot{width:22px;height:22px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:#e2e8f0;color:#475569;font-size:12px;flex:0 0 auto}
-.loginProgressStep.active{background:#eff6ff;border-color:rgba(37,99,235,.20);color:#1d4ed8}
-.loginProgressStep.active .loginStepDot{background:#dbeafe;color:#1d4ed8}
-.loginProgressStep.done{background:#f0fdf4;border-color:rgba(34,197,94,.18);color:#166534}
-.loginProgressStep.done .loginStepDot{background:#dcfce7;color:#15803d}
-.loginProgressStep.error{background:#fef2f2;border-color:rgba(239,68,68,.16);color:#b91c1c}
-.loginProgressStep.error .loginStepDot{background:#fee2e2;color:#b91c1c}
-.showQualityRow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.showQualityChip{display:inline-flex;align-items:center;gap:8px;padding:8px 11px;border-radius:999px;font-size:12px;font-weight:900;border:1px solid rgba(148,163,184,.14);background:#fff;color:#334155;box-shadow:var(--shadowSoft)}
-.showQualityChip.good{background:#f0fdf4;color:#166534;border-color:#bbf7d0}
-.showQualityChip.warn{background:#fffbeb;color:#92400e;border-color:#fde68a}
-.showQualityChip.bad{background:#fef2f2;color:#b91c1c;border-color:#fecaca}
-.showQualityChip.info{background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe}
-.showQualityHint{margin-top:10px;font-size:12px;color:#64748b;font-weight:700}
-
 </style>
 </head>
 
@@ -1824,20 +1799,6 @@ body.sidebar-expanded .navLabel{
       <button class="btnB" id="btnGuest">Entrar como convidado</button>
     </div>
     <div class="hint" id="loginHint" style="margin-top:12px"></div>
-    <div class="loginProgressCard hidden" id="loginProgressCard" aria-live="polite">
-      <div class="loginProgressHead">
-        <div class="loginProgressTitle" id="loginProgressTitle">Preparando acesso</div>
-        <div class="loginProgressState" id="loginProgressState">0%</div>
-      </div>
-      <div class="loginProgressBar"><span id="loginProgressFill"></span></div>
-      <div class="loginProgressSteps">
-        <div class="loginProgressStep" id="loginStepSession"><span class="loginStepDot">1</span><span>Verificando sessão</span></div>
-        <div class="loginProgressStep" id="loginStepAuth"><span class="loginStepDot">2</span><span>Validando acesso</span></div>
-        <div class="loginProgressStep" id="loginStepProfile"><span class="loginStepDot">3</span><span>Carregando perfil</span></div>
-        <div class="loginProgressStep" id="loginStepPermissions"><span class="loginStepDot">4</span><span>Aplicando permissões</span></div>
-        <div class="loginProgressStep" id="loginStepOpen"><span class="loginStepDot">5</span><span>Abrindo sistema</span></div>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -2733,90 +2694,15 @@ function getUserLabelByUid(uid, fallbackEmail){
 
 function getFirstLineValue(reportText, label){
   const t = (reportText||"").toString();
-  const re1 = new RegExp("\*"+label+"\*:\s*(.+)$","mi");
+  const re1 = new RegExp("\\*"+label+"\\*:\\s*(.+)$","mi");
   const m1 = t.match(re1);
   if(m1 && m1[1]) return m1[1].trim();
-  const re2 = new RegExp(label+":\s*(.+)$","mi");
+  const re2 = new RegExp(label+":\\s*(.+)$","mi");
   const m2 = t.match(re2);
   if(m2 && m2[1]) return m2[1].trim();
   return "";
 }
-function textNorm(raw){
-  return (raw||"").toString().normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
-}
-function inferShowroomPhotoType(raw){
-  const t=textNorm(raw);
-  if(!t) return 'extra';
-  if(/frente|front|dianteira|dianteiro/.test(t)) return 'frente';
-  if(/traseira|traseiro|rear/.test(t)) return 'traseira';
-  if(/lateral.*esq|esquerd|motorista|left/.test(t)) return 'lateral esquerda';
-  if(/lateral.*dir|direit|passageiro|right/.test(t)) return 'lateral direita';
-  if(/interior|banco|cabine/.test(t)) return 'interior';
-  if(/painel|dashboard/.test(t)) return 'painel';
-  if(/motor/.test(t)) return 'motor';
-  if(/porta\s*-?malas|malas/.test(t)) return 'porta-malas';
-  if(/roda|pneu/.test(t)) return 'rodas';
-  if(/chave|manual|documento/.test(t)) return 'extras';
-  return 'extra';
-}
-const SHOWROOM_PHOTO_TYPE_ORDER = {'frente':0,'traseira':1,'lateral esquerda':2,'lateral direita':3,'interior':4,'painel':5,'motor':6,'porta-malas':7,'rodas':8,'extras':9,'extra':10};
-function photoTypeRank(label){ return SHOWROOM_PHOTO_TYPE_ORDER[inferShowroomPhotoType(label)] ?? 99; }
-function sortShowroomPhotoObjects(list){
-  return (Array.isArray(list)?list:[]).slice().sort((a,b)=>{
-    const ra=photoTypeRank(a?.name || a?.src || '');
-    const rb=photoTypeRank(b?.name || b?.src || '');
-    if(ra!==rb) return ra-rb;
-    return (a?.name||a?.src||'').localeCompare((b?.name||b?.src||''),'pt-BR');
-  });
-}
-function sortShowroomPhotoUrls(urls){
-  return sortShowroomPhotoObjects((Array.isArray(urls)?urls:[]).map(url=>({src:url,name:url}))).map(x=>x.src);
-}
-function buildShowroomQualityMeta(source){
-  const item = source || {};
-  const report = (item.reportText||'').toString();
-  const laudo = ((item.laudo || getFirstLineValue(report,'Laudo') || 'APROVADO')+'').toUpperCase().trim();
-  const leilao = (item.leilao || getFirstLineValue(report,'Leilão') || 'Não').toString().trim() || 'Não';
-  const motor = (item.motor || getFirstLineValue(report,'Motor') || '').toString().trim();
-  const blindadoEstado = (item.blindadoEstado || getFirstLineValue(report,'Blindagem') || '').toString().trim();
-  return { laudo, leilao, motor, blindadoEstado };
-}
-function getShowroomQualityMeta(item){
-  const base = buildShowroomQualityMeta(item);
-  if(item?.origemVistoriaId && Array.isArray(histItemsCache) && histItemsCache.length){
-    const origem = histItemsCache.find(x=>x.id===item.origemVistoriaId || (x.placa && plateBR(x.placa||'')===plateBR(item.placa||'')));
-    if(origem){
-      const merged = buildShowroomQualityMeta({...origem, ...item});
-      return { ...base, ...merged, laudo: merged.laudo || base.laudo, leilao: merged.leilao || base.leilao, motor: merged.motor || base.motor, blindadoEstado: merged.blindadoEstado || base.blindadoEstado };
-    }
-  }
-  return base;
-}
-function getShowroomQualityChips(item){
-  const meta = getShowroomQualityMeta(item);
-  const chips=[];
-  const la=(meta.laudo||'APROVADO').toUpperCase();
-  if(la==='REPROVADO') chips.push({cls:'bad', txt:'Laudo reprovado'});
-  else if(la==='APONTAMENTO') chips.push({cls:'warn', txt:'Laudo com apontamentos'});
-  else chips.push({cls:'good', txt:'Estrutura aprovada'});
-  const le=textNorm(meta.leilao||'nao');
-      if(le && !['nao','não','nenhum','sem','sem informacao','sem informação'].includes(le)) chips.push({cls:'warn', txt:`Leilão: ${meta.leilao}`});
-  else chips.push({cls:'good', txt:'Sem leilão informado'});
-  const mo=textNorm(meta.motor||'');
-  if(mo){
-    if(/ok|bom|regular|sem/.test(mo)) chips.push({cls:'info', txt:`Motor: ${meta.motor}`});
-    else chips.push({cls:'warn', txt:`Motor: ${meta.motor}`});
-  }
-  if(item?.blindado || /blindado|blindagem/i.test((item?.versao||'')+' '+(item?.descricao||''))) chips.push({cls:'info', txt:`Blindagem${meta.blindadoEstado ? ': '+meta.blindadoEstado : ''}`});
-  return chips.slice(0,4);
-}
-function renderShowroomQualityRow(item){
-  const chips=getShowroomQualityChips(item);
-  if(!chips.length) return '';
-  return `<div class="showQualityRow">${chips.map(ch=>`<span class="showQualityChip ${ch.cls}">${escapeHtml(ch.txt)}</span>`).join('')}</div>`;
-}
 
-}
 function getAvaliadores(){ return Array.from(document.querySelectorAll(".avChk:checked")).map(x=>x.value).filter(Boolean); }
 function getAvaliadoresText(){ return getAvaliadores().join("/"); }
 function toggleDebitos(){ const sim=(v("debitosSel")||"Não")==="Sim"; el("debitosValorWrap").classList.toggle("hidden", !sim); if(!sim) el("debitosValor").value=""; }
@@ -3256,7 +3142,7 @@ function normalizeShowroomFotos(source){
   const merged = [...raw, ...legacy]
     .map(x => (x || '').toString().trim())
     .filter(Boolean);
-  return sortShowroomPhotoUrls([...new Set(merged)]);
+  return [...new Set(merged)];
 }
 const showroomUploadState = {
   existingUrls: [],
@@ -3326,9 +3212,9 @@ function removeShowroomFotoAt(index){
   renderShowroomFotoPreview();
 }
 function getShowroomPreviewItems(){
-  const existing = normalizeShowroomFotos(showroomUploadState.existingUrls || []).map(url => ({ type:'saved', src:url, name:url }));
+  const existing = normalizeShowroomFotos(showroomUploadState.existingUrls || []).map(url => ({ type:'saved', src:url }));
   const pending = (showroomUploadState.pendingFiles || []).map(fileObj => ({ type:'pending', src:fileObj.previewUrl || '', name:fileObj.name || 'foto' }));
-  return sortShowroomPhotoObjects([...existing, ...pending]);
+  return [...existing, ...pending];
 }
 function renderShowroomFotoPreview(){
   syncShowroomFotosFields();
@@ -3346,7 +3232,7 @@ function renderShowroomFotoPreview(){
     thumbs.innerHTML = fotos.map((foto, i) => `
       <div class="showEditorThumb ${foto.type==='pending' ? 'pending' : ''}">
         <img src="${escapeHtml(foto.src || '')}" alt="Foto ${i+1}">
-        <span class="showEditorThumbTag">${i===0 ? 'CAPA' : inferShowroomPhotoType(foto.name || foto.src)}${foto.type==='pending' ? ' • NOVA' : ''}</span>
+        <span class="showEditorThumbTag">${i===0 ? 'CAPA' : 'GALERIA'}${foto.type==='pending' ? ' • NOVA' : ''}</span>
         <button class="showEditorThumbRemove" type="button" data-show-remove-photo="${i}">×</button>
       </div>
     `).join('');
@@ -3384,7 +3270,7 @@ function bindShowroomFileInput(){
     input.dataset.appendMode = '0';
     const hint = el('showEditHint');
     const total = (showroomUploadState.pendingFiles || []).length;
-    if(hint && total) hint.innerHTML = `<span class='ok'>${total} nova(s) foto(s) selecionada(s).</span> Organização automática da galeria por tipo de foto ativada.`;
+    if(hint && total) hint.innerHTML = `<span class='ok'>${total} nova(s) foto(s) selecionada(s). Clique em salvar anúncio para concluir.</span>`;
   });
 }
 function openShowroomFilePicker(append){
@@ -3540,7 +3426,6 @@ function renderShowroom(){
           <span class="showSpec">⛽ ${escapeHtml(it.combustivel||"Combustível")}</span>
           <span class="showSpec">🎨 ${escapeHtml(it.cor||"Cor")}</span>
         </div>
-        ${renderShowroomQualityRow(it)}
         ${canSeeCatalogFipe() ? `<div class="showAlert ${opp.cls}">${escapeHtml(opp.label)}</div>` : ``}
         <div class="showActions">
           <button class="btnB" type="button" data-show-open="${escapeHtml(it.id)}">Ver veículo</button>
@@ -3611,7 +3496,7 @@ function openShowModal(item){
         ${gallery.map((url, i) => `
           <div class="showModalThumb ${i===0 ? 'active' : ''}" data-show-thumb="${i}" data-show-url="${escapeHtml(url)}">
             <img src="${escapeHtml(url)}" alt="Foto ${i+1}">
-            <span class="showModalThumbTag">${i===0 ? 'CAPA' : inferShowroomPhotoType(url)}</span>
+            <span class="showModalThumbTag">${i===0 ? 'CAPA' : 'FOTO ' + (i+1)}</span>
           </div>
         `).join('')}
       </div>
@@ -3627,8 +3512,6 @@ function openShowModal(item){
           ${canSeeCatalogFipe() ? `<div class="showDetailCard"><div class="showDetailLabel">Oportunidade</div><div class="showDetailValue">${escapeHtml(opp.label)}</div></div>` : ``}
           <div class="showDetailCard"><div class="showDetailLabel">Origem</div><div class="showDetailValue">${item.origemVistoriaId ? 'Histórico / veículo comprado' : 'Cadastro direto no catálogo'}</div></div>
         </div>
-        ${renderShowroomQualityRow(item)}
-        <div class="showQualityHint">Indicadores vindos da vistoria comercial e do histórico do veículo.</div>
         <div class="showDesc">${escapeHtml(item.descricao||'Sem descrição comercial ainda.')}</div>
         <div class="showModalActionBar">
           <button class="btnW" type="button" id="btnShowModalShare">📲 Compartilhar veículo</button>
@@ -3681,7 +3564,6 @@ function openShowModal(item){
 function closeShowModal(){ const m=el("showModal"); if(m) m.style.display="none"; }
 function openShowEditor(item){
   if(!canManageShowroom()) return alert("Somente gerente/admin podem editar o catálogo.");
-  window.currentShowEditorMeta = getShowroomQualityMeta(item || {});
   el("showEditHint").textContent='';
   el("showEditId").value=item?.id||'';
   el("showOrigemVistoriaId").value=item?.origemVistoriaId||'';
@@ -3713,13 +3595,12 @@ async function saveShowEditor(){
   const btnSave = el('btnShowSave');
   if(btnSave) btnSave.disabled = true;
   try{
-    fotos = sortShowroomPhotoUrls(await uploadPendingShowroomFiles());
+    fotos = await uploadPendingShowroomFiles();
   }catch(err){
     if(btnSave) btnSave.disabled = false;
     el("showEditHint").innerHTML = `<span class='warn'>Erro ao enviar fotos:</span> ${escapeHtml(err?.message||err)}`;
     return;
   }
-  const qualityMeta = { ...(window.currentShowEditorMeta || {}) };
   const payload={
     origemVistoriaId: el("showOrigemVistoriaId").value || '',
     marca: v("showMarca"),
@@ -3736,10 +3617,6 @@ async function saveShowEditor(){
     status: v("showStatus") || 'Em preparação',
     placa: plateBR(v("showPlaca")),
     descricao: v("showDescricao"),
-    laudo: qualityMeta.laudo || '',
-    leilao: qualityMeta.leilao || '',
-    motor: qualityMeta.motor || '',
-    blindadoEstado: qualityMeta.blindadoEstado || '',
     fotoCapa: fotos[0] || '',
     fotos,
     updatedAt: serverTimestamp(),
@@ -3813,7 +3690,6 @@ async function sendHistoricoToShowroom(item){
     status:'Em preparação',
     placa:plateBR(item.placa||''),
     descricao:'Veículo vindo do histórico de compra. Complemente com preço, fotos e descrição comercial.',
-    ...buildShowroomQualityMeta(item),
     fotoCapa:'',
     fotos:[],
     blindado: !!item.blindado || /blindagem|blindado/i.test((getFirstLineValue(item.reportText,'Versão')||''))
@@ -4335,41 +4211,6 @@ function setAuthButtonsBusy(disabled){
 function setLoginHint(html){
   if(el("loginHint")) el("loginHint").innerHTML=html||"";
 }
-function setLoginProgressVisible(show){
-  el("loginProgressCard")?.classList.toggle("hidden", !show);
-}
-function updateLoginProgress(step, title){
-  const order = ["session","auth","profile","permissions","open"];
-  const activeIndex = Math.max(0, order.indexOf(step));
-  const percent = Math.round(((activeIndex+1)/order.length)*100);
-  const map = {session:"loginStepSession",auth:"loginStepAuth",profile:"loginStepProfile",permissions:"loginStepPermissions",open:"loginStepOpen"};
-  order.forEach((key, idx)=>{
-    const node=el(map[key]);
-    if(!node) return;
-    node.classList.remove('active','done','error');
-    if(idx < activeIndex) node.classList.add('done');
-    else if(idx === activeIndex) node.classList.add('active');
-  });
-  if(el('loginProgressFill')) el('loginProgressFill').style.width = `${percent}%`;
-  if(el('loginProgressState')) el('loginProgressState').textContent = `${percent}%`;
-  if(title && el('loginProgressTitle')) el('loginProgressTitle').textContent = title;
-  setLoginProgressVisible(true);
-}
-function markLoginProgressError(message){
-  const active = document.querySelector('.loginProgressStep.active') || el('loginStepAuth');
-  active?.classList.add('error');
-  active?.classList.remove('active');
-  if(el('loginProgressTitle')) el('loginProgressTitle').textContent = message || 'Não foi possível concluir o acesso';
-}
-function resetLoginProgress(hide=true){
-  ['loginStepSession','loginStepAuth','loginStepProfile','loginStepPermissions','loginStepOpen'].forEach(id=>{
-    const node=el(id); if(node) node.classList.remove('active','done','error');
-  });
-  if(el('loginProgressFill')) el('loginProgressFill').style.width = '0%';
-  if(el('loginProgressState')) el('loginProgressState').textContent = '0%';
-  if(el('loginProgressTitle')) el('loginProgressTitle').textContent = 'Preparando acesso';
-  if(hide) setLoginProgressVisible(false);
-}
 function getFriendlyAuthError(err, mode){
   const code=(err?.code||"").toString();
   if(mode==="register"){
@@ -4396,13 +4237,11 @@ el("btnDoLogin").addEventListener("click", async ()=>{
   if(!email||!pass) return setLoginHint("<span class='warn'>Preencha e-mail e senha para entrar.</span>");
   authActionBusy=true; setAuthButtonsBusy(true);
   try{
-    updateLoginProgress('auth','Validando acesso');
     setLoginHint("Entrando...");
     await signInWithEmailAndPassword(auth,email,pass);
     isGuest=false;
     setLoginHint("");
   }catch(e){
-    markLoginProgressError('Falha na validação do acesso');
     setLoginHint("<span class='warn'>Não foi possível entrar.</span> "+escapeHtml(getFriendlyAuthError(e,"login")));
   }finally{
     authActionBusy=false; setAuthButtonsBusy(false);
@@ -4445,9 +4284,9 @@ el("btnForgotPass")?.addEventListener("click", async ()=>{
     authActionBusy=false; setAuthButtonsBusy(false);
   }
 });
-el("btnGuest").addEventListener("click", ()=>{ isGuest=true; resetLoginProgress(); try{ signOut(auth);}catch(e){} showApp(); el("whoami").textContent="Convidado"; currentRole="convidado"; computePermissions(); setRoleUI(); setTab("showroom"); loadLastConsultor(); });
-el("btnLogout").addEventListener("click", async ()=>{ isGuest=false; resetLoginProgress(); try{ await signOut(auth);}catch(e){} showLogin(); });
-el("btnSwitchUser").addEventListener("click", ()=>{ isGuest=false; resetLoginProgress(); showLogin(); });
+el("btnGuest").addEventListener("click", ()=>{ isGuest=true; try{ signOut(auth);}catch(e){} showApp(); el("whoami").textContent="Convidado"; currentRole="convidado"; computePermissions(); setRoleUI(); setTab("showroom"); loadLastConsultor(); });
+el("btnLogout").addEventListener("click", async ()=>{ isGuest=false; try{ await signOut(auth);}catch(e){} showLogin(); });
+el("btnSwitchUser").addEventListener("click", ()=>{ isGuest=false; showLogin(); });
 ["loginEmail","loginPass"].forEach(id=>el(id)?.addEventListener("keydown", (ev)=>{
   if(ev.key==="Enter"){
     ev.preventDefault();
@@ -4502,20 +4341,13 @@ toggleDebitos(); toggleFin();
 
 onAuthStateChanged(auth, async (u)=>{
   if(isGuest) return;
-  updateLoginProgress('session','Verificando sessão');
   if(u){
-    updateLoginProgress('profile','Carregando perfil');
     showApp();
     el("whoami").textContent=lower(u.email||"");
     try{ currentRole=await ensureUserDoc(u); }catch(e){ currentRole=HARD_ADMINS.has(lower(u.email||""))?"admin":"consultor"; }
-    updateLoginProgress('permissions','Aplicando permissões');
-    computePermissions(); setRoleUI();
-    updateLoginProgress('open','Abrindo sistema');
-    setTab(isCatalogOnlyRole() ? "showroom" : "nova"); loadLastConsultor();
-    setTimeout(()=>resetLoginProgress(), 500);
+    computePermissions(); setRoleUI(); setTab(isCatalogOnlyRole() ? "showroom" : "nova"); loadLastConsultor();
   }else{
     showLogin(); currentRole="consultor"; computePermissions(); setRoleUI();
-    resetLoginProgress();
   }
 });
 
