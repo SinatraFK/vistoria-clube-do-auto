@@ -1771,6 +1771,21 @@ body.sidebar-expanded .navLabel{
 .loginAssistText{font-size:12px;color:#64748b;font-weight:700}
 @media (max-width:760px){.loginAssistRow{align-items:flex-start}.loginAssistText{width:100%}}
 
+.loginLoadCard{display:none;margin-top:14px;padding:14px;border-radius:20px;background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%);border:1px solid rgba(148,163,184,.18);box-shadow:0 12px 28px rgba(15,23,42,.08)}
+.loginLoadCard.show{display:block}
+.loginLoadHead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.loginLoadTitle{font-size:14px;font-weight:900;color:#0f172a;letter-spacing:-.01em}
+.loginLoadPct{font-size:12px;font-weight:900;color:#1d4ed8}
+.loginLoadBar{width:100%;height:10px;border-radius:999px;background:#e2e8f0;overflow:hidden}
+.loginLoadBar span{display:block;height:100%;width:0%;border-radius:999px;background:linear-gradient(135deg,#2563eb 0%,#3b82f6 55%,#22c55e 100%);transition:width .22s ease}
+.loginLoadSteps{display:grid;grid-template-columns:1fr;gap:8px;margin-top:12px}
+.loginLoadStep{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:14px;background:#f8fafc;border:1px solid rgba(148,163,184,.14);font-size:12px;font-weight:800;color:#64748b}
+.loginLoadDot{width:20px;height:20px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;background:#e2e8f0;color:#475569;font-size:11px;flex:0 0 auto}
+.loginLoadStep.done{background:#f0fdf4;color:#166534;border-color:#bbf7d0}
+.loginLoadStep.done .loginLoadDot{background:#16a34a;color:#fff}
+.loginLoadStep.active{background:#eff6ff;color:#1d4ed8;border-color:rgba(59,130,246,.24)}
+.loginLoadStep.active .loginLoadDot{background:#2563eb;color:#fff}
+
 </style>
 </head>
 
@@ -1799,6 +1814,20 @@ body.sidebar-expanded .navLabel{
       <button class="btnB" id="btnGuest">Entrar como convidado</button>
     </div>
     <div class="hint" id="loginHint" style="margin-top:12px"></div>
+    <div class="loginLoadCard" id="loginLoadCard" aria-live="polite">
+      <div class="loginLoadHead">
+        <div class="loginLoadTitle" id="loginLoadTitle">Preparando acesso...</div>
+        <div class="loginLoadPct" id="loginLoadPct">0%</div>
+      </div>
+      <div class="loginLoadBar"><span id="loginLoadBarFill"></span></div>
+      <div class="loginLoadSteps">
+        <div class="loginLoadStep" data-auth-step="session"><span class="loginLoadDot">1</span><span>Verificando sessão</span></div>
+        <div class="loginLoadStep" data-auth-step="auth"><span class="loginLoadDot">2</span><span>Validando acesso</span></div>
+        <div class="loginLoadStep" data-auth-step="profile"><span class="loginLoadDot">3</span><span>Carregando perfil</span></div>
+        <div class="loginLoadStep" data-auth-step="permissions"><span class="loginLoadDot">4</span><span>Aplicando permissões</span></div>
+        <div class="loginLoadStep" data-auth-step="opening"><span class="loginLoadDot">5</span><span>Abrindo sistema</span></div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -4200,6 +4229,8 @@ function openUsers(){
 }
 
 let authActionBusy=false;
+let authTransitionPending=false;
+const AUTH_PROGRESS_MAP={session:12,auth:34,profile:58,permissions:82,opening:100};
 function setAuthButtonsBusy(disabled){
   ["btnDoLogin","btnCreateUser","btnForgotPass","btnGuest"].forEach(id=>{
     const node=el(id);
@@ -4208,6 +4239,37 @@ function setAuthButtonsBusy(disabled){
 }
 function setLoginHint(html){
   if(el("loginHint")) el("loginHint").innerHTML=html||"";
+}
+function setLoginProgress(stepKey, title){
+  const card=el("loginLoadCard"), titleNode=el("loginLoadTitle"), pctNode=el("loginLoadPct"), bar=el("loginLoadBarFill");
+  if(!card || !titleNode || !pctNode || !bar) return;
+  const pct=Math.max(0, Math.min(100, Number(AUTH_PROGRESS_MAP[stepKey] ?? 0)));
+  card.classList.add("show");
+  titleNode.textContent=title||"Processando acesso...";
+  pctNode.textContent=`${pct}%`;
+  bar.style.width=`${pct}%`;
+  document.querySelectorAll("[data-auth-step]").forEach((node)=>{
+    const key=node.getAttribute("data-auth-step");
+    const nodePct=Number(AUTH_PROGRESS_MAP[key] ?? 0);
+    node.classList.remove("done","active");
+    if(nodePct < pct) node.classList.add("done");
+    else if(key===stepKey) node.classList.add("active");
+  });
+}
+function hideLoginProgress(){
+  const card=el("loginLoadCard");
+  if(!card) return;
+  card.classList.remove("show");
+  if(el("loginLoadBarFill")) el("loginLoadBarFill").style.width="0%";
+  if(el("loginLoadPct")) el("loginLoadPct").textContent="0%";
+  if(el("loginLoadTitle")) el("loginLoadTitle").textContent="Preparando acesso...";
+  document.querySelectorAll("[data-auth-step]").forEach((node)=>node.classList.remove("done","active"));
+}
+function finishAuthUi(){
+  authActionBusy=false;
+  authTransitionPending=false;
+  setAuthButtonsBusy(false);
+  hideLoginProgress();
 }
 function getFriendlyAuthError(err, mode){
   const code=(err?.code||"").toString();
@@ -4233,16 +4295,17 @@ el("btnDoLogin").addEventListener("click", async ()=>{
   if(authActionBusy) return;
   const email=v("loginEmail"), pass=v("loginPass");
   if(!email||!pass) return setLoginHint("<span class='warn'>Preencha e-mail e senha para entrar.</span>");
-  authActionBusy=true; setAuthButtonsBusy(true);
+  authActionBusy=true; authTransitionPending=true; setAuthButtonsBusy(true);
   try{
     setLoginHint("Entrando...");
+    setLoginProgress("auth","Validando acesso com segurança...");
     await signInWithEmailAndPassword(auth,email,pass);
     isGuest=false;
-    setLoginHint("");
+    setLoginHint("Acesso validado. Carregando seu ambiente...");
   }catch(e){
+    authTransitionPending=false;
     setLoginHint("<span class='warn'>Não foi possível entrar.</span> "+escapeHtml(getFriendlyAuthError(e,"login")));
-  }finally{
-    authActionBusy=false; setAuthButtonsBusy(false);
+    finishAuthUi();
   }
 });
 el("btnCreateUser").addEventListener("click", async ()=>{
@@ -4250,17 +4313,18 @@ el("btnCreateUser").addEventListener("click", async ()=>{
   const email=v("loginEmail"), pass=v("loginPass");
   if(!email||!pass) return setLoginHint("<span class='warn'>Preencha e-mail e senha para cadastrar.</span>");
   if(pass.length<6) return setLoginHint("<span class='warn'>A senha deve ter no mínimo 6 caracteres.</span>");
-  authActionBusy=true; setAuthButtonsBusy(true);
+  authActionBusy=true; authTransitionPending=true; setAuthButtonsBusy(true);
   try{
     setLoginHint("Criando cadastro...");
+    setLoginProgress("auth","Criando cadastro com segurança...");
     await createUserWithEmailAndPassword(auth,email,pass);
     isGuest=false;
-    setLoginHint("<span class='ok'>Cadastro criado com sucesso.</span> O novo usuário entrou como Cliente.");
+    setLoginHint("<span class='ok'>Cadastro criado com sucesso.</span> Carregando o ambiente inicial do cliente...");
     alert("Cadastro criado com sucesso. O novo usuário entrou como Cliente.");
   }catch(e){
+    authTransitionPending=false;
     setLoginHint("<span class='warn'>Não foi possível cadastrar.</span> "+escapeHtml(getFriendlyAuthError(e,"register")));
-  }finally{
-    authActionBusy=false; setAuthButtonsBusy(false);
+    finishAuthUi();
   }
 });
 el("btnForgotPass")?.addEventListener("click", async ()=>{
@@ -4270,6 +4334,7 @@ el("btnForgotPass")?.addEventListener("click", async ()=>{
   authActionBusy=true; setAuthButtonsBusy(true);
   try{
     setLoginHint("Enviando link de redefinição...");
+    setLoginProgress("auth","Solicitando redefinição de senha...");
     await sendPasswordResetEmail(auth, email);
     const okMsg="<span class='ok'>Link de redefinição enviado com sucesso.</span> Verifique a caixa de entrada e o spam do e-mail informado.";
     setLoginHint(okMsg);
@@ -4279,12 +4344,12 @@ el("btnForgotPass")?.addEventListener("click", async ()=>{
     setLoginHint("<span class='warn'>Não foi possível enviar o link de redefinição.</span> "+escapeHtml(msg));
     alert("Não foi possível enviar o link de redefinição. "+msg);
   }finally{
-    authActionBusy=false; setAuthButtonsBusy(false);
+    finishAuthUi();
   }
 });
-el("btnGuest").addEventListener("click", ()=>{ isGuest=true; try{ signOut(auth);}catch(e){} showApp(); el("whoami").textContent="Convidado"; currentRole="convidado"; computePermissions(); setRoleUI(); setTab("showroom"); loadLastConsultor(); });
-el("btnLogout").addEventListener("click", async ()=>{ isGuest=false; try{ await signOut(auth);}catch(e){} showLogin(); });
-el("btnSwitchUser").addEventListener("click", ()=>{ isGuest=false; showLogin(); });
+el("btnGuest").addEventListener("click", ()=>{ isGuest=true; try{ signOut(auth);}catch(e){} finishAuthUi(); setLoginHint(""); showApp(); el("whoami").textContent="Convidado"; currentRole="convidado"; computePermissions(); setRoleUI(); setTab("showroom"); loadLastConsultor(); });
+el("btnLogout").addEventListener("click", async ()=>{ isGuest=false; try{ await signOut(auth);}catch(e){} finishAuthUi(); setLoginHint(""); showLogin(); });
+el("btnSwitchUser").addEventListener("click", ()=>{ isGuest=false; finishAuthUi(); setLoginHint(""); showLogin(); });
 ["loginEmail","loginPass"].forEach(id=>el(id)?.addEventListener("keydown", (ev)=>{
   if(ev.key==="Enter"){
     ev.preventDefault();
@@ -4337,15 +4402,27 @@ toggleDebitos(); toggleFin();
   chk.addEventListener("change", apply); apply();
 })();
 
+setLoginProgress("session","Verificando sessão salva...");
 onAuthStateChanged(auth, async (u)=>{
   if(isGuest) return;
   if(u){
-    showApp();
+    showLogin();
+    setLoginProgress("profile","Carregando perfil do usuário...");
     el("whoami").textContent=lower(u.email||"");
     try{ currentRole=await ensureUserDoc(u); }catch(e){ currentRole=HARD_ADMINS.has(lower(u.email||""))?"admin":"consultor"; }
-    computePermissions(); setRoleUI(); setTab(isCatalogOnlyRole() ? "showroom" : "nova"); loadLastConsultor();
+    setLoginProgress("permissions","Aplicando permissões do sistema...");
+    computePermissions(); setRoleUI();
+    setLoginProgress("opening","Abrindo ambiente de trabalho...");
+    setTab(isCatalogOnlyRole() ? "showroom" : "nova"); loadLastConsultor();
+    showApp();
+    setLoginHint("");
+    finishAuthUi();
   }else{
     showLogin(); currentRole="consultor"; computePermissions(); setRoleUI();
+    if(authTransitionPending){
+      setLoginHint("<span class='warn'>Sessão não foi iniciada.</span> Tente novamente.");
+    }
+    finishAuthUi();
   }
 });
 
