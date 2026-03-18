@@ -3923,6 +3923,11 @@ async function saveShowEditor(){
     updatedByUid: auth.currentUser?.uid || '',
     updatedByEmail: lower(auth.currentUser?.email || '')
   };
+  if(payload.ofertaAtiva){
+    if(!showroomMoneyNumber(payload.ofertaPreco)){
+      if(btnSave) btnSave.disabled = false;
+      return alert('Informe o preço promocional da oferta.');
+    }
     if(!Number((payload.ofertaHoras||'').replace(/[^\d]/g,''))){
       if(btnSave) btnSave.disabled = false;
       return alert('Informe a validade da oferta em horas.');
