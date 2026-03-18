@@ -2569,7 +2569,44 @@ body.sidebar-expanded .navLabel{
         <div><label>Status</label><select id="showStatus"><option>Em preparação</option><option>Disponível</option><option>Reservado</option><option>Vendido</option></select></div>
         <div><label>Placa</label><input id="showPlaca" placeholder="Ex: EPX5C99"></div>
       </div>
-      
+      <div class="showOfferPanel">
+        <div class="showOfferPanelTitle">🔥 Oferta promocional e arte automática</div>
+        <div class="row3">
+          <div><label class="chkLabelRight">Ativar oferta <input type="checkbox" id="showOfertaAtiva"></label></div>
+          <div><label>Preço promocional</label><input id="showOfertaPreco" inputmode="numeric" placeholder="Ex: 78990"></div>
+          <div><label>Validade (horas)</label><input id="showOfertaHoras" inputmode="numeric" placeholder="Ex: 24, 48, 72"></div>
+        </div>
+        <div class="row2">
+          <div><label>Título superior</label><input id="showOfertaTitulo" placeholder="Ex: OFERTA"></div>
+          <div><label>Selo inferior</label><input id="showOfertaSelo" placeholder="Ex: OPORTUNIDADE"></div>
+        </div>
+        <div class="showOfferPreview" id="showOfertaPreviewHint">Quando a oferta estiver ativa, o catálogo monta automaticamente a arte visual da capa e também libera a geração da imagem pronta para WhatsApp e Instagram.</div>
+      </div>
+      <label>Descrição</label><textarea id="showDescricao" placeholder="Observações comerciais do veículo, diferenciais e preparação."></textarea>
+      <div class="row2">
+        <div>
+          <label>Fotos do veículo</label>
+          <div class="showEditorActions">
+            <button class="btnB" type="button" id="btnShowTakePhoto">📸 Escolher fotos</button>
+            <button class="btnSecondary" type="button" id="btnShowAddPhotos">➕ Adicionar mais fotos</button>
+          </div>
+          <input type="hidden" id="showroomFotoUrl">
+          <input type="hidden" id="showroomFotosJson">
+          <input type="file" id="showroomFileInput" accept="image/*" multiple class="hidden">
+          <div class="hint">A primeira foto vira capa. As demais entram como galeria no anúncio e no modal do veículo.</div>
+          <div class="hint"><span class="showFotoCount" id="showroomFotoCount">0 fotos carregadas</span></div>
+        </div>
+        <div>
+          <label>Prévia da galeria</label>
+          <div class="showEditorGallery">
+            <div class="showEditorMainPreview">
+              <img id="showroomFotoPreview" style="display:block" alt="Prévia da foto">
+            </div>
+            <div id="showroomThumbs" class="showEditorThumbGrid"></div>
+            <div id="showroomEmpty" class="showEditorEmpty">Nenhuma foto carregada ainda. A primeira foto será usada como capa.</div>
+          </div>
+        </div>
+      </div>
       <div class="showPromoUploadBox">
         <label>Capa promocional (opcional)</label>
         <div class="hint">Se você criar a arte fora do app, pode subir aqui. Quando existir, ela vira a capa do catálogo no lugar da foto normal.</div>
@@ -3402,7 +3439,7 @@ function ofertaHorasRestantes(item){
 function ofertaTitulo(item){ return (item?.ofertaTitulo || 'OFERTA').toString().trim() || 'OFERTA'; }
 function ofertaSelo(item){ return (item?.ofertaSelo || 'OPORTUNIDADE').toString().trim() || 'OPORTUNIDADE'; }
 function displayShowPrice(item){
-  return formatShowPrice(item?.preco || '');
+  return isOfertaAtiva(item) ? formatShowPrice(item.ofertaPreco || item.preco) : formatShowPrice(item.preco);
 }
 function promoStatusText(item){
   const status = (item?.status || 'Disponível').toString().trim() || 'Disponível';
@@ -3691,17 +3728,13 @@ function renderShowroom(){
   }
   wrap.innerHTML = items.map(it=>{
     const opp=showroomOpportunityInfo(it);
+    const offer = isOfertaAtiva(it);
     const displayPrice = displayShowPrice(it);
     return `
     <div class="showCard">
       <div class="showImg">
         <img src="${escapeHtml(showImgSrc(it))}" alt="${escapeHtml((it.marca?it.marca+" ":"") + (it.modelo||"Veículo"))}">
-        ${!it.promoCapa && isBlindadoItem(it) ? `<div class="showBlindadoRibbon">BLINDADO</div>` : ``}
-        <div class="showPriceBox">
-          <div class="showPrice">${escapeHtml(displayPrice)}</div>
-          ${canSeeCatalogFipe() ? `<div class="showFipeMini">FIPE ${escapeHtml(it.fipe ? formatShowMoney(it.fipe) : 'Não informada')}</div>` : ``}
-        </div>
-        <div class="showBadge ${showroomStatusClass(it.status)}">${escapeHtml(it.status||'Disponível')}</div>
+        ${it.promoCapa ? `` : showroomPromoCardHtml(it)}
       </div>
       <div class="showBody">
         <div class="showTitle">${escapeHtml(((it.marca||"")+" "+(it.modelo||"")).trim() || "Veículo")}</div>
@@ -3712,11 +3745,13 @@ function renderShowroom(){
           <span class="showSpec">⛽ ${escapeHtml(it.combustivel||"Combustível")}</span>
           <span class="showSpec">🎨 ${escapeHtml(it.cor||"Cor")}</span>
         </div>
-        ${canSeeCatalogFipe() ? `<div class="showAlert ${opp.cls}">${escapeHtml(opp.label)}</div>` : ``}
+        ${offer ? `<div class="showAlert good">Oferta ativa • ${escapeHtml(ofertaHorasRestantes(it) || 'prazo promocional')}</div>` : (canSeeCatalogFipe() ? `<div class="showAlert ${opp.cls}">${escapeHtml(opp.label)}</div>` : ``)}
         <div class="showActions">
           <button class="btnB" type="button" data-show-open="${escapeHtml(it.id)}">Ver veículo</button>
           <button class="btnSecondary" type="button" data-show-copy="${escapeHtml(it.id)}">Copiar dados</button>
           <button class="btnW full" type="button" data-show-wa="${escapeHtml(it.id)}">📲 Compartilhar veículo</button>
+          <button class="btnG" type="button" data-show-promo="${escapeHtml(it.id)}">🖼️ Baixar arte</button>
+          <button class="btnP" type="button" data-show-shareimg="${escapeHtml(it.id)}">🚀 Enviar imagem</button>
           ${canManageShowroom()?`<button class="btnP" type="button" data-show-edit="${escapeHtml(it.id)}">Editar</button><button class="btnDanger" type="button" data-show-del="${escapeHtml(it.id)}">Excluir</button>`:''}
         </div>
       </div>
@@ -3733,6 +3768,16 @@ function renderShowroom(){
     const txt = `${item.marca||''} ${item.modelo||''} ${item.versao||''}\n${[item.ano||'', canSeeCatalogKm() ? (item.km||'') : ''].filter(Boolean).join(' • ')}\n${item.cambio||''} • ${item.combustivel||''} • ${item.cor||''}\n${canSeeCatalogFipe() ? `FIPE: ${item.fipe ? formatShowPrice(item.fipe) : 'Não informada'}\n` : ''}Preço: ${formatShowPrice(item.preco)}\nStatus: ${item.status||''}`.trim();
     const ok = await copiar(txt);
     if(ok) alert("Dados do veículo copiados.");
+  }));
+  wrap.querySelectorAll("[data-show-promo]").forEach(btn=>btn.addEventListener("click", async ()=>{
+    const item=showroomItemsCache.find(x=>x.id===btn.dataset.showPromo);
+    if(!item) return;
+    try{ await downloadShowroomPromoImage(item); }catch(err){ alert('Não foi possível gerar a arte: '+(err?.message||err)); }
+  }));
+  wrap.querySelectorAll("[data-show-shareimg]").forEach(btn=>btn.addEventListener("click", async ()=>{
+    const item=showroomItemsCache.find(x=>x.id===btn.dataset.showShareimg);
+    if(!item) return;
+    try{ await shareShowroomPromoImage(item); }catch(err){ alert('Não foi possível compartilhar a imagem: '+(err?.message||err)); }
   }));
   wrap.querySelectorAll("[data-show-edit]").forEach(btn=>btn.addEventListener("click", ()=>{
     const item=showroomItemsCache.find(x=>x.id===btn.dataset.showEdit);
@@ -3846,6 +3891,8 @@ function openShowModal(item){
 
   el("btnShowModalEdit")?.addEventListener("click", ()=>{ closeShowModal(); openShowEditor(item); });
   el("btnShowModalShare")?.addEventListener("click", ()=>shareShowVehicle(item));
+  el("btnShowModalPromo")?.addEventListener("click", async ()=>{ try{ await downloadShowroomPromoImage(item); }catch(err){ alert('Não foi possível gerar a arte: ' + (err?.message||err)); } });
+  el("btnShowModalShareImage")?.addEventListener("click", async ()=>{ try{ await shareShowroomPromoImage(item); }catch(err){ alert('Não foi possível compartilhar a imagem: ' + (err?.message||err)); } });
 }
 function closeShowModal(){ const m=el("showModal"); if(m) m.style.display="none"; }
 function openShowEditor(item){
@@ -3866,6 +3913,11 @@ function openShowEditor(item){
   el("showCor").value=item?.cor||'';
   el("showStatus").value=item?.status||'Em preparação';
   el("showPlaca").value=item?.placa||'';
+  el("showOfertaAtiva").checked=!!item?.ofertaAtiva;
+  el("showOfertaPreco").value=item?.ofertaPreco||'';
+  el("showOfertaHoras").value=item?.ofertaHoras||'';
+  el("showOfertaTitulo").value=item?.ofertaTitulo||'OFERTA';
+  el("showOfertaSelo").value=item?.ofertaSelo||'OPORTUNIDADE';
   el("showDescricao").value=item?.descricao||'';
   clearPendingShowroomFiles();
   clearPendingShowPromoCapaFile();
@@ -4220,6 +4272,32 @@ el("btnShowEditorClose")?.addEventListener("click", closeShowEditor);
 el("showEditorModal")?.addEventListener("click", (ev)=>{ if(ev.target?.id==="showEditorModal") closeShowEditor(); });
 el("btnShowSave")?.addEventListener("click", saveShowEditor);
 el("btnShowDelete")?.addEventListener("click", deleteShowEditor);
+["showOfertaPreco","showOfertaHoras","showOfertaTitulo","showOfertaSelo"].forEach(id=>{
+  const node = el(id);
+  if(node){
+    node.addEventListener('blur', ()=>{ if((id==="showOfertaPreco") && v(id)) node.value = fmtBRL(v(id)); });
+    node.addEventListener('input', ()=>{
+      const hint = el('showOfertaPreviewHint');
+      if(hint){
+        const ativo = !!el('showOfertaAtiva')?.checked;
+        const preco = v('showOfertaPreco') || 'sob consulta';
+        const horas = v('showOfertaHoras') || 'sem prazo';
+        hint.textContent = ativo
+          ? `Oferta ativa: ${v('showOfertaTitulo')||'OFERTA'} • preço ${preco} • validade ${horas}h • selo ${v('showOfertaSelo')||'OPORTUNIDADE'}.`
+          : 'Quando a oferta estiver ativa, o catálogo monta automaticamente a arte visual da capa e também libera a geração da imagem pronta para WhatsApp e Instagram.';
+      }
+    });
+  }
+});
+el("showOfertaAtiva")?.addEventListener("change", ()=>{
+  const hint = el('showOfertaPreviewHint');
+  if(hint){
+    hint.textContent = el('showOfertaAtiva')?.checked
+      ? `Oferta ativa: ${v('showOfertaTitulo')||'OFERTA'} • preço ${v('showOfertaPreco')||'sob consulta'} • validade ${v('showOfertaHoras')||'sem prazo'}h • selo ${v('showOfertaSelo')||'OPORTUNIDADE'}.`
+      : 'Quando a oferta estiver ativa, o catálogo monta automaticamente a arte visual da capa e também libera a geração da imagem pronta para WhatsApp e Instagram.';
+  }
+  renderShowroom();
+});
 el("btnShowTakePhoto")?.addEventListener("click", ()=>openShowroomFilePicker(false));
 el("btnShowAddPhotos")?.addEventListener("click", ()=>openShowroomFilePicker(true));
 el("btnShowPromoPick")?.addEventListener("click", openShowPromoCapaPicker);
@@ -4229,7 +4307,7 @@ el("btnShowPromoRemove")?.addEventListener("click", removeShowPromoCapa);
   if(!e) return;
   e.addEventListener("blur", ()=>{ if(v(id)) e.value = fmtBRL(v(id)); renderShowroom(); });
 });
-["showSearch","showStatusFilter","showCambioFilter","showCombustivelFilter","showPrecoMin","showPrecoMax","showKmMax"].forEach(id=>{
+["showSearch","showStatusFilter","showCambioFilter","showCombustivelFilter","showPrecoMin","showPrecoMax","showKmMax","showOfertaAtiva","showOfertaPreco","showOfertaHoras","showOfertaTitulo","showOfertaSelo"].forEach(id=>{
   const node=el(id);
   if(!node) return;
   node.addEventListener("input", renderShowroom);
