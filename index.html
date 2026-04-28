@@ -2143,14 +2143,8 @@ body.sidebar-expanded .navLabel{
         <div><label>Consultor <span class="hint">(obrigatório)</span></label><input id="consultor"></div>
         <div>
           <label>Avaliadores <span class="hint">(obrigatório)</span></label>
-          <div class="chkWrap" id="avaliadoresWrap">
-            <label class="chkItem"><input type="checkbox" class="avChk" value="Lucas"> Lucas</label>
-            <label class="chkItem"><input type="checkbox" class="avChk" value="Guilherme"> Guilherme</label>
-            <label class="chkItem"><input type="checkbox" class="avChk" value="Junior"> Junior</label>
-            <label class="chkItem"><input type="checkbox" class="avChk" value="Anderson"> Anderson</label>
-            <label class="chkItem"><input type="checkbox" class="avChk" value="Thiago"> Thiago</label>
-          </div>
-          <div class="hint">Selecione 1 a 5 avaliadores.</div>
+          <input id="avaliadores" placeholder="Ex: Leonardo / Anderson">
+          <div class="hint">Digite o nome de quem avaliou. Pode usar / para separar mais de um avaliador.</div>
         </div>
       </div>
     </div>
@@ -2703,8 +2697,8 @@ function getFirstLineValue(reportText, label){
   return "";
 }
 
-function getAvaliadores(){ return Array.from(document.querySelectorAll(".avChk:checked")).map(x=>x.value).filter(Boolean); }
-function getAvaliadoresText(){ return getAvaliadores().join("/"); }
+function getAvaliadores(){ return v("avaliadores").split(/[\/;,]+/).map(x=>x.trim()).filter(Boolean); }
+function getAvaliadoresText(){ return v("avaliadores"); }
 function toggleDebitos(){ const sim=(v("debitosSel")||"Não")==="Sim"; el("debitosValorWrap").classList.toggle("hidden", !sim); if(!sim) el("debitosValor").value=""; }
 function toggleFin(){ const sim=(v("finSel")||"Não")==="Sim"; el("finValorWrap").classList.toggle("hidden", !sim); if(!sim) el("finValor").value=""; }
 
@@ -2931,7 +2925,7 @@ function validar(){
   const s=(v("laudo")||"APROVADO").toUpperCase();
   if(s!=="APROVADO" && !v("laudoObs")) return focusWarn("laudoObs","Descreva o laudo.");
   if(!v("consultor")) return focusWarn("consultor","Obrigatório: Consultor");
-  if(getAvaliadores().length===0){ alert("Obrigatório: Selecione ao menos 1 avaliador."); el("avaliadoresWrap").scrollIntoView({behavior:"smooth",block:"center"}); return false; }
+  if(!getAvaliadoresText()) return focusWarn("avaliadores","Obrigatório: informe ao menos 1 avaliador.");
   if((v("debitosSel")==="Sim") && !v("debitosValor")) return focusWarn("debitosValor","Informe o valor dos débitos.");
   if((v("finSel")==="Sim") && !v("finValor")) return focusWarn("finValor","Informe o valor da quitação.");
   if(!v("cliente")) return focusWarn("cliente","Obrigatório: Cliente");
@@ -4284,7 +4278,7 @@ el("btnFillPadrao").addEventListener("click", ()=>{
 el("btnWhats").addEventListener("click", async ()=>{ if(!validar()) return; const texto=montar(); setButtonsDisabled(true); await salvarUmaVez(texto); abrirWhats(texto); setButtonsDisabled(false); });
 el("btnCopy").addEventListener("click", async ()=>{ if(!validar()) return; const texto=montar(); setButtonsDisabled(true); await salvarUmaVez(texto); const ok=await copiar(texto); if(ok) alert("Copiado!"); setButtonsDisabled(false); });
 
-["modelo","ano","versao","placa","km","kmComprou","debitosSel","debitosValor","finSel","finValor","fipe","valorPretendido","laudo","laudoObs","leilao","motor","luzes","arCond","blindadoChk","blindadoEstado","blindadoObs","testeRodagem","consultor","cliente","local","captacao","tablier","bancosOnde","bancosServico","volante","manopla","forro_motorista","forro_passageiro","forro_traseiro_d","forro_traseiro_e","forro_dianteiros","forro_traseiros","forro_todos","forroEstado","funilariaPecas","pneusQtd","pinturaCompleta","chuvaGranizo","paraChoqueD","paraChoqueT","retrovisorD","retrovisorE","farolD","farolE","lanternaD","lanternaE","vidroParabrisa","vidro_dd_chk","vidro_dd_act","vidro_de_chk","vidro_de_act","vidro_td_chk","vidro_td_act","vidro_te_chk","vidro_te_act","vidro_vg_chk","vidro_vg_act"].forEach(id=>{
+["modelo","ano","versao","placa","km","kmComprou","debitosSel","debitosValor","finSel","finValor","fipe","valorPretendido","laudo","laudoObs","leilao","motor","luzes","arCond","blindadoChk","blindadoEstado","blindadoObs","testeRodagem","consultor","avaliadores","cliente","local","captacao","tablier","bancosOnde","bancosServico","volante","manopla","forro_motorista","forro_passageiro","forro_traseiro_d","forro_traseiro_e","forro_dianteiros","forro_traseiros","forro_todos","forroEstado","funilariaPecas","pneusQtd","pinturaCompleta","chuvaGranizo","paraChoqueD","paraChoqueT","retrovisorD","retrovisorE","farolD","farolE","lanternaD","lanternaE","vidroParabrisa","vidro_dd_chk","vidro_dd_act","vidro_de_chk","vidro_de_act","vidro_td_chk","vidro_td_act","vidro_te_chk","vidro_te_act","vidro_vg_chk","vidro_vg_act"].forEach(id=>{
   const e=el(id); if(!e) return;
   e.addEventListener("input", ()=>{
     if(id==="laudo"){ setStatusBadge(); toggleLaudoDescricao(); }
@@ -4308,7 +4302,6 @@ el("btnHistExport").addEventListener("click", exportHistoricoCsv);
 
 el("debitosSel").addEventListener("change",()=>{ toggleDebitos(); atualizarPreview(); refreshNovaAppUX(); });
 el("finSel").addEventListener("change",()=>{ toggleFin(); atualizarPreview(); refreshNovaAppUX(); });
-document.querySelectorAll(".avChk").forEach(c=>c.addEventListener("change",()=>{ atualizarPreview(); refreshNovaAppUX(); }));
 toggleDebitos(); toggleFin();
 
 (function(){
