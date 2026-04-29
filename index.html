@@ -997,6 +997,30 @@ body.sidebar-expanded .navLabel{
 }
 
 
+
+/* ===== Rascunho automático local ===== */
+.draftAutoBox{
+  display:none;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin:10px 0 14px 0;
+  padding:12px 14px;
+  border-radius:18px;
+  background:linear-gradient(180deg,#fff7ed 0%, #fffbeb 100%);
+  border:1px solid #fed7aa;
+  box-shadow:var(--shadowSoft);
+}
+.draftAutoBox.show{display:flex}
+.draftAutoMsg{font-size:13px;font-weight:900;color:#7c2d12;line-height:1.35}
+.draftAutoSub{display:block;font-size:12px;font-weight:700;color:#9a3412;margin-top:3px}
+.draftAutoActions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.draftAutoActions button{width:auto;min-height:40px;border-radius:12px;padding:9px 11px;font-size:12px;font-weight:900;border:none;cursor:pointer}
+.btnDraftRestore{background:#2563eb;color:#fff}
+.btnDraftDiscard{background:#b91c1c;color:#fff}
+.draftSavedHint{font-size:12px;color:#64748b;font-weight:800;margin-top:8px;text-align:right}
+@media (max-width:760px){.draftAutoBox{align-items:stretch;flex-direction:column}.draftAutoActions{justify-content:stretch}.draftAutoActions button{flex:1}}
+
 </style>
 
 </head>
@@ -1099,6 +1123,19 @@ body.sidebar-expanded .navLabel{
     </div>
     <div class="novaQuickNav" id="novaQuickNav"></div>
     <div class="appProgressWrap"><div class="appProgressBar"><span id="appProgressFill"></span></div><div class="appProgressMeta" id="appProgressMeta">Preenchimento da vistoria</div></div>
+    <div class="draftAutoBox" id="draftAutoBox">
+      <div class="draftAutoMsg">
+        💾 Rascunho encontrado
+        <span class="draftAutoSub" id="draftAutoSub">Existe uma vistoria não finalizada salva neste aparelho.</span>
+      </div>
+      <div>
+        <div class="draftAutoActions">
+          <button class="btnDraftRestore" type="button" id="btnDraftRestore">Continuar vistoria</button>
+          <button class="btnDraftDiscard" type="button" id="btnDraftDiscard">Descartar</button>
+        </div>
+        <div class="draftSavedHint" id="draftSavedHint">Rascunho automático ativo</div>
+      </div>
+    </div>
     <div class="stickyUtilityBar">
       <div class="utilityGroup">
         <span class="utilityLabel">Fluxo rápido</span>
@@ -2485,7 +2522,11 @@ el("btnFipeApply").addEventListener("click", ()=>{
   atualizarPreview(); refreshNovaAppUX(); showFipeModal(false);
 });
 el("btnFavOpen")?.addEventListener("click", ()=>alert("Favoritos: função em atualização. (Layout mantido)"));
-el("btnClearForm")?.addEventListener("click", ()=>window.location.reload());
+el("btnClearForm")?.addEventListener("click", ()=>{
+  if(!confirm("Limpar o formulário e apagar o rascunho salvo neste aparelho?")) return;
+  try{ localStorage.removeItem("clubeauto_rascunho_v1"); }catch(e){}
+  window.location.reload();
+});
 
 
 function getSectionMetaByTitle(title){
@@ -2758,11 +2799,128 @@ function applyPremiumFieldState(){
   });
 }
 
+
+/* ===== Rascunho automático local seguro ===== */
+const DRAFT_KEY = "clubeauto_rascunho_v1";
+let draftRestoring = false;
+let draftSaveTimer = null;
+function getDraftFields(){
+  return Array.from(document.querySelectorAll("#viewNova input, #viewNova select, #viewNova textarea")).filter(node=>{
+    if(!node.id) return false;
+    const type=(node.type||"").toLowerCase();
+    if(["button","submit","reset","file"].includes(type)) return false;
+    return true;
+  });
+}
+function readNovaDraftData(){
+  const data={};
+  getDraftFields().forEach(node=>{
+    const type=(node.type||"").toLowerCase();
+    data[node.id] = (type==="checkbox" || type==="radio") ? !!node.checked : (node.value ?? "");
+  });
+  return data;
+}
+function hasUsefulDraftData(data){
+  if(!data || typeof data!=="object") return false;
+  return Object.entries(data).some(([key,val])=>{
+    if(key==="laudo" && String(val||"").toUpperCase()==="APROVADO") return false;
+    if(key==="debitosSel" && val==="Não") return false;
+    if(key==="finSel" && val==="Não") return false;
+    if(typeof val==="boolean") return val;
+    return String(val||"").trim()!=="";
+  });
+}
+function formatDraftTime(ts){
+  try{ return new Intl.DateTimeFormat("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}).format(new Date(ts)); }catch(e){ return ""; }
+}
+function updateDraftBox(){
+  const box=el("draftAutoBox"), sub=el("draftAutoSub"), hint=el("draftSavedHint");
+  if(!box) return;
+  try{
+    const raw=localStorage.getItem(DRAFT_KEY);
+    if(!raw){ box.classList.remove("show"); return; }
+    const draft=JSON.parse(raw);
+    if(!hasUsefulDraftData(draft?.data)){ box.classList.remove("show"); return; }
+    const current=readNovaDraftData();
+    const same = JSON.stringify(current)===JSON.stringify(draft.data);
+    box.classList.toggle("show", !same);
+    if(sub) sub.textContent = `Salvo em ${formatDraftTime(draft.updatedAt || Date.now())}.`;
+    if(hint) hint.textContent = same ? `Rascunho salvo às ${formatDraftTime(draft.updatedAt || Date.now())}` : "Rascunho automático ativo";
+  }catch(e){ box.classList.remove("show"); }
+}
+function saveNovaDraftNow(){
+  if(draftRestoring) return;
+  try{
+    const data=readNovaDraftData();
+    if(!hasUsefulDraftData(data)){
+      localStorage.removeItem(DRAFT_KEY);
+      updateDraftBox();
+      return;
+    }
+    localStorage.setItem(DRAFT_KEY, JSON.stringify({version:1, updatedAt:Date.now(), data}));
+    updateDraftBox();
+  }catch(e){}
+}
+function saveNovaDraftDebounced(){
+  if(draftRestoring) return;
+  clearTimeout(draftSaveTimer);
+  draftSaveTimer=setTimeout(saveNovaDraftNow, 350);
+}
+function restoreNovaDraft(){
+  try{
+    const raw=localStorage.getItem(DRAFT_KEY);
+    if(!raw) return false;
+    const draft=JSON.parse(raw);
+    if(!hasUsefulDraftData(draft?.data)) return false;
+    draftRestoring=true;
+    Object.entries(draft.data).forEach(([id,val])=>{
+      const node=el(id); if(!node) return;
+      const type=(node.type||"").toLowerCase();
+      if(type==="checkbox" || type==="radio") node.checked=!!val;
+      else node.value=val ?? "";
+      node.dispatchEvent(new Event("change", {bubbles:true}));
+      node.dispatchEvent(new Event("input", {bubbles:true}));
+    });
+    draftRestoring=false;
+    setStatusBadge(); toggleLaudoDescricao(); toggleBlindagem(); toggleArCond(); toggleDebitos(); toggleFin();
+    atualizarPreview(); refreshNovaAppUX();
+    updateDraftBox();
+    return true;
+  }catch(e){ draftRestoring=false; return false; }
+}
+function discardNovaDraft(){
+  try{ localStorage.removeItem(DRAFT_KEY); }catch(e){}
+  updateDraftBox();
+}
+function initNovaDraftAutoSave(){
+  getDraftFields().forEach(node=>{
+    node.addEventListener("input", saveNovaDraftDebounced);
+    node.addEventListener("change", saveNovaDraftDebounced);
+  });
+  el("btnDraftRestore")?.addEventListener("click", ()=>{
+    if(restoreNovaDraft()) alert("Rascunho recuperado.");
+  });
+  el("btnDraftDiscard")?.addEventListener("click", ()=>{
+    if(!confirm("Descartar o rascunho salvo neste aparelho?")) return;
+    discardNovaDraft();
+  });
+  el("btnFillPadrao")?.addEventListener("click", ()=>setTimeout(saveNovaDraftNow, 150));
+  el("btnFipeApply")?.addEventListener("click", ()=>setTimeout(saveNovaDraftNow, 150));
+  const originalAtualizarPreview = atualizarPreview;
+  atualizarPreview = function(){
+    originalAtualizarPreview();
+    saveNovaDraftDebounced();
+  };
+  updateDraftBox();
+}
+
 setStatusBadge();
 toggleLaudoDescricao();
 toggleBlindagem();
 toggleArCond();
 initNovaAvaliacaoUX();
+initNovaDraftAutoSave();
+restoreNovaDraft();
 atualizarPreview();
 refreshNovaAppUX();
 </script>
