@@ -1021,6 +1021,24 @@ body.sidebar-expanded .navLabel{
 .draftSavedHint{font-size:12px;color:#64748b;font-weight:800;margin-top:8px;text-align:right}
 @media (max-width:760px){.draftAutoBox{align-items:stretch;flex-direction:column}.draftAutoActions{justify-content:stretch}.draftAutoActions button{flex:1}}
 
+
+
+/* ===== Correção final segura: ações rápidas limpas e funcionais ===== */
+.smartActionBar{position:relative;z-index:5}
+.smartActionBtns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#btnFillPadrao,#btnClearForm,#smartCopy,#smartWhats,#smartTopo{
+  position:relative;
+  z-index:6;
+  pointer-events:auto;
+  cursor:pointer;
+}
+#smartWhats{grid-column:auto!important}
+#smartTopo{grid-column:1 / -1!important}
+@media (max-width:520px){
+  .smartActionBtns{grid-template-columns:1fr}
+  #smartWhats,#smartTopo{grid-column:1 / -1!important}
+}
+
 </style>
 
 </head>
@@ -1067,7 +1085,7 @@ body.sidebar-expanded .navLabel{
     <div class="msg" id="draftMsg">Rascunho encontrado.</div>
     <div class="actions">
       <button class="btnP" type="button" id="btnDraftContinue">Continuar</button>
-      <button class="btnDanger" type="button" id="btnDraftDiscard">Descartar</button>
+      <button class="btnDanger" type="button" id="btnDraftDiscardOld">Descartar</button>
     </div>
   </div>
 
@@ -1114,7 +1132,8 @@ body.sidebar-expanded .navLabel{
       <div class="smartActionBar">
         <div class="smartActionTitle">Ações rápidas</div>
         <div class="smartActionBtns">
-          <button class="btnP" type="button" id="smartPadrao">⚡ Padrão</button>
+          <button class="btnP" type="button" id="btnFillPadrao">⚡ Preencher padrão</button>
+          <button class="btnG" type="button" id="btnClearForm">🧹 Limpar formulário</button>
           <button class="btnB" type="button" id="smartCopy">📋 Copiar</button>
           <button class="btnW smartActionFull" type="button" id="smartWhats">📲 Enviar relatório</button>
           <button class="btnG smartActionFull smartActionTop" type="button" id="smartTopo">⬆️ Voltar ao topo</button>
@@ -1431,10 +1450,8 @@ body.sidebar-expanded .navLabel{
 
     <div class="card">
       <h3>✅ Ações finais</h3>
-      <button class="btnP" type="button" id="btnFillPadrao">⚡ Preencher padrão</button>
       <button class="btnW" id="btnWhats">📲 Enviar relatório (WhatsApp)</button>
       <button class="btnB" id="btnCopy">📋 Copiar relatório</button>
-      <button class="btnG" type="button" id="btnClearForm">🧹 Limpar formulário</button>
       <h3 style="margin-top:14px;">Prévia</h3>
       <div class="preview" id="preview"></div>
       <div class="hint" id="saveHint" style="margin-top:10px"></div>
@@ -2522,11 +2539,36 @@ el("btnFipeApply").addEventListener("click", ()=>{
   atualizarPreview(); refreshNovaAppUX(); showFipeModal(false);
 });
 el("btnFavOpen")?.addEventListener("click", ()=>alert("Favoritos: função em atualização. (Layout mantido)"));
-el("btnClearForm")?.addEventListener("click", ()=>{
+function clearNovaFormSafely(){
   if(!confirm("Limpar o formulário e apagar o rascunho salvo neste aparelho?")) return;
   try{ localStorage.removeItem("clubeauto_rascunho_v1"); }catch(e){}
-  window.location.reload();
-});
+
+  document.querySelectorAll("#viewNova input, #viewNova select, #viewNova textarea").forEach(node=>{
+    const type=(node.type||"").toLowerCase();
+    if(["button","submit","reset","file"].includes(type)) return;
+    if(type==="checkbox" || type==="radio") node.checked=false;
+    else if(node.tagName==="SELECT") node.selectedIndex=0;
+    else node.value="";
+    node.dispatchEvent(new Event("change", {bubbles:true}));
+    node.dispatchEvent(new Event("input", {bubbles:true}));
+  });
+
+  if(el("laudo")) el("laudo").value="APROVADO";
+  if(el("debitosSel")) el("debitosSel").value="Não";
+  if(el("finSel")) el("finSel").value="Não";
+  if(el("leilao")) el("leilao").value="Não";
+
+  setStatusBadge();
+  toggleLaudoDescricao();
+  toggleBlindagem();
+  toggleArCond();
+  toggleDebitos();
+  toggleFin();
+  atualizarPreview();
+  refreshNovaAppUX();
+  if(typeof updateDraftBox === "function") updateDraftBox();
+}
+el("btnClearForm")?.addEventListener("click", clearNovaFormSafely);
 
 
 function getSectionMetaByTitle(title){
