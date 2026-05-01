@@ -1039,6 +1039,42 @@ body.sidebar-expanded .navLabel{
   #smartWhats,#smartTopo{grid-column:1 / -1!important}
 }
 
+
+
+/* ===== Correção mobile segura: mostrar ações rápidas no celular ===== */
+@media (max-width:760px){
+  #viewNova .appCockpit{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+  }
+  #viewNova .smartActionBar{
+    display:flex!important;
+    position:relative!important;
+    z-index:30!important;
+    width:100%!important;
+    margin-bottom:14px!important;
+  }
+  #viewNova .smartActionBtns{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:10px!important;
+  }
+  #viewNova .smartActionBtns button{
+    width:100%!important;
+    min-height:50px!important;
+    pointer-events:auto!important;
+  }
+  #smartWhats,#smartTopo{
+    grid-column:1 / -1!important;
+  }
+  body.view-nova .mobileActionDock{
+    display:none!important;
+  }
+  body{
+    padding-bottom:18px!important;
+  }
+}
+
 </style>
 
 </head>
