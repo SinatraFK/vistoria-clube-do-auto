@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Clube do Auto - Avalia??o de Compra</title>
+
+<meta name="theme-color" content="#101418">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+
+<!-- GitHub Pages/local base -->
+<script>
+window.CLUBE_AUTO_APP_VERSION = "20260629-mobile-force-v3";
+(function(){
+  try{
+    var key="clubeauto_loaded_version";
+    var current=window.CLUBE_AUTO_APP_VERSION;
+    if(localStorage.getItem(key)!==current){
+      localStorage.setItem(key,current);
+      if("caches" in window){ caches.keys().then(function(keys){ return Promise.all(keys.map(function(k){ return caches.delete(k); })); }).catch(function(){}); }
+      if("serviceWorker" in navigator){ navigator.serviceWorker.getRegistrations().then(function(regs){ return Promise.all(regs.map(function(r){ return r.unregister(); })); }).catch(function(){}); }
+      setTimeout(function(){
+        var clean=location.href.split("#")[0].split("?")[0];
+        location.replace(clean+"?appv="+encodeURIComponent(current));
+      },700);
+    }
+  }catch(e){}
+})();
+</script>
+
+<script src="./js/config.js?v=20260629-mobile-force-v3"></script>
+
+<link rel="manifest" id="manifestLink" href="">
+<link rel="apple-touch-icon" id="appleIconLink" href="">
+
+<script src="./js/manifest-links.js?v=20260629-mobile-force-v3"></script>
+
+<link rel="stylesheet" href="./css/styles.css?v=20260629-mobile-force-v3">
+
+</head>
+
+<body>
+<div id="appSplash" class="appSplash" aria-label="Inicializando Clube do Auto">
+  <div class="splashGlow splashGlowOne"></div>
+  <div class="splashGlow splashGlowTwo"></div>
+  <div class="splashPanel">
+    <div class="splashBadge">Clube do Auto</div>
+    <div class="splashLogoShell">
+      <img src="./assets/logo.png" alt="Clube do Auto" class="splashLogo">
+    </div>
+    <div class="splashKicker">Compra de veículos • Osasco</div>
+    <div class="splashTitle">Avaliação de Compra</div>
+    <div class="splashStatus">Carregando ambiente seguro</div>
+    <div class="splashTrack"><span></span></div>
+  </div>
+</div>
+
+<section id="screenLogin">
+  <div class="loginWrap">
+    <img id="logoLogin" class="loginLogo" alt="Logo">
+    <div class="loginKicker">Aqui seu carro tem valor</div>
+    <div class="loginTitle">Avaliação de Compra</div>
+    <div class="loginSubtitle">Operação interna Clube do Auto Osasco</div>
+    <div class="loginProof">
+      <span>PIX rápido</span>
+      <span>Avaliação justa</span>
+      <span>Sem burocracia</span>
+    </div>
+    <div class="loginRow">
+      <div><label>E-mail</label><input id="loginEmail" inputmode="email" placeholder="ex: consultor@clube.com"></div>
+      <div><label>Senha</label><input id="loginPass" type="password" placeholder="••••••••"></div>
+    </div>
+    <div class="loginBtns">
+      <button class="btnP" id="btnDoLogin">Entrar</button>
+      <button class="btnG" id="btnCreateUser">Cadastrar</button>
+      <button class="btnB" id="btnGuest">Convidado</button>
+    </div>
+    <div class="hint" id="loginHint" style="margin-top:12px"></div>
+  </div>
+</section>
+
+<div class="modalOverlay registerOverlay" id="registerModal">
+  <div class="modalBox registerBox">
+    <div class="modalTop">
+      <div>
+        <div class="modalTitle">Cadastrar usuário</div>
+        <div class="modalHint">Crie o acesso inicial. O cargo pode ser ajustado depois no painel do Admin.</div>
+      </div>
+      <button class="btnX" type="button" id="btnRegisterClose">Fechar</button>
+    </div>
+    <div class="registerBrand">
+      <img src="./assets/logo.png" alt="Clube do Auto">
+      <span>Operação interna Osasco</span>
+    </div>
+    <div class="row2">
+      <div>
+        <label>Nome de usuário</label>
+        <input id="registerName" placeholder="Ex: Lucas">
+      </div>
+      <div>
+        <label>E-mail</label>
+        <input id="registerEmail" inputmode="email" placeholder="consultor@clube.com">
+      </div>
+    </div>
+    <div>
+      <label>Senha</label>
+      <input id="registerPass" type="password" placeholder="mínimo 6 caracteres">
+    </div>
+    <div class="btnLine">
+      <button class="btnP" type="button" id="btnRegisterSubmit">Criar usuário</button>
+      <button class="btnSecondary" type="button" id="btnRegisterCancel">Cancelar</button>
+    </div>
+    <div class="hint" id="registerHint" style="margin-top:10px"></div>
+  </div>
+</div>
+
+<section id="screenApp" class="hidden">
+  <div class="topbar">
+    <div class="topbarHeader">
+      <img id="logoTop" alt="Logo">
+      <div class="topbarTitle">
+        <div class="main">AVALIAÇÃO DE COMPRA</div>
+        <div class="userline">
+          <span class="chip"><span class="dot" id="dot"></span><span id="statusTxt">APROVADO</span></span>
+          <span class="chip" id="whoami">—</span>
+          <span class="chip"><span id="roleTxt">—</span></span>
+        </div>
+      </div>
+    </div>
+    <div class="topbarBtns">
+      <button class="btnSmall btnGhost" id="btnSwitchUser">Trocar usuário</button>
+      <button class="btnSmall btnExit" id="btnLogout">Sair</button>
+    </div>
+  </div>
+
+  <div class="draftBar" id="draftBar">
+    <div class="msg" id="draftMsg">Rascunho encontrado.</div>
+    <div class="actions">
+      <button class="btnP" type="button" id="btnDraftContinue">Continuar</button>
+      <button class="btnDanger" type="button" id="btnDraftDiscardOld">Descartar</button>
+    </div>
+  </div>
+
+  <div class="appFrame">
+    <aside class="appSidebar">
+      <div class="appSidebarTop">
+        <button class="appSidebarToggle" type="button" id="btnSidebarToggle">☰</button>
+        <div class="appSidebarMeta">
+          <div class="appSidebarEyebrow">Menu do app</div>
+          <div class="appSidebarRole" id="sidebarRolePill">CONSULTOR</div>
+        </div>
+      </div>
+      <div class="tabs">
+        <button class="tabbtn active" id="tabNova"><span class="navIcon">🚗</span><span class="navLabel">Nova avaliação</span></button>
+        <button class="tabbtn" id="tabHist"><span class="navIcon">📋</span><span class="navLabel">Histórico</span></button>
+        <button class="tabbtn hidden" id="tabPainel"><span class="navIcon">📊</span><span class="navLabel">Painel</span></button>
+        <button class="tabbtn hidden" id="tabUsers"><span class="navIcon">👥</span><span class="navLabel">Usuários</span></button>
+      </div>
+      <div class="appSidebarFooter">
+        <div class="sidebarSessionLabel">Sessao</div>
+        <button class="sidebarLogoutBtn" type="button" id="btnSidebarLogout">
+          <span class="navIcon">-&gt;</span><span class="navLabel">Sair da conta</span>
+        </button>
+      </div>
+    </aside>
+    <div class="appMain">
+
+  <div id="viewNova">
+    <div class="appHero">
+      <div class="appHeroTop">
+        <div>
+          <div class="appHeroTitle">Clube do Auto • Avaliação de Compra</div>
+          <div class="appHeroSub">Unidade Osasco</div>
+        </div>
+        <div class="appHeroStats" id="heroStats">
+          <span class="heroPill">🚗 <span id="heroModelo">Modelo não informado</span></span>
+          <span class="heroPill">📋 <span id="heroLaudo">APROVADO</span></span>
+          <span class="heroPill">👤 <span id="heroCliente">Cliente não informado</span></span>
+          <span class="heroPill">⚡ <span id="heroProgresso">0/0 seções prontas</span></span>
+        </div>
+      </div>
+    </div>
+    <div class="appCockpit">
+      <div class="cockpitGrid">
+        <div class="cockpitCard"><div class="cockpitLabel">Veículo</div><div class="cockpitValue" id="cockpitModelo">Modelo não informado</div><div class="cockpitMini" id="cockpitAnoVersao">Ano e versão</div></div>
+        <div class="cockpitCard"><div class="cockpitLabel">Identificação</div><div class="cockpitValue" id="cockpitPlaca">Placa não informada</div><div class="cockpitMini" id="cockpitKm">KM não informado</div></div>
+        <div class="cockpitCard"><div class="cockpitLabel">Negócio</div><div class="cockpitValue" id="cockpitFipe">FIPE não informada</div><div class="cockpitMini" id="cockpitPretendido">Valor pretendido</div></div>
+        <div class="cockpitCard"><div class="cockpitLabel">Atendimento</div><div class="cockpitValue" id="cockpitCliente">Cliente não informado</div><div class="cockpitMini" id="cockpitConsultor">Consultor não informado</div></div>
+      </div>
+      <div class="smartActionBar">
+        <div class="smartActionTitle">Ações rápidas</div>
+        <div class="smartActionBtns">
+          <button class="btnP" type="button" id="btnFillPadrao">⚡ Preencher padrão</button>
+          <button class="btnG" type="button" id="btnClearForm">🧹 Limpar formulário</button>
+          <button class="btnB" type="button" id="smartCopy">📋 Copiar</button>
+          <button class="btnW smartActionFull" type="button" id="smartWhats">📲 Enviar relatório</button>
+          <button class="btnG smartActionFull smartActionTop" type="button" id="smartTopo">⬆️ Voltar ao topo</button>
+        </div>
+      </div>
+    </div>
+    <div class="operationPanel">
+      <div class="operationPanelHead">
+        <div>
+          <div class="operationKicker">Cockpit operacional</div>
+          <div class="operationTitle">Controle da avaliação</div>
+        </div>
+        <div class="operationScore" id="operationScore">0%</div>
+      </div>
+      <div class="operationAlerts" id="operationAlerts"></div>
+    </div>
+    <div class="novaQuickNav" id="novaQuickNav"></div>
+    <div class="appProgressWrap"><div class="appProgressBar"><span id="appProgressFill"></span></div><div class="appProgressMeta" id="appProgressMeta">Preenchimento da vistoria</div></div>
+    <div class="draftAutoBox" id="draftAutoBox">
+      <div class="draftAutoMsg">
+        💾 Rascunho encontrado
+        <span class="draftAutoSub" id="draftAutoSub">Existe uma vistoria não finalizada salva neste aparelho.</span>
+      </div>
+      <div>
+        <div class="draftAutoActions">
+          <button class="btnDraftRestore" type="button" id="btnDraftRestore">Continuar vistoria</button>
+          <button class="btnDraftDiscard" type="button" id="btnDraftDiscard">Descartar</button>
+        </div>
+        <div class="draftSavedHint" id="draftSavedHint">Rascunho automático ativo</div>
+      </div>
+    </div>
+    <div class="stickyUtilityBar">
+      <div class="utilityGroup">
+        <span class="utilityLabel">Fluxo rápido</span>
+        <button class="utilityBtn" type="button" id="btnExpandAllSecs">Expandir tudo</button>
+        <button class="utilityBtn" type="button" id="btnCollapseAllSecs">Recolher tudo</button>
+        <button class="utilityBtn" type="button" id="btnGoAcoes">Ir para ações finais</button>
+      </div>
+      <div class="utilityGroup">
+        <button class="utilityBtn" type="button" id="btnGoCliente">Cliente</button>
+        <button class="utilityBtn" type="button" id="btnGoLaudo">Laudo</button>
+      </div>
+    </div>
+    <div class="summaryStrip" id="summaryStrip"></div>
+    <div class="quickAssistGrid">
+      <div class="quickAssistCard"><div class="quickAssistLabel">Status do laudo</div><div class="quickAssistValue" id="assistLaudo">Aprovado</div><div class="quickAssistMini" id="assistLeilao">Sem informação de leilão</div></div>
+      <div class="quickAssistCard"><div class="quickAssistLabel">Blindagem / Ar</div><div class="quickAssistValue" id="assistBlindagem">Sem blindagem</div><div class="quickAssistMini" id="assistAr">Ar-condicionado não avaliado</div></div>
+      <div class="quickAssistCard"><div class="quickAssistLabel">Cliente e captação</div><div class="quickAssistValue" id="assistCliente">Cliente não informado</div><div class="quickAssistMini" id="assistCaptacao">Captação não informada</div></div>
+      <div class="quickAssistCard"><div class="quickAssistLabel">Fechamento</div><div class="quickAssistValue" id="assistResponsavel">Consultor não informado</div><div class="quickAssistMini" id="assistAvaliadores">Avaliadores não selecionados</div></div>
+    </div>
+    <div class="card fipeHero">
+      <div class="modalTitle">🔎 Consulta FIPE</div>
+      <div class="modalHint">Use a busca para preencher automaticamente <b>Modelo</b>, <b>Ano</b> e <b>Fipe</b>. (Carros)</div>
+      <div class="btnLine" style="margin-top:10px">
+        <button class="btnB" type="button" id="btnFipe">🔎 Buscar FIPE</button>
+        <button class="btnSecondary" type="button" id="btnFipeClear">Limpar FIPE</button>
+      </div>
+      <div class="hint" style="margin-top:8px">Dica: depois de aplicar, revise a versão do veículo (mantemos manual).</div>
+    </div>
+
+    <div class="card vehicleFormCard">
+      <h3>🚗 Veículo</h3>
+      <div class="vehicleModelRow">
+        <div class="vehicleModelField">
+          <label>Modelo <span class="hint">(obrigatório)</span></label><input id="modelo" placeholder="Ex: Fox Trend">
+        </div>
+        <button class="btnSecondary vehicleQuickBtn" type="button" id="btnFavOpen">⭐ Modelos rápidos</button>
+      </div>
+      <div class="row2">
+        <div><label>Ano <span class="hint">(obrigatório)</span></label><input id="ano" placeholder="Ex: 2012/2013"></div>
+        <div><label>Versão <span class="hint">(obrigatório)</span></label>
+          <select id="versao">
+            <option value="">Selecione</option>
+            <option>Básico</option>
+            <option>Completo</option>
+            <option>Completo menos ar</option>
+            <option>Completo + 7 Lugares</option>
+            <option>Apenas Vidros Elétricos</option>
+            <option>Apenas direção</option>
+            <option>Apenas AR</option>
+          </select>
+        </div>
+      </div>
+      <div class="row3">
+        <div><label>Placa <span class="hint">(obrigatório)</span></label><input id="placa" placeholder="Ex: EPX5C99"></div>
+        <div><label>Km <span class="hint">(obrigatório)</span></label><input id="km" inputmode="numeric" placeholder="Ex: 21000"></div>
+        <div>
+          <label>Comprou (Km) <span class="hint">(obrigatório)</span></label>
+          <div id="kmComprouWrap">
+            <input id="kmComprou" type="text" placeholder="Ex: 10.000 ou aprox. 80.000">
+          </div>
+        </div>
+      </div>
+
+      <div class="vehicleOptionsRow">
+        <label class="chkLabelRight vehicleOption">Cliente não sabe <input type="checkbox" id="kmComprouNaoSabe"></label>
+        <label class="chkLabelRight vehicleOption">Veículo blindado <input type="checkbox" id="blindadoChk"></label>
+        <div id="blindadoEstadoWrap" class="hidden">
+          <label>Blindagem / vidros</label>
+          <select id="blindadoEstado">
+            <option>Bom</option>
+            <option>Avariado</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="blindadoObsWrap" class="hidden">
+        <label>Detalhes da blindagem</label>
+        <textarea id="blindadoObs" placeholder="Ex: vidro delaminado em 2 portas, vigia trincado, vidro quebrado..."></textarea>
+      </div>
+
+      <div id="placaDuplicadaHint"></div>
+
+      <div class="hint">Km pode ser número (o app formata). Em "Comprou (Km)", marque "Cliente não sabe" quando necessário.</div>
+    </div>
+
+    <div class="card">
+      <h3>💰 Negócio</h3>
+      <div class="row2">
+        <div>
+          <label>Débitos do veículo</label>
+          <select id="debitosSel"><option>Não</option><option>Sim</option></select>
+        </div>
+        <div id="debitosValorWrap" class="hidden">
+          <label>Valor dos débitos</label>
+          <input id="debitosValor" inputmode="numeric" placeholder="Ex: 1500">
+        </div>
+      </div>
+      <div class="row2">
+        <div>
+          <label>Financiamento</label>
+          <select id="finSel"><option>Não</option><option>Sim</option></select>
+        </div>
+        <div id="finValorWrap" class="hidden">
+          <label>Valor da quitação</label>
+          <input id="finValor" inputmode="numeric" placeholder="Ex: 12000">
+        </div>
+      </div>
+      <div class="row2">
+        <div>
+          <label>Fipe <span class="hint">(obrigatório)</span></label>
+          <input id="fipe" inputmode="numeric" placeholder="Ex: 59000">
+          <div class="hint">Sai como R$ 59.000,00</div>
+        </div>
+        <div>
+          <label>Valor pretendido</label>
+          <input id="valorPretendido" inputmode="numeric" placeholder="Ex: 29000">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>📋 Laudo</h3>
+      <label>Status</label>
+      <select id="laudo"><option>APROVADO</option><option>APONTAMENTO</option><option>REPROVADO</option></select>
+      <div id="laudoObsWrap">
+        <label>Descrição do laudo</label>
+        <textarea id="laudoObs" placeholder="Longarina, painel, colunas, chassi..."></textarea>
+      </div>
+      <h3 style="margin-top:14px">🚨 Leilão</h3>
+      <label>Situação</label>
+      <select id="leilao"><option>Não</option><option>Financeira</option><option>Pequena monta</option><option>Média monta</option></select>
+      <div class="hint">Só aparece no relatório se não for “Não”.</div>
+    </div>
+
+    <div class="card">
+      <h3>⚙️ Gastos</h3>
+      <label>Motor / mecânica (texto livre)</label>
+      <textarea id="motor" placeholder="Ex: Rajando / Caixa de direção / Vazamento..."></textarea>
+      <label>Luzes do painel (texto livre)</label>
+      <textarea id="luzes" placeholder="Ex: ABS / Injeção / Óleo..."></textarea>
+
+      <div id="arCondWrap" class="hidden">
+        <label>Ar condicionado</label>
+        <select id="arCond">
+          <option>Bom</option>
+          <option>Não gela</option>
+          <option>Não funciona</option>
+        </select>
+      </div>
+
+      <h3 style="margin-top:14px">🪑 Gastos internos</h3>
+      <label>Tablier</label>
+      <select id="tablier"><option>Bom</option><option>Avariado</option></select>
+      <div class="row2">
+        <div>
+          <label>Bancos (quais)</label>
+          <select id="bancosOnde">
+            <option value="">Selecione</option><option>Motorista</option><option>Dianteiros</option><option>Traseiros</option><option>Todos</option>
+          </select>
+        </div>
+        <div>
+          <label>Bancos (serviço)</label>
+          <select id="bancosServico"><option>Bom</option><option>Faixa</option><option>Reformar</option></select>
+        </div>
+      </div>
+      <div class="row2">
+        <div>
+          <label>Volante</label>
+          <select id="volante"><option>Bom</option><option>Encapar</option><option>Trocar</option></select>
+        </div>
+        <div>
+          <label>Manopla do câmbio</label>
+          <select id="manopla"><option>Bom</option><option>Trocar</option></select>
+        </div>
+      </div>
+      <label>Forro de porta (selecione)</label>
+      <div style="border:1px dashed #e5e7eb;border-radius:14px;padding:12px;background:#fafafa;margin-bottom:10px">
+        <div class="row3">
+          <label class="chkLabelRight">Motorista <input type="checkbox" id="forro_motorista"></label>
+          <label class="chkLabelRight">Passageiro <input type="checkbox" id="forro_passageiro"></label>
+          <label class="chkLabelRight">Traseiro D <input type="checkbox" id="forro_traseiro_d"></label>
+          <label class="chkLabelRight">Traseiro E <input type="checkbox" id="forro_traseiro_e"></label>
+          <label class="chkLabelRight">Dianteiros <input type="checkbox" id="forro_dianteiros"></label>
+          <label class="chkLabelRight">Traseiros <input type="checkbox" id="forro_traseiros"></label>
+          <label class="chkLabelRight">Todos <input type="checkbox" id="forro_todos"></label>
+        </div>
+        <div style="margin-top:10px">
+          <label>Estado</label>
+          <select id="forroEstado"><option>Bom</option><option>Avariado</option></select>
+        </div>
+      </div>
+
+      <h3 style="margin-top:14px">🚗 Gastos externos</h3>
+      <div class="row2">
+        <div>
+          <label>Funilaria (peças)</label>
+          <select id="funilariaPecas"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select>
+        </div>
+        <div>
+          <label>Pneus avariados</label>
+          <select id="pneusQtd"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+        </div>
+      </div>
+      <div class="row2 granizoRow">
+        <label class="chkLabelRight">Pintura completa <input type="checkbox" id="pinturaCompleta"></label>
+        <label class="chkLabelRight">Chuva de granizo <input type="checkbox" id="chuvaGranizo"></label>
+      </div>
+      <div class="row2">
+        <div>
+          <label>Para-choque dianteiro</label>
+          <select id="paraChoqueD"><option>Bom</option><option>Troca</option></select>
+        </div>
+        <div>
+          <label>Para-choque traseiro</label>
+          <select id="paraChoqueT"><option>Bom</option><option>Troca</option></select>
+        </div>
+      </div>
+      <div class="row2">
+        <div>
+          <label>Retrovisor (D)</label>
+          <select id="retrovisorD">
+            <option>Bom</option>
+            <option>Capa</option>
+            <option>Troca</option>
+          </select>
+        </div>
+        <div>
+          <label>Retrovisor (E)</label>
+          <select id="retrovisorE">
+            <option>Bom</option>
+            <option>Capa</option>
+            <option>Troca</option>
+          </select>
+        </div>
+      </div>
+      <h3 style="margin-top:14px">💡 Faróis e lanternas</h3>
+      <div class="row2">
+        <div><label>Farol (D)</label><select id="farolD"><option>Bom</option><option>Polimento</option><option>Troca</option></select></div>
+        <div><label>Farol (E)</label><select id="farolE"><option>Bom</option><option>Polimento</option><option>Troca</option></select></div>
+      </div>
+      <div class="row2">
+        <div><label>Lanterna (D)</label><select id="lanternaD"><option>Bom</option><option>Polimento</option><option>Troca</option></select></div>
+        <div><label>Lanterna (E)</label><select id="lanternaE"><option>Bom</option><option>Polimento</option><option>Troca</option></select></div>
+      </div>
+      <h3 style="margin-top:14px">🪟 Vidros</h3>
+      <label>Para-brisa</label>
+      <select id="vidroParabrisa"><option>OK</option><option>Reparo</option><option>Troca</option></select>
+      <div style="border:1px dashed #e5e7eb;border-radius:14px;padding:12px;background:#fafafa;margin-bottom:10px">
+        <div class="hint">Demais vidros (marque e selecione a ação).</div>
+        <div class="chkRow"><label class="chkLabelRight">Dianteiro (D) <input type="checkbox" id="vidro_dd_chk"></label><select id="vidro_dd_act"><option>Reparo</option><option>Troca</option><option>Não abre</option></select></div>
+        <div class="chkRow"><label class="chkLabelRight">Dianteiro (E) <input type="checkbox" id="vidro_de_chk"></label><select id="vidro_de_act"><option>Reparo</option><option>Troca</option><option>Não abre</option></select></div>
+        <div class="chkRow"><label class="chkLabelRight">Traseiro (D) <input type="checkbox" id="vidro_td_chk"></label><select id="vidro_td_act"><option>Reparo</option><option>Troca</option><option>Não abre</option></select></div>
+        <div class="chkRow"><label class="chkLabelRight">Traseiro (E) <input type="checkbox" id="vidro_te_chk"></label><select id="vidro_te_act"><option>Reparo</option><option>Troca</option><option>Não abre</option></select></div>
+        <div class="chkRow"><label class="chkLabelRight">Vigia <input type="checkbox" id="vidro_vg_chk"></label><select id="vidro_vg_act"><option>Reparo</option><option>Troca</option><option>Não abre</option></select></div>
+      </div>
+      <div class="hint">No relatório aparecem apenas itens que geram custo. “Bom/OK/0” não aparece.</div>
+    </div>
+
+    <div class="card">
+      <h3>🛣️ Teste de Rodagem</h3>
+      <label>Observações (texto livre)</label>
+      <textarea id="testeRodagem" placeholder="Como o carro se comportou na rua (com mecânico dirigindo): trepidação, puxando, barulho..."></textarea>
+      <div class="hint">Esse item é preenchido por último e aparece separado no relatório.</div>
+    </div>
+
+    <div class="card">
+      <h3>👨‍🔧 Responsáveis</h3>
+      <div class="row2">
+        <div><label>Consultor <span class="hint">(obrigatório)</span></label><input id="consultor"></div>
+        <div>
+          <label>Avaliadores <span class="hint">(obrigatório)</span></label>
+          <input id="avaliadores" placeholder="Ex: Leonardo / Anderson">
+          <div class="hint">Digite o nome de quem avaliou. Pode usar / para separar mais de um avaliador.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>👤 Cliente</h3>
+      <div class="row2">
+        <div><label>Cliente <span class="hint">(obrigatório)</span></label><input id="cliente"></div>
+        <div><label>Local</label><input id="local"></div>
+      </div>
+      <label>Telefone (WhatsApp)</label>
+      <input id="telefone" placeholder="Ex: 11 99999-9999">
+      <div class="hint">Esse telefone NÃO vai no relatório (Whats/Copiar). Fica salvo só no histórico (gestores).</div>
+      <label>Captação</label>
+      <select id="captacao"><option value="">Selecione</option><option>Lead</option><option>Porta</option><option>Orgânico</option></select>
+      <div class="hint">“Osasco - SP 📍” sempre aparece no relatório.</div>
+    </div>
+
+    <div class="card">
+      <h3>✅ Ações finais</h3>
+      <button class="btnW" id="btnWhats">📲 Enviar relatório (WhatsApp)</button>
+      <button class="btnB" id="btnCopy">📋 Copiar relatório</button>
+      <h3 style="margin-top:14px;">Prévia</h3>
+      <div class="preview" id="preview"></div>
+      <div class="hint" id="saveHint" style="margin-top:10px"></div>
+    </div>
+  </div>
+
+  <div id="viewHistorico" class="hidden">
+    <div class="card historyCleanCard">
+      <h3>☁️ Histórico da equipe</h3>
+      <div class="hint" id="histHint"></div>
+      <div class="historySearchLine">
+        <div>
+          <label>🔎 Buscar no histórico</label>
+          <div class="histSearchWrap"><span class="histSearchIcon">🔎</span><input id="histSearch" placeholder="Pesquise placa, cliente ou laudo..."></div>
+        </div>
+        <div>
+          <label>📅 Período</label>
+          <select id="histPeriodo">
+            <option value="30d">Últimos 30 dias</option><option value="7d">Últimos 7 dias</option><option value="hoje">Hoje</option>
+            <option value="ontem">Ontem</option><option value="mes">Este mês</option><option value="tudo">Tudo (até 2000)</option>
+          </select>
+        </div>
+      </div>
+      <div class="hint" id="histCount"></div>
+
+      <div class="histGrid" id="historicoList"></div>
+    </div>
+  </div>
+
+  <div class="modalOverlay" id="historyReportModal">
+    <div class="modalBox historyReportBox">
+      <div class="modalTop">
+        <div>
+          <div class="modalTitle" id="historyReportTitle">Avaliação salva</div>
+          <div class="modalHint" id="historyReportMeta"></div>
+        </div>
+        <button class="btnX" type="button" id="btnHistoryReportClose">Fechar</button>
+      </div>
+      <div class="preview historyReportText" id="historyReportText"></div>
+      <div class="btnLine historyReportActions">
+        <button class="btnB" type="button" id="btnHistoryReportCopy">Copiar relatório</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="viewPainel" class="hidden">
+    <div class="card painelCleanCard">
+      <h3>📊 Dashboard da equipe</h3>
+      <div class="painelTop painelCleanTop">
+        <div>
+          <label>Mês</label>
+          <input id="painelMes" type="month">
+        </div>
+        <div>
+          <button class="btnP" type="button" id="btnPainelAtualizar">Atualizar</button>
+          <div class="hint" id="painelHint" style="margin-top:8px"></div>
+        </div>
+      </div>
+
+      <div class="painelGrid" id="painelKpis"></div>
+
+      <h3 style="margin-top:14px">Resumo da equipe</h3>
+      <div id="painelTabela"></div>
+
+      <h3 style="margin-top:14px">Captação</h3>
+      <div id="painelCaptacao"></div>
+
+      <h3 style="margin-top:14px">Evolução mensal</h3>
+      <div id="painelEvolucao"></div>
+    </div>
+  </div>
+
+
+
+  <div id="viewUsers" class="hidden">
+    <div class="card">
+      <h3>👥 Usuários (Admin)</h3>
+      <div class="hint" id="usersHint"></div>
+      <div id="usersList"></div>
+    </div>
+  </div>
+    </div>
+  </div>
+
+  <nav class="bottomNav" id="bottomNav">
+    <button class="bottomNavBtn active" type="button" id="tabNovaMobile"><span class="navIcon">🚗</span><span>Nova</span></button>
+    <button class="bottomNavBtn" type="button" id="tabHistMobile"><span class="navIcon">📋</span><span>Histórico</span></button>
+    <button class="bottomNavBtn hidden" type="button" id="tabGestaoMobile"><span class="navIcon">👤</span><span>Gestão</span></button>
+  </nav>
+</section>
+
+
+
+<div class="modalOverlay" id="fipeModal">
+  <div class="modalBox">
+    <div class="modalTop">
+      <div>
+        <div class="modalTitle">🔎 Buscar FIPE (Carros)</div>
+        <div class="modalHint">Selecione Marca → Modelo → Ano. Depois clique em “Aplicar no formulário”.</div>
+      </div>
+      <button class="btnX" type="button" id="btnFipeClose">Fechar</button>
+    </div>
+
+    <div class="card" style="box-shadow:none;border:1px solid #e5e7eb;margin-top:12px">
+      <div class="row2">
+        <div>
+          <label>Marca</label>
+          <select id="fipeMarca"><option value="">Carregando...</option></select>
+        </div>
+        <div>
+          <label>Modelo (busca rápida)</label>
+          <input id="fipeBuscaModelo" placeholder="Digite para filtrar (ex: FOX, HB20, ONIX)">
+          <div class="hint">Dica: digite parte do nome para reduzir a lista.</div>
+        </div>
+      </div>
+
+      <div class="row2">
+        <div>
+          <label>Modelo</label>
+          <select id="fipeModelo"><option value="">Selecione a marca</option></select>
+        </div>
+        <div>
+          <label>Ano / combustível</label>
+          <select id="fipeAno"><option value="">Selecione o modelo</option></select>
+        </div>
+      </div>
+
+      <div class="row2">
+        <div>
+          <label>Resultado</label>
+          <div class="preview" id="fipeResult">—</div>
+        </div>
+        <div>
+          <label>Ação</label>
+          <button class="btnP" type="button" id="btnFipeApply">Aplicar no formulário</button>
+          <div class="hint" id="fipeStatus" style="margin-top:8px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modalOverlay" id="favModal">
+  <div class="modalBox">
+    <div class="modalTop">
+      <div>
+        <div class="modalTitle">⭐ Modelos rápidos</div>
+        <div class="modalHint">Selecione um modelo favorito para abrir a busca FIPE já filtrada.</div>
+      </div>
+      <button class="btnX" type="button" id="btnFavClose">Fechar</button>
+    </div>
+
+    <div class="card" style="box-shadow:none;border:1px solid #e5e7eb;margin-top:12px">
+      <div class="hint">Dica: adicione favoritos dentro da busca FIPE (botão “⭐ Favoritar este modelo”).</div>
+      <div id="favList"></div>
+      <div class="btnLine">
+        <button class="btnDanger" type="button" id="btnFavClear">Limpar favoritos</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<textarea id="copyFallback" style="position:fixed;left:-9999px;top:-9999px;"></textarea>
+
+<script src="./js/brand-assets.js?v=20260629-mobile-force-v3"></script>
+
+<script src="./js/modules/users.js?v=20260629-mobile-force-v3"></script>
+
+<script src="./js/app.js?v=20260629-mobile-force-v3"></script>
+
+<script src="./js/pwa.js?v=20260629-mobile-force-v3"></script>
+
+
+
+
+</body>
+</html>
